@@ -1,0 +1,36 @@
+FROM ruby:2.4.4
+
+USER root
+
+ENV BUNDLE_PATH=/bundle \
+    BUNDLE_BIN=/bundle/bin \
+    GEM_HOME=/bundle \
+    RAILS_ENV=production \
+    RACK_ENV=production \
+    RAILS_SERVE_STATIC_FILES=true \
+    RAILS_LOG_TO_STDOUT=true \
+    EDITOR=vim
+
+ENV PATH="${BUNDLE_BIN}:${PATH}"
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+
+RUN curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
+RUN apt-get update && \
+    apt-get install -y yarn sudo nano netcat telnet postgresql-client build-essential libpq-dev libxml2-dev libxslt1-dev nodejs yarn vim && \
+    rm -rf /var/lib/apt/lists/* 
+
+RUN echo 'ALL ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+RUN gem install rake
+RUN gem install rails --version 5.2
+
+WORKDIR /app
+
+COPY Gemfile /app/
+COPY Gemfile.lock /app/
+
+# include cache in the base image
+RUN RAILS_ENV=production bundle install --without development test && chmod -R 777 /usr/local/bundle/ && chmod -R 777 /bundle && rm /app/Gemfile /app/Gemfile.lock

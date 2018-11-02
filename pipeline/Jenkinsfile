@@ -1,0 +1,120 @@
+#!groovy
+String toolchain = ''
+String environment = ''
+String ecr_repo_url = ''
+
+def SharedTasks = null
+
+node("master") {
+  stage('Checkout'){
+    env.GIT_COMMIT = checkout(scm).GIT_COMMIT
+    version = env.GIT_COMMIT
+    SharedTasks = load "${WORKSPACE}/pipeline/lib/sharedTasks.groovy"
+
+    // If there is a previous PR build running for this pipeline, cancel it
+    if (env.BRANCH_NAME != 'master') {
+      def prevBuild = currentBuild.previousBuild
+      if (prevBuild) {
+        prevBuild.rawBuild._this().doTerm();
+      }
+    }
+
+    dir('rails-ref') {
+      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/bench-rails.git'
+      sh 'mv Gemfile* ../'
+    }
+
+    dir('node-ref') {
+      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/bench-react.git'
+      sh 'mv package.json yarn.lock* ../'
+    }
+
+  } // end: stage: checkout
+
+   
+  if (env.BRANCH_NAME == 'master') {
+    stage("Common Infrastructure") {
+      toolchain = 'infrastructure'
+
+      timeout(time: 10, unit: 'MINUTES') {
+        environment = 'common'
+        vars = [
+          project_key: SharedTasks.getSSMParam("project_key"),
+          app_name: toolchain,
+          environment: environment
+        ]
+
+        SharedTasks.planAndApplyTerraform(toolchain, environment, 'lock', vars, false)
+        SharedTasks.planAndApplyTerraform(toolchain, environment, 'common', vars)
+      }
+    } // end: stage: build image
+
+    stage("Build & Publish Rails Base Image") {
+      toolchain = 'rails_base'
+
+      timeout(time: 10, unit: 'MINUTES') {
+        ecr_repo_url = SharedTasks.getSSMParam("${toolchain}_ecr_url")
+
+        SharedTasks.ecrLogin()
+
+        sh """
+          docker build -t "${ecr_repo_url}:latest" -f pipeline/dockerfiles/Dockerfile.${toolchain} .
+          docker push "${ecr_repo_url}:latest" 
+        """
+      }
+    } // end: stage: build rails base image
+
+    stage("Build & Publish Rails Pipeline Image") {
+      toolchain = 'rails_pipeline'
+
+      timeout(time: 10, unit: 'MINUTES') {
+        ecr_repo_url = SharedTasks.getSSMParam("${toolchain}_ecr_url")
+        rails_base_ecr_url = SharedTasks.getSSMParam("rails_base_ecr_url")
+
+        SharedTasks.ecrLogin()
+
+        sh """
+          sed -i 's#FROM .*#FROM ${rails_base_ecr_url}:latest#g' pipeline/dockerfiles/Dockerfile.${toolchain}
+          docker build -t "${ecr_repo_url}:latest" -f pipeline/dockerfiles/Dockerfile.${toolchain} .
+          docker push "${ecr_repo_url}:latest"
+        """
+      }
+    } // end: stage: build rails pipeline image
+
+
+    stage("Build & Publish Node Base Image") {
+      toolchain = 'node_base'
+
+      timeout(time: 10, unit: 'MINUTES') {
+        ecr_repo_url = SharedTasks.getSSMParam("${toolchain}_ecr_url")
+
+        SharedTasks.ecrLogin()
+
+        sh """
+          docker build -t "${ecr_repo_url}:latest" -f pipeline/dockerfiles/Dockerfile.${toolchain} .
+          docker push "${ecr_repo_url}:latest" 
+        """
+      }
+    } // end: stage: build node base image
+
+
+    stage("Build & Publish Node Pipeline Image") {
+      toolchain = 'node_pipeline'
+
+      timeout(time: 10, unit: 'MINUTES') {
+        ecr_repo_url = SharedTasks.getSSMParam("${toolchain}_ecr_url")
+        node_base_ecr_url = SharedTasks.getSSMParam("node_base_ecr_url")
+
+        SharedTasks.ecrLogin()
+
+        sh """
+          sed -i 's#FROM .*#FROM ${node_base_ecr_url}:latest#g' pipeline/dockerfiles/Dockerfile.${toolchain}
+          docker build -t "${ecr_repo_url}:latest" -f pipeline/dockerfiles/Dockerfile.${toolchain} .
+          docker push "${ecr_repo_url}:latest"
+        """
+      }
+    } // end: stage: build node pipeline image
+
+  } // end: if master
+
+} // end: node: master

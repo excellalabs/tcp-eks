@@ -1,0 +1,34 @@
+#!groovy
+def environments = ["development", "production"]
+def repos = ["bench-java", "bench-rails", "bench-react"]
+
+def DestroyTasks = null
+
+node("master") {
+  stage('Checkout') {
+    env.GIT_COMMIT = checkout(scm).GIT_COMMIT
+    version = env.GIT_COMMIT
+    DestroyTasks = load "${WORKSPACE}/pipeline/lib/destroy.groovy"
+  } // end: stage: checkout
+
+  for (app in repos) {
+    stage("Destroy ${app}"){
+      dir("${app}-ref") {
+        git branch: 'master', credentialsId: 'github-ci-credentials', url: "https://github.com/excellaco/${app}.git"
+
+        for (environment in environments) {
+          DestroyTasks.destroyTerraform(app, environment, "deploy")
+        }
+
+        DestroyTasks.destroyTerraform(app, "common", "common")
+        DestroyTasks.destroyTerraform(app, "common", "lock", lock=false)
+      } // end: dir
+    } // end: stage {app}
+  } // end: for all repos
+
+  stage("Destroy infrastructure"){
+    DestroyTasks.destroyTerraform("infrastructure", "common", "common")
+    DestroyTasks.destroyTerraform("infrastructure", "common", "lock", lock=false)
+  }
+
+} // end: node: master

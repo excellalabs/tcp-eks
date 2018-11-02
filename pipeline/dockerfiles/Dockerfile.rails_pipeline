@@ -1,0 +1,8 @@
+FROM rails-base:2.4.4-8
+USER root
+WORKDIR /app
+
+COPY Gemfile /app/
+COPY Gemfile.lock /app/
+
+RUN RAILS_ENV=test bundle install && chmod -R 777 /bundle && rm /app/Gemfile /app/Gemfile.lock
