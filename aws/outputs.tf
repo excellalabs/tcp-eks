@@ -1,5 +1,5 @@
 output "alb_target_group" {
-  value = "${module.ecs-cluster.default_alb_target_group}"
+  value = "${module.eks-cluster.default_alb_target_group}"
 }
 
 output "jenkins_master_public_dns" {

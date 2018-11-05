@@ -1,4 +1,4 @@
-# Default ALB implementation that can be used connect ECS instances to it
+# Default ALB implementation that can be used connect EKS instances to it
 
 resource "aws_alb_target_group" "default" {
   name                 = "${var.alb_name}"
