@@ -1,11 +1,11 @@
-# Why we need ECS instance policies http://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-# ECS roles explained here http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_managed_policies.html
-# Some other ECS policy examples http://docs.aws.amazon.com/AmazonECS/latest/developerguide/IAMPolicyExamples.html
+# Why we need EKS instance policies http://docs.aws.amazon.com/AmazonEKS/latest/developerguide/instance_IAM_role.html
+# EKS roles explained here http://docs.aws.amazon.com/AmazonEKS/latest/developerguide/eks_managed_policies.html
+# Some other EKS policy examples http://docs.aws.amazon.com/AmazonEKS/latest/developerguide/IAMPolicyExamples.html
 
 # Load Balancer Policies
-resource "aws_iam_role" "ecs_lb_role" {
-  name = "${var.environment}_${var.cluster}_ecs_lb_role"
-  path = "/ecs/"
+resource "aws_iam_role" "eks_lb_role" {
+  name = "${var.environment}_${var.cluster}_eks_lb_role"
+  path = "/eks/"
 
   assume_role_policy = <<EOF
 {
@@ -14,7 +14,7 @@ resource "aws_iam_role" "ecs_lb_role" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": ["ecs.amazonaws.com"]
+        "Service": ["eks.amazonaws.com"]
       },
       "Effect": "Allow"
     }
@@ -23,15 +23,15 @@ resource "aws_iam_role" "ecs_lb_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_lb" {
-  role       = "${aws_iam_role.ecs_lb_role.id}"
+resource "aws_iam_role_policy_attachment" "eks_lb" {
+  role       = "${aws_iam_role.eks_lb_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 
 # Instance policies
 
-resource "aws_iam_role" "ecs_instance_role" {
-  name = "${var.environment}_${var.cluster}_ecs_instance_role"
+resource "aws_iam_role" "eks_instance_role" {
+  name = "${var.environment}_${var.cluster}_eks_instance_role"
 
   assume_role_policy = <<EOF
 {
@@ -49,19 +49,19 @@ resource "aws_iam_role" "ecs_instance_role" {
 EOF
 }
 
-resource "aws_iam_instance_profile" "ecs" {
-  name = "${var.environment}_${var.cluster}_ecs_instance_profile"
+resource "aws_iam_instance_profile" "eks" {
+  name = "${var.environment}_${var.cluster}_eks_instance_profile"
   path = "/"
-  role = "${aws_iam_role.ecs_instance_role.name}"
+  role = "${aws_iam_role.eks_instance_role.name}"
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_ec2_role" {
-  role       = "${aws_iam_role.ecs_instance_role.id}"
+resource "aws_iam_role_policy_attachment" "eks_ec2_role" {
+  role       = "${aws_iam_role.eks_instance_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_ec2_cloudwatch_role" {
-  role       = "${aws_iam_role.ecs_instance_role.id}"
+resource "aws_iam_role_policy_attachment" "eks_ec2_cloudwatch_role" {
+  role       = "${aws_iam_role.eks_instance_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
@@ -103,16 +103,16 @@ EOF
   }
 }
 
-resource "aws_iam_policy" "ecs_default_log_task" {
-  name = "${var.environment}_${var.cluster}_ecs_default_log_task"
+resource "aws_iam_policy" "eks_default_log_task" {
+  name = "${var.environment}_${var.cluster}_eks_default_log_task"
   path = "/"
 
   policy = "${data.template_file.log_policy.rendered}"
 }
 
-resource "aws_iam_policy_attachment" "ecs_default_log_task" {
-  name = "${var.environment}_${var.cluster}_ecs_default_log_task"
+resource "aws_iam_policy_attachment" "eks_default_log_task" {
+  name = "${var.environment}_${var.cluster}_eks_default_log_task"
 
-  roles      = ["${aws_iam_role.ecs_instance_role.name}"]
-  policy_arn = "${aws_iam_policy.ecs_default_log_task.arn}"
+  roles      = ["${aws_iam_role.eks_instance_role.name}"]
+  policy_arn = "${aws_iam_policy.eks_default_log_task.arn}"
 }

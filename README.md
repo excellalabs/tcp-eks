@@ -1,12 +1,12 @@
-# Bench CI/CD + ECS infrastructure
+# Bench CI/CD + EKS infrastructure
 
-This repo uses Terraform and Chef to quickly create a Jenkins instance and two ECS clusters optimized for rapid prototype development in AWS. The jenkins instance acts as both the CI/CD facilitator as well as the bastion to access instances within the VPC.
+This repo uses Terraform and Chef to quickly create a Jenkins instance and two EKS clusters optimized for rapid prototype development in AWS. The jenkins instance acts as both the CI/CD facilitator as well as the bastion to access instances within the VPC.
 
 ![Architecture Overview](./doc/overview.png "Architecture Overview")
 
-Each environment (development and production) is a standalone ECS cluster. Each cluster is split across multiple availability zones with the EC2 instances residing in private subnets. A single postgres RDS instance (with multi-az enabled) is provisioned for each cluster, each application is expected to create the databases it needs within the given instance. A single ALB is created for all ingress traffic into the cluster (it is depicted in the figure as two ALBs since it is redundant across AZs), furthermore a NAT Gateway is provided for each ECS cluster to allow internet connectivity for EC2 cluster instances. Note: if you need more environments and are running up against EIP account limits, then the reduntant NAT Gateway in each cluster can be safely removed.
+Each environment (development and production) is a standalone EKS cluster. Each cluster is split across multiple availability zones with the EC2 instances residing in private subnets. A single postgres RDS instance (with multi-az enabled) is provisioned for each cluster, each application is expected to create the databases it needs within the given instance. A single ALB is created for all ingress traffic into the cluster (it is depicted in the figure as two ALBs since it is redundant across AZs), furthermore a NAT Gateway is provided for each ECS cluster to allow internet connectivity for EC2 cluster instances. Note: if you need more environments and are running up against EIP account limits, then the reduntant NAT Gateway in each cluster can be safely removed.
 
-![ECS Cluster](./doc/ecs-cluster.png "ECS Cluster")
+![EKS Cluster](./doc/eks-cluster.png "EKS Cluster")
 
 Upon running terraform to create the infrastructure in this repo, several AWS SSM key-value parameters will be available for reference in the CI/CD pipeline (e.g. deployment region, cluster names, ALB listener references, etc). Furthermore each application pipeline will need to coordinate resource creation/usage with what has been provided in this repo. Below is an example of such coordination:
 
@@ -50,7 +50,7 @@ jenkins_github_ci_token = "your token"
 
 # these need to be unique per region
 jenkins_key_name = "jenkins_master_ssh_key_pair_YOURNAME"
-ecs_key_name = "ecs_ssh_key_pair_YOURNAME"
+eks_key_name = "eks_ssh_key_pair_YOURNAME"
 
 # credentials used to create any application database
 # password must be greater than 8 characters
@@ -68,7 +68,7 @@ This is used by both of the jenkins and ecs terraform modules.
 [Generate Github token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) follow instructions here to generate a personal access token. Be sure to include scope for "repo" and "admin:repo_hook", otherwise your token will not allow you to scan the organization for exisiting repos.
 
 
-## Provisioning Jenkins + Dev/Prod ECS Clusters
+## Provisioning Jenkins + Dev/Prod EKS Clusters
 
 Head into the infrastructure toolchain container:
 ```

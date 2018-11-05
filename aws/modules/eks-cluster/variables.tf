@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "aws_ami" "ecs_aws_ami" {
+data "aws_ami" "eks_aws_ami" {
   most_recent = true
 
   filter {
@@ -12,7 +12,7 @@ data "aws_ami" "ecs_aws_ami" {
 
   filter {
     name   = "name"
-    values = ["amzn-ami-*-amazon-ecs-optimized*"]
+    values = ["amzn-ami-*-amazon-eks-optimized*"]
   }
 }
 
@@ -32,7 +32,7 @@ variable "environment" {
 
 variable "cluster" {
   default     = "default"
-  description = "The name of the ECS cluster"
+  description = "The name of the EKS cluster"
 }
 
 variable "instance_group" {
@@ -108,14 +108,14 @@ variable "custom_userdata" {
   description = "Inject extra command in the instance template to be run on boot"
 }
 
-variable "ecs_config" {
-  default     = "echo '' > /etc/ecs/ecs.config"
-  description = "Specify ecs configuration or get it from S3. Example: aws s3 cp s3://some-bucket/ecs.config /etc/ecs/ecs.config"
+variable "eks_config" {
+  default     = "echo '' > /etc/eks/eks.config"
+  description = "Specify eks configuration or get it from S3. Example: aws s3 cp s3://some-bucket/eks.config /etc/eks/eks.config"
 }
 
-variable "ecs_logging" {
+variable "eks_logging" {
   default     = "[\"json-file\",\"awslogs\"]"
-  description = "Adding logging option to ECS that the Docker containers can use. It is possible to add fluentd as well"
+  description = "Adding logging option to EKS that the Docker containers can use. It is possible to add fluentd as well"
 }
 
 variable "cloudwatch_prefix" {

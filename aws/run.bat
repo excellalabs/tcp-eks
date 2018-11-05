@@ -1,9 +1,9 @@
 @ECHO OFF
 SET KEY_ROOT="..\keys"
 
-IF NOT EXIST %KEY_ROOT%\ecs (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\ecs
-  ssh-keygen -f %KEY_ROOT%\ecs.pub -m pem -e > %KEY_ROOT%\ecs.pem
+IF NOT EXIST %KEY_ROOT%\eks (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\eks
+  ssh-keygen -f %KEY_ROOT%\eks.pub -m pem -e > %KEY_ROOT%\eks.pem
 )
 
 IF /I "%1"=="init" (

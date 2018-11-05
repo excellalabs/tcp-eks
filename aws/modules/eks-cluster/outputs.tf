@@ -13,25 +13,25 @@ output "secrets_kms_key_id" {
 resource "aws_ssm_parameter" "cluster_id" {
   name      = "${var.environment}_cluster_id"
   type      = "String"
-  value     = "${aws_ecs_cluster.cluster.id}"
+  value     = "${aws_eks_cluster.cluster.id}"
   overwrite = true
 }
 
-resource "aws_ssm_parameter" "ecs_private_subnet_cidrs" {
-  name      = "${var.environment}_ecs_private_subnet_cidrs"
+resource "aws_ssm_parameter" "eks_private_subnet_cidrs" {
+  name      = "${var.environment}_eks_private_subnet_cidrs"
   type      = "String"
   value     = "${join(",", var.private_subnet_cidrs)}"
   overwrite = true
 }
 
-output "ecs_default_iam_role_arn" {
-  value = "${aws_iam_role.ecs_default_task.arn}"
+output "eks_default_iam_role_arn" {
+  value = "${aws_iam_role.eks_default_task.arn}"
 }
 
-resource "aws_ssm_parameter" "ecs_default_task_role" {
-  name      = "${var.environment}_ecs_task_role_arn"
+resource "aws_ssm_parameter" "eks_default_task_role" {
+  name      = "${var.environment}_eks_task_role_arn"
   type      = "String"
-  value     = "${aws_iam_role.ecs_default_task.arn}"
+  value     = "${aws_iam_role.eks_default_task.arn}"
   overwrite = true
 }
 

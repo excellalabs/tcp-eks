@@ -3,16 +3,16 @@
 # Timezone
 ln -fs /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
 
-#Using script from http://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_cloudwatch_logs.html
+#Using script from http://docs.aws.amazon.com/AmazonEKS/latest/developerguide/using_cloudwatch_logs.html
 # Install awslogs and the jq JSON parser
 yum install -y awslogs jq aws-cli
 
-# ECS config
-${ecs_config}
+# EKS config
+${eks_config}
 {
-  echo "ECS_CLUSTER=${cluster_name}"
-  echo 'ECS_AVAILABLE_LOGGING_DRIVERS=${ecs_logging}'
-} >> /etc/ecs/ecs.config
+  echo "EKS_CLUSTER=${cluster_name}"
+  echo 'EKS_AVAILABLE_LOGGING_DRIVERS=${eks_logging}'
+} >> /etc/eks/eks.config
 
 # Inject the CloudWatch Logs configuration file contents
 cat > /etc/awslogs/awslogs.conf <<- EOF
@@ -36,21 +36,21 @@ log_group_name = ${cloudwatch_prefix}/var/log/docker
 log_stream_name = ${cluster_name}/{container_instance_id}
 datetime_format = %Y-%m-%dT%H:%M:%S.%f
 
-[/var/log/ecs/ecs-init.log]
-file = /var/log/ecs/ecs-init.log.*
-log_group_name = ${cloudwatch_prefix}/var/log/ecs/ecs-init.log
+[/var/log/eks/eks-init.log]
+file = /var/log/eks/eks-init.log.*
+log_group_name = ${cloudwatch_prefix}/var/log/eks/eks-init.log
 log_stream_name = ${cluster_name}/{container_instance_id}
 datetime_format = %Y-%m-%dT%H:%M:%SZ
 
-[/var/log/ecs/ecs-agent.log]
-file = /var/log/ecs/ecs-agent.log.*
-log_group_name = ${cloudwatch_prefix}/var/log/ecs/ecs-agent.log
+[/var/log/eks/eks-agent.log]
+file = /var/log/eks/eks-agent.log.*
+log_group_name = ${cloudwatch_prefix}/var/log/eks/eks-agent.log
 log_stream_name = ${cluster_name}/{container_instance_id}
 datetime_format = %Y-%m-%dT%H:%M:%SZ
 
-[/var/log/ecs/audit.log]
-file = /var/log/ecs/audit.log.*
-log_group_name = ${cloudwatch_prefix}/var/log/ecs/audit.log
+[/var/log/eks/audit.log]
+file = /var/log/eks/audit.log.*
+log_group_name = ${cloudwatch_prefix}/var/log/eks/audit.log
 log_stream_name = ${cluster_name}/{container_instance_id}
 datetime_format = %Y-%m-%dT%H:%M:%SZ
 
@@ -66,12 +66,12 @@ sed -i -e "s/{container_instance_id}/$container_instance_id/g" /etc/awslogs/awsl
 
 cat > /etc/init/awslogjob.conf <<- EOF
 #upstart-job
-description "Configure and start CloudWatch Logs agent on Amazon ECS container instance"
+description "Configure and start CloudWatch Logs agent on Amazon EKS container instance"
 author "Amazon Web Services"
-start on started ecs
+start on started eks
 
 script
-	exec 2>>/var/log/ecs/cloudwatch-logs-start.log
+	exec 2>>/var/log/eks/cloudwatch-logs-start.log
 	set -x
 
 	until curl -s http://localhost:51678/v1/metadata
@@ -85,9 +85,9 @@ end script
 
 EOF
 
-start ecs
+start eks
 
-#Get ECS instance info, althoug not used in this user_data it self this allows you to use
+#Get EKS instance info, althoug not used in this user_data it self this allows you to use
 #az(availability zone) and region
 until $(curl --output /dev/null --silent --head --fail http://localhost:51678/v1/metadata); do
   printf '.'

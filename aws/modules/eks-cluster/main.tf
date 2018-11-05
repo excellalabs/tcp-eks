@@ -1,4 +1,4 @@
-resource "aws_ecs_cluster" "cluster" {
+resource "aws_eks_cluster" "cluster" {
   name = "${var.cluster}-${var.environment}"
 }
 
@@ -30,13 +30,13 @@ module "alb" {
   aws_email          = "${var.aws_email}"
 }
 
-resource "aws_security_group_rule" "alb_to_ecs" {
+resource "aws_security_group_rule" "alb_to_eks" {
   type                     = "ingress"
   from_port                = 32768
   to_port                  = 61000
   protocol                 = "TCP"
   source_security_group_id = "${module.alb.alb_security_group_id}"
-  security_group_id        = "${module.ecs-instances.ecs_instance_security_group_id}"
+  security_group_id        = "${module.eks-instances.eks_instance_security_group_id}"
 }
 
 module "network" {
@@ -54,22 +54,22 @@ module "network" {
   aws_email            = "${var.aws_email}"
 }
 
-module "ecs-instances" {
-  source = "../ecs-instances"
+module "eks-instances" {
+  source = "../eks-instances"
 
   environment             = "${var.environment}"
   cluster                 = "${var.cluster}"
   bastion_cidrs           = ["${var.bastion_cidrs}"]
   instance_group          = "${var.instance_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
-  aws_ami                 = "${data.aws_ami.ecs_aws_ami.id}"
+  aws_ami                 = "${data.aws_ami.eks_aws_ami.id}"
   aws_email               = "${var.aws_email}"
   instance_type           = "${var.instance_type}"
   max_size                = "${var.max_size}"
   min_size                = "${var.min_size}"
   desired_capacity        = "${var.desired_capacity}"
   vpc_id                  = "${var.vpc_id}"
-  iam_instance_profile_id = "${aws_iam_instance_profile.ecs.id}"
+  iam_instance_profile_id = "${aws_iam_instance_profile.eks.id}"
   key_name                = "${var.key_name}"
   load_balancers          = "${var.load_balancers}"
   depends_id              = "${module.network.depends_id}"

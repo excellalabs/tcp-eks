@@ -30,7 +30,7 @@ variable "bastion_instance_type" {
   default = "t2.micro"
 }
 
-## ECS Cluster
+## EKS Cluster
 
 variable "max_size" {
   default = 4
@@ -54,8 +54,8 @@ variable "home" {
   default = "~"
 }
 
-variable "ecs_key_name" {
-  description = "the ssh key pair to use for the EC2 instances making up the ECS cluster"
+variable "eks_key_name" {
+  description = "the ssh key pair to use for the EC2 instances making up the EKS cluster"
 }
 
 variable "db_username" {}

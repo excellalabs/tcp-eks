@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "bastion_ssh_access" {
   security_group_id = "${aws_security_group.instance.id}"
 }
 
-# Default disk size for Docker is 22 gig, see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+# Default disk size for Docker is 22 gig, see http://docs.aws.amazon.com/AmazonEKS/latest/developerguide/eks-optimized_AMI.html
 resource "aws_launch_configuration" "launch" {
   name_prefix          = "${var.environment}_${var.cluster}_${var.instance_group}_"
   image_id             = "${var.aws_ami}"
@@ -61,7 +61,7 @@ resource "aws_autoscaling_group" "asg" {
 
   tag {
     key                 = "Name"
-    value               = "${var.environment}_ecs_${var.cluster}_${var.instance_group}"
+    value               = "${var.environment}_eks_${var.cluster}_${var.instance_group}"
     propagate_at_launch = "true"
   }
 
@@ -96,8 +96,8 @@ data "template_file" "user_data" {
   template = "${file("${path.module}/templates/user_data.sh")}"
 
   vars {
-    ecs_config        = "${var.ecs_config}"
-    ecs_logging       = "${var.ecs_logging}"
+    eks_config        = "${var.eks_config}"
+    eks_logging       = "${var.eks_logging}"
     cluster_name      = "${var.cluster}-${var.environment}"
     env_name          = "${var.environment}"
     custom_userdata   = "${var.custom_userdata}"

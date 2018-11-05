@@ -10,12 +10,12 @@ output "jenkins_public_subnet_cidrs" {
   value = "${module.jenkins-master.jenkins_public_subnet_cidrs}"
 }
 
-# output "ecs_deployer_access_key" {
-#   value = "${module.users.ecs_deployer_access_key}"
+# output "eks_deployer_access_key" {
+#   value = "${module.users.eks_deployer_access_key}"
 # }
 
-# output "ecs_deployer_secret_key" {
-#   value = "${module.users.ecs_deployer_secret_key}"
+# output "eks_deployer_secret_key" {
+#   value = "${module.users.eks_deployer_secret_key}"
 # }
 
 resource "aws_ssm_parameter" "project_key" {

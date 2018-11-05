@@ -2,7 +2,7 @@
 set -eu
 
 realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
 KEY_ROOT=$(realpath keys)
@@ -42,9 +42,9 @@ case "$1" in
       mkdir $KEY_ROOT
     fi
     if [ ! -f $KEY_ROOT/ecs ]; then
-      echo "${BOLD}Creating SSH keys for ECS instances${NORMAL}" 
-      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/ecs
-      ssh-keygen -f $KEY_ROOT/ecs.pub -m pem -e > $KEY_ROOT/ecs.pem
+      echo "${BOLD}Creating SSH keys for EKS instances${NORMAL}" 
+      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/eks
+      ssh-keygen -f $KEY_ROOT/eks.pub -m pem -e > $KEY_ROOT/eks.pem
     fi
     if [ ! -f $KEY_ROOT/jenkins ]; then
       echo "${BOLD}Creating SSH keys for Jenkins instance${NORMAL}" 

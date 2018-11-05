@@ -13,9 +13,9 @@ module "vpc" {
   cidr        = "${var.vpc_cidr}"
 }
 
-resource "aws_key_pair" "ecs" {
-  key_name   = "${var.ecs_key_name}"
-  public_key = "${file("${path.module}/../keys/ecs.pub")}"
+resource "aws_key_pair" "eks" {
+  key_name   = "${var.eks_key_name}"
+  public_key = "${file("${path.module}/../keys/eks.pub")}"
 }
 
 # module "users" {
@@ -49,8 +49,8 @@ module "jenkins-master" {
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
 
-module "ecs-cluster" {
-  source = "modules/ecs-cluster"
+module "eks-cluster" {
+  source = "modules/eks-cluster"
 
   environment          = "${var.environment}"
   vpc_id               = "${module.vpc.id}"
@@ -73,7 +73,7 @@ module "ecs-cluster" {
   max_size         = "${var.max_size}"
   min_size         = "${var.min_size}"
   desired_capacity = "${var.desired_capacity}"
-  key_name         = "${aws_key_pair.ecs.key_name}"
+  key_name         = "${aws_key_pair.eks.key_name}"
   instance_type    = "${var.instance_type}"
 }
 
