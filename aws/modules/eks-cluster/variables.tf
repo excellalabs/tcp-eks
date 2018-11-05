@@ -12,7 +12,7 @@ data "aws_ami" "eks_aws_ami" {
 
   filter {
     name   = "name"
-    values = ["amzn-ami-*-amazon-eks-optimized*"]
+    values = ["amzn-ami-*-amazon-ecs-optimized*"]
   }
 }
 

@@ -1,5 +1,31 @@
 resource "aws_eks_cluster" "cluster" {
-  name = "${var.cluster}-${var.environment}"
+  name     = "${var.cluster}-${var.environment}"
+  role_arn = "${aws_iam_role.eks_default_task.arn}"
+
+  vpc_config {
+    security_group_ids = ["${aws_security_group.eks_cluster_sg.id}"]
+	subnet_ids         = ["${module.network.public_subnet_ids}"]
+  }
+}
+
+resource "aws_security_group" "eks_cluster_sg" {
+  name        = "${var.environment}-${var.cluster}-eks-cluster-sg"
+  description = "Cluster communication with worker nodes"
+  vpc_id      = "${var.vpc_id}"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags {
+    Name        = "${var.environment}-${var.cluster}-eks-cluster-sg"
+    Cluster     = "${var.cluster}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
 }
 
 module "rds" {

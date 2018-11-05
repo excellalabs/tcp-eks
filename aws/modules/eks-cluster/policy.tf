@@ -7,7 +7,7 @@ resource "aws_iam_role" "eks_lb_role" {
   name = "${var.environment}_${var.cluster}_eks_lb_role"
   path = "/eks/"
 
-  assume_role_policy = <<EOF
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -20,7 +20,7 @@ resource "aws_iam_role" "eks_lb_role" {
     }
   ]
 }
-EOF
+POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "eks_lb" {
@@ -33,7 +33,7 @@ resource "aws_iam_role_policy_attachment" "eks_lb" {
 resource "aws_iam_role" "eks_instance_role" {
   name = "${var.environment}_${var.cluster}_eks_instance_role"
 
-  assume_role_policy = <<EOF
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -46,7 +46,7 @@ resource "aws_iam_role" "eks_instance_role" {
     }
   ]
 }
-EOF
+POLICY
 }
 
 resource "aws_iam_instance_profile" "eks" {
@@ -115,4 +115,24 @@ resource "aws_iam_policy_attachment" "eks_default_log_task" {
 
   roles      = ["${aws_iam_role.eks_instance_role.name}"]
   policy_arn = "${aws_iam_policy.eks_default_log_task.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "eks-instance-role-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = "${aws_iam_role.eks_instance_role.name}"
+}
+
+resource "aws_iam_role_policy_attachment" "eks-instance-role-AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = "${aws_iam_role.eks_instance_role.name}"
+}
+
+resource "aws_iam_role_policy_attachment" "eks-instance-role-AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = "${aws_iam_role.eks_instance_role.name}"
+}
+
+resource "aws_iam_instance_profile" "eks_instance_role" {
+  name = "${var.environment}_${var.cluster}_eks_instance_role"
+  role = "${aws_iam_role.eks_instance_role.name}"
 }
