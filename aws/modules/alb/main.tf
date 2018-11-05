@@ -1,7 +1,7 @@
 # Default ALB implementation that can be used connect ECS instances to it
 
 resource "aws_alb_target_group" "default" {
-  name                 = "${var.alb_name}-default"
+  name                 = "${var.alb_name}"
   port                 = 80
   protocol             = "HTTP"
   vpc_id               = "${var.vpc_id}"
