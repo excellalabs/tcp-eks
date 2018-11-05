@@ -23,7 +23,7 @@ data "template_file" "chef" {
 resource "null_resource" "berks_package" {
   # asuming this is run from a cookbook/terraform directory
   provisioner "local-exec" {
-    command = "rm -f ${path.module}/cookbooks.tar.gz ; berks package ${path.module}/cookbooks.tar.gz --berksfile=${path.module}/cookbooks/bench-demo/Berksfile"
+    command = "rm -f ${path.module}/cookbooks.tar.gz ; berks package ${path.module}/cookbooks.tar.gz --berksfile=${path.module}/cookbooks/demo/Berksfile"
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_instance" "jenkins_master" {
   instance_type               = "m5.xlarge"
   associate_public_ip_address = "true"
   subnet_id                   = "${module.public_subnet.ids[0]}"
-  vpc_security_group_ids      = ["${aws_security_group.jenkins-sg.id}"]
+  vpc_security_group_ids      = ["${aws_security_group.jenkins_sg.id}"]
   key_name                    = "${aws_key_pair.auth.key_name}"
 
   root_block_device = {

@@ -21,7 +21,7 @@ IF /I "%1"=="apply" (
 IF /I "%1"=="chef" (
   cd modules\jenkins-master
   gem install berkshelf
-  berks package cookbooks.tar.gz --berksfile=cookbooks\bench-demo\Berksfile
+  berks package cookbooks.tar.gz --berksfile=cookbooks\demo\Berksfile
   cd ..\..
   IF EXIST "%2" (
     scp -i ..\keys\jenkins cookbooks.tar.gz  ubuntu@%2:/tmp/

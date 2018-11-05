@@ -44,21 +44,18 @@ resource "aws_security_group" "database_sg" {
     protocol    = "TCP"
     cidr_blocks = "${var.db_subnet_cidrs}"
   }
-
   ingress {
     from_port   = "${var.db_port}"
     to_port     = "${var.db_port}"
     protocol    = "TCP"
     cidr_blocks = ["${var.db_access_cidrs}"]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   tags {
     Name        = "${var.project_key}-db-security-group"
     Project     = "${var.project_key}"

@@ -28,6 +28,6 @@
         }
     },
     "run_list": [
-        "recipe[bench-demo::default]"
+        "recipe[demo::default]"
     ]
 }

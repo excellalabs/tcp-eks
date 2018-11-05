@@ -70,7 +70,7 @@ case "$1" in
     ;;
   chef)
     pushd modules/jenkins-master
-    berks package ./cookbooks.tar.gz --berksfile=./cookbooks/bench-demo/Berksfile
+    berks package ./cookbooks.tar.gz --berksfile=./cookbooks/demo/Berksfile
     popd
     scp -i ../keys/jenkins modules/jenkins-master/cookbooks.tar.gz  ubuntu@$(terraform output jenkins_master_public_dns):/tmp/
     ssh -i ../keys/jenkins ubuntu@$(terraform output jenkins_master_public_dns) sudo chef-solo --recipe-url /tmp/cookbooks.tar.gz -j /tmp/chef.json

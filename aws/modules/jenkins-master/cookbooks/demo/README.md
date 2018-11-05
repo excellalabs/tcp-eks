@@ -1,4 +1,4 @@
-# bench-demo
+# demo
 
 TODO: Enter the cookbook description here.
 
