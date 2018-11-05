@@ -15,7 +15,16 @@ data "aws_ami" "eks_aws_ami" {
     values = ["amzn-ami-*-amazon-ecs-optimized*"]
   }
 }
-
+/*
+data "aws_ami" "eks_worker" {
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-*"]
+  }
+  most_recent = true
+  owners      = ["602401143452"] # Amazon
+}
+*/
 variable "aws_email" {}
 
 variable "vpc_id" {
