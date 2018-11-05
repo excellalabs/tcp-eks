@@ -1,5 +1,5 @@
 variable "name" {
-  description = "Name of the subnet, actual name will be, for example: name_us-west-2a"
+  description = "Name of the subnet, actual name will be, for example: name-us-west-2a"
 }
 
 variable "environment" {
