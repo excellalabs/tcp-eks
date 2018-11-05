@@ -4,7 +4,7 @@ This repo uses Terraform and Chef to quickly create a Jenkins instance and two E
 
 ![Architecture Overview](./doc/overview.png "Architecture Overview")
 
-Each environment (development and production) is a standalone EKS cluster. Each cluster is split across multiple availability zones with the EC2 instances residing in private subnets. A single postgres RDS instance (with multi-az enabled) is provisioned for each cluster, each application is expected to create the databases it needs within the given instance. A single ALB is created for all ingress traffic into the cluster (it is depicted in the figure as two ALBs since it is redundant across AZs), furthermore a NAT Gateway is provided for each ECS cluster to allow internet connectivity for EC2 cluster instances. Note: if you need more environments and are running up against EIP account limits, then the reduntant NAT Gateway in each cluster can be safely removed.
+Each environment (development and production) is a standalone EKS cluster. Each cluster is split across multiple availability zones with the EC2 instances residing in private subnets. A single postgres RDS instance (with multi-az enabled) is provisioned for each cluster, each application is expected to create the databases it needs within the given instance. A single ALB is created for all ingress traffic into the cluster (it is depicted in the figure as two ALBs since it is redundant across AZs), furthermore a NAT Gateway is provided for each EKS cluster to allow internet connectivity for EC2 cluster instances. Note: if you need more environments and are running up against EIP account limits, then the reduntant NAT Gateway in each cluster can be safely removed.
 
 ![EKS Cluster](./doc/eks-cluster.png "EKS Cluster")
 
@@ -16,7 +16,7 @@ First the `bench-infrastructure` pipeline should be run to create any globally u
 
 *What are these docker images?* The "base" image is what the application produciton docker image will be derived from. The "pipeline" image is used within the application pipeline to test and build the application. (It is assumed that any toolchains necessary to build and test an application will be containerized for speed and portability. In this way if a toolchain changes it will not require that Jenkins be reprovisoned, but instead, simply rebuilding the toolchain image in question. )
 
-Once the `bench-infrastructure` pipeline completes successfully, then application pipelines can begin to run. In the example above a `bench-react` application is being tested, built, and deployed. The application pipeline in this example is using terraform to create and manage the ECS service, ECR repo (for the application production image), ALB Target changes (for facilitating routing), and persisting important key-value parameters in SSM. All terraform state is persisted to an S3 bucket and read/write coordination is achieved by locking on a dynamoDB table during any terraform action --this ensures that parallel pipeline runs aren't mutating shared state simultaneously.
+Once the `bench-infrastructure` pipeline completes successfully, then application pipelines can begin to run. In the example above a `bench-react` application is being tested, built, and deployed. The application pipeline in this example is using terraform to create and manage the EKS service, ECR repo (for the application production image), ALB Target changes (for facilitating routing), and persisting important key-value parameters in SSM. All terraform state is persisted to an S3 bucket and read/write coordination is achieved by locking on a dynamoDB table during any terraform action --this ensures that parallel pipeline runs aren't mutating shared state simultaneously.
 
 Lastly, jenkins has resource locks for each environment to ensure that multiple applications are not attempting to modify the same environment at the same time. During any deployment the application pipeline should acquire an environment resource lock before attempting to deploy any application and release this lock after the deployment has finished.
 
@@ -63,7 +63,7 @@ jenkins_seedjob_repo_owner = "excellaco"
 jenkins_seedjob_repo_include = "bench-java bench-rails bench-react bench-infrastructure"
 ```
 
-This is used by both of the jenkins and ecs terraform modules.
+This is used by both of the jenkins and eks terraform modules.
 
 [Generate Github token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) follow instructions here to generate a personal access token. Be sure to include scope for "repo" and "admin:repo_hook", otherwise your token will not allow you to scan the organization for exisiting repos.
 
