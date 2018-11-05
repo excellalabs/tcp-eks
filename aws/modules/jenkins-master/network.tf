@@ -1,7 +1,7 @@
 module "public_subnet" {
   source = "../subnet"
 
-  name               = "${var.project_key}-jenkins_public_subnet"
+  name               = "${var.project_key}-jenkins-public-subnet"
   environment        = "jenkins"
   aws_email          = "${var.aws_email}"
   vpc_id             = "${var.vpc_id}"
