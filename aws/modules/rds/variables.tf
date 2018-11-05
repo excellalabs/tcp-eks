@@ -96,7 +96,7 @@ variable "db_param_family" {
 
 variable "db_version" {
   description = "engine_version (Optional) The engine version to use. If auto_minor_version_upgrade is enabled, you can provide a prefix of the version"
-  default     = "9.6.6"
+  default     = "9.6.9"
 }
 
 variable "db_port" {
