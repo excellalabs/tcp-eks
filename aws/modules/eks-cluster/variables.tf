@@ -44,6 +44,11 @@ variable "cluster_name" {
   description = "The name of the cluster"
 }
 
+variable "cluster_version" {
+  default     = "1.10"
+  description = "Kubernetes version to use for the EKS cluster"
+}
+
 variable "instance_group" {
   default     = "default"
   description = "The name of the instances that you consider as a group"
