@@ -49,6 +49,16 @@ variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster"
 }
 
+variable "cluster_create_timeout" {
+  description = "Timeout value when creating the EKS cluster"
+  default     = "15m"
+}
+
+variable "cluster_delete_timeout" {
+  description = "Timeout value when deleting the EKS cluster"
+  default     = "15m"
+}
+
 variable "instance_group" {
   default     = "default"
   description = "The name of the instances that you consider as a group"
@@ -135,4 +145,41 @@ variable "eks_logging" {
 variable "cloudwatch_prefix" {
   default     = ""
   description = "If you want to avoid cloudwatch collision or you don't want to merge all logs to one log group specify a prefix"
+}
+
+variable "worker_groups" {
+  description = "A list of maps defining worker group configurations. See workers_group_defaults for valid keys."
+  type        = "list"
+
+  default = [{
+    "name" = "default"
+  }]
+}
+
+variable "worker_group_count" {
+  description = "The number of maps contained within the worker_groups list."
+  type        = "string"
+  default     = "1"
+}
+
+variable "workers_group_defaults" {
+  description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
+  type        = "map"
+  default     = {}
+}
+
+variable "worker_security_group_id" {
+  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
+  default     = ""
+}
+
+variable "worker_additional_security_group_ids" {
+  description = "A list of additional security group ids to attach to worker instances."
+  type        = "list"
+  default     = []
+}
+
+variable "worker_sg_ingress_from_port" {
+  description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)."
+  default     = "1025"
 }
