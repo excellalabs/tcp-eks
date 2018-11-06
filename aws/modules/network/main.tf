@@ -29,8 +29,8 @@ resource "aws_nat_gateway" "nat" {
   count         = "${length(var.public_subnet_cidrs)}"
   tags {
     Name        = "${var.name}-nat-gateway"
-    Project     = "${var.cluster}"
-   #Creator     = "${var.aws_email}"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
 	Environment = "${var.environment}"
   }
 }

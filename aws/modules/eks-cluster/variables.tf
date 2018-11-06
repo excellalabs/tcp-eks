@@ -39,9 +39,9 @@ variable "environment" {
   description = "The name of the environment"
 }
 
-variable "cluster" {
+variable "cluster_name" {
   default     = "default"
-  description = "The name of the EKS cluster"
+  description = "The name of the cluster"
 }
 
 variable "instance_group" {

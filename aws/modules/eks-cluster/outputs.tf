@@ -36,7 +36,7 @@ resource "aws_ssm_parameter" "eks_default_task_role" {
 }
 
 resource "aws_ssm_parameter" "secrets_bucket" {
-  name      = "${var.cluster}_${var.environment}_secrets_bucket"
+  name      = "${var.cluster_name}_${var.environment}_secrets_bucket"
   type      = "String"
   value     = "${aws_s3_bucket.secrets.bucket}"
   overwrite = true

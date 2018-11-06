@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "cluster" {
-  name     = "${var.cluster}-${var.environment}"
+  name     = "${var.cluster_name}-${var.environment}"
   role_arn = "${aws_iam_role.eks_default_task.arn}"
 
   vpc_config {
@@ -9,7 +9,7 @@ resource "aws_eks_cluster" "cluster" {
 }
 
 resource "aws_security_group" "eks_cluster_sg" {
-  name        = "${var.environment}-${var.cluster}-eks-cluster-sg"
+  name        = "${var.environment}-${var.cluster_name}-eks-cluster-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = "${var.vpc_id}"
 
@@ -21,8 +21,8 @@ resource "aws_security_group" "eks_cluster_sg" {
   }
 
   tags {
-    Name        = "${var.environment}-${var.cluster}-eks-cluster-sg"
-    Cluster     = "${var.cluster}"
+    Name        = "${var.environment}-${var.cluster_name}-eks-cluster-sg"
+    Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -31,7 +31,7 @@ resource "aws_security_group" "eks_cluster_sg" {
 module "rds" {
   source = "../rds"
 
-  project_key        = "${var.cluster}"
+  project_key        = "${var.cluster_name}"
   environment        = "${var.environment}"
   aws_region         = "${data.aws_region.current.name}"
   db_subnet_cidrs    = "${var.db_subnet_cidrs}"
@@ -40,7 +40,7 @@ module "rds" {
   availability_zones = "${var.availability_zones}"
   aws_email          = "${var.aws_email}"
   db_name            = "${var.db_name}"
-  db_identifier      = "${var.cluster}-${var.environment}-pg-db"
+  db_identifier      = "${var.cluster_name}-${var.environment}-pg-db"
   db_username        = "${var.db_username}"
   db_password        = "${var.db_password}"
 }
@@ -48,9 +48,9 @@ module "rds" {
 module "alb" {
   source = "../alb"
 
-  cluster           = "${var.cluster}"
+  cluster_name      = "${var.cluster_name}"
   environment       = "${var.environment}"
-  alb_name          = "${var.environment}-${var.cluster}"
+  alb_name          = "${var.environment}-${var.cluster_name}"
   vpc_id            = "${var.vpc_id}"
   public_subnet_ids = "${module.network.public_subnet_ids}"
   aws_email          = "${var.aws_email}"
@@ -70,13 +70,12 @@ module "network" {
 
   vpc_id               = "${var.vpc_id}"
   vpc_igw              = "${var.vpc_igw}"
-  cluster              = "${var.cluster}"
+  name                 = "${var.cluster_name}"
   environment          = "${var.environment}"
   public_subnet_cidrs  = "${var.public_subnet_cidrs}"
   private_subnet_cidrs = "${var.private_subnet_cidrs}"
   availability_zones   = "${var.availability_zones}"
   depends_id           = ""
-  name                 = "${var.cluster}"
   aws_email            = "${var.aws_email}"
 }
 
@@ -84,7 +83,7 @@ module "eks-instances" {
   source = "../eks-instances"
 
   environment             = "${var.environment}"
-  cluster                 = "${var.cluster}"
+  cluster_name            = "${var.cluster_name}"
   bastion_cidrs           = ["${var.bastion_cidrs}"]
   instance_group          = "${var.instance_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
@@ -105,7 +104,7 @@ module "eks-instances" {
 
 # provides a log group for any applications deployed into this cluster to log to
 resource "aws_cloudwatch_log_group" "log-group" {
-  name              = "${var.cluster}/${var.environment}"
+  name              = "${var.cluster_name}/${var.environment}"
   retention_in_days = 7
 }
 
@@ -114,12 +113,12 @@ resource "aws_kms_key" "secrets" {
 }
 
 resource "aws_kms_alias" "secrets" {
-  name          = "alias/${var.cluster}/${var.environment}/secrets"
+  name          = "alias/${var.cluster_name}/${var.environment}/secrets"
   target_key_id = "${aws_kms_key.secrets.key_id}"
 }
 
 resource "aws_s3_bucket" "secrets" {
-  bucket = "${var.cluster}-${var.environment}-secrets"
+  bucket = "${var.cluster_name}-${var.environment}-secrets"
   acl    = "private"
 
   force_destroy = true
@@ -136,8 +135,8 @@ resource "aws_s3_bucket" "secrets" {
     }
   }
   tags {
-    Name        = "${var.cluster}-secrets"
-    Project     = "${var.cluster}"
+    Name        = "${var.cluster_name}-${var.environment}-secrets"
+    Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

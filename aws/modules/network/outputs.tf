@@ -10,8 +10,8 @@ output "depends_id" {
   value = "${null_resource.dummy_dependency.id}"
 }
 
-resource "aws_ssm_parameter" "ecs_private_subnet_ids" {
-  name      = "${var.environment}_ecs_private_subnet_ids"
+resource "aws_ssm_parameter" "eks_private_subnet_ids" {
+  name      = "${var.environment}_eks_private_subnet_ids"
   type      = "String"
   value     = "${join(",", module.private_subnet.ids)}"
   overwrite = true

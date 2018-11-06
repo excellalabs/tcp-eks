@@ -1,4 +1,4 @@
-# Default ALB implementation that can be used connect EKS instances to it
+# Default ALB implementation that can be used connect cluster instances to it
 
 resource "aws_alb_target_group" "default" {
   name                 = "${var.alb_name}"
@@ -12,8 +12,8 @@ resource "aws_alb_target_group" "default" {
     protocol = "HTTP"
   }
   tags {
-    Name        = "${var.cluster}-alb-target-group"
-    Project     = "${var.cluster}"
+    Name        = "${var.cluster_name}-alb-target-group"
+    Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -24,8 +24,8 @@ resource "aws_alb" "alb" {
   subnets         = ["${var.public_subnet_ids}"]
   security_groups = ["${aws_security_group.alb.id}"]
   tags {
-    Name        = "${var.cluster}-alb"
-    Project     = "${var.cluster}"
+    Name        = "${var.cluster_name}-alb"
+    Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -45,8 +45,8 @@ resource "aws_security_group" "alb" {
   name   = "${var.alb_name}_alb"
   vpc_id = "${var.vpc_id}"
   tags {
-    Name        = "${var.cluster}-alb-security-group"
-    Project     = "${var.cluster}"
+    Name        = "${var.cluster_name}-alb-security-group"
+    Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -56,6 +56,15 @@ resource "aws_security_group_rule" "http_from_anywhere" {
   type              = "ingress"
   from_port         = 80
   to_port           = 80
+  protocol          = "TCP"
+  cidr_blocks       = ["${var.allow_cidr_block}"]
+  security_group_id = "${aws_security_group.alb.id}"
+}
+
+resource "aws_security_group_rule" "https_from_anywhere" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
   protocol          = "TCP"
   cidr_blocks       = ["${var.allow_cidr_block}"]
   security_group_id = "${aws_security_group.alb.id}"

@@ -1,8 +1,8 @@
 resource "aws_iam_role" "eks_default_task" {
-  name = "${var.environment}_${var.cluster}_default_task"
+  name = "${var.environment}_${var.cluster_name}_task"
   path = "/eks/"
 
-  assume_role_policy = <<EOF
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -15,11 +15,11 @@ resource "aws_iam_role" "eks_default_task" {
     }
   ]
 }
-EOF
+POLICY
 }
 
 data "template_file" "policy" {
-  template = <<EOF
+  template = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -76,25 +76,24 @@ data "template_file" "policy" {
     }
   ]
 }
-EOF
+POLICY
 
   vars {
     account_id  = "${data.aws_caller_identity.current.account_id}"
-    prefix      = "${var.cluster}/${var.environment}/"
+    prefix      = "${var.cluster_name}/${var.environment}/"
     aws_region  = "${data.aws_region.current.name}"
     kms_key_arn = "${aws_kms_key.secrets.arn}"
   }
 }
 
 resource "aws_iam_policy" "eks_default_task" {
-  name = "${var.environment}_${var.cluster}_eks_default_task"
-  path = "/"
-
+  name   = "${var.environment}_${var.cluster_name}_eks_task"
+  path   = "/"
   policy = "${data.template_file.policy.rendered}"
 }
 
 resource "aws_iam_policy_attachment" "eks_default_task" {
-  name       = "${var.environment}_${var.cluster}_eks_default_task"
+  name       = "${var.environment}_${var.cluster_name}_eks_task"
   roles      = ["${aws_iam_role.eks_default_task.name}"]
   policy_arn = "${aws_iam_policy.eks_default_task.arn}"
 }

@@ -10,10 +10,6 @@ variable "aws_email" {
   description = "the user email address"
 }
 
-variable "cluster" {
-  description = "prefix for all created resources"
-}
-
 variable "vpc_id" {
   description = "The ID of the VPC the cluster should reside in"
 }

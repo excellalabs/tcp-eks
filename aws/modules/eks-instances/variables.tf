@@ -7,7 +7,7 @@ variable "cloudwatch_prefix" {
   description = "If you want to avoid cloudwatch collision or you don't want to merge all logs to one log group specify a prefix"
 }
 
-variable "cluster" {
+variable "cluster_name" {
   description = "The name of the cluster"
 }
 
@@ -42,10 +42,15 @@ variable "min_size" {
   description = "Minimum size of the nodes in the cluster"
 }
 
-#For more explenation see http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html
+#For more explanation see http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html
 variable "desired_capacity" {
   default     = 1
   description = "The desired capacity of the cluster"
+}
+
+variable "cloudwatch_log_file_retention" {
+  description = "Number of days to retain cloudwatch log files"
+  default     = "30"
 }
 
 variable "iam_instance_profile_id" {

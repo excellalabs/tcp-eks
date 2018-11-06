@@ -11,7 +11,7 @@ variable "aws_email" {
   description = "the user email address"
 }
 
-variable "cluster" {
+variable "cluster_name" {
   description = "prefix for all created resources"
 }
 

@@ -56,7 +56,7 @@ module "eks-cluster" {
   vpc_id               = "${module.vpc.id}"
   vpc_igw              = "${module.vpc.igw}"
   bastion_cidrs        = ["${module.jenkins-master.jenkins_public_subnet_cidrs}"]
-  cluster              = "${var.project_key}"
+  cluster_name         = "${var.project_key}"
   cloudwatch_prefix    = "${var.project_key}/${var.environment}"
   public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
   private_subnet_cidrs = ["10.0.50.0/24", "10.0.51.0/24"]

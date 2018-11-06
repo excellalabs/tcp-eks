@@ -3,7 +3,6 @@
 # Timezone
 ln -fs /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
 
-#Using script from http://docs.aws.amazon.com/AmazonEKS/latest/developerguide/using_cloudwatch_logs.html
 # Install awslogs and the jq JSON parser
 yum install -y awslogs jq aws-cli
 
@@ -60,7 +59,7 @@ EOF
 region=$(curl 169.254.169.254/latest/meta-data/placement/availability-zone | sed s'/.$//')
 sed -i -e "s/region = us-west-2/region = $region/g" /etc/awslogs/awscli.conf
 
-# Set the ip address of the node
+# Set the IP address of the node
 container_instance_id=$(curl 169.254.169.254/latest/meta-data/local-ipv4)
 sed -i -e "s/{container_instance_id}/$container_instance_id/g" /etc/awslogs/awslogs.conf
 
@@ -87,8 +86,8 @@ EOF
 
 start eks
 
-#Get EKS instance info, althoug not used in this user_data it self this allows you to use
-#az(availability zone) and region
+# Get container instance information, although not used in this user_data
+# itself this allows you to use az (availability zone) and region
 until $(curl --output /dev/null --silent --head --fail http://localhost:51678/v1/metadata); do
   printf '.'
   sleep 5
@@ -97,7 +96,7 @@ instance_arn=$(curl -s http://localhost:51678/v1/metadata | jq -r '. | .Containe
 az=$(curl -s http://instance-data/latest/meta-data/placement/availability-zone)
 region=$${az:0:$${#az} - 1}
 
-#Custom userdata script code
+# Custom userdata script code
 ${custom_userdata}
 
 echo "Done"
