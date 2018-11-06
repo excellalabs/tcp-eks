@@ -183,3 +183,41 @@ variable "worker_sg_ingress_from_port" {
   description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)."
   default     = "1025"
 }
+
+variable "config_output_path" {
+  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` ."
+  default     = "./"
+}
+
+variable "write_kubeconfig" {
+  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
+  default     = true
+}
+
+variable "kubeconfig_aws_authenticator_command" {
+  description = "Command to use to to fetch AWS EKS credentials."
+  default     = "aws-iam-authenticator"
+}
+
+variable "kubeconfig_aws_authenticator_command_args" {
+  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
+  type        = "list"
+  default     = []
+}
+
+variable "kubeconfig_aws_authenticator_additional_args" {
+  description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]."
+  type        = "list"
+  default     = []
+}
+
+variable "kubeconfig_aws_authenticator_env_variables" {
+  description = "Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = \"eks\"}."
+  type        = "map"
+  default     = {}
+}
+
+variable "kubeconfig_name" {
+  description = "Override the default name used for items kubeconfig."
+  default     = ""
+}
