@@ -29,8 +29,13 @@ Add a file called `./aws/terraform.tfvars` with the following contents:
 # Change these
 aws_access_key = "your access key"
 aws_secret_key = "your secret key"
-aws_region = "us-west-2"
 aws_email = "your email address"
+
+# Amazon EKS is available in the following Regions at this time:
+# US West (Oregon) (us-west-2)
+# US East (N. Virginia) (us-east-1)
+# EU (Ireland) (eu-west-1)
+aws_region = "us-west-2"
 
 # only alpha-numeric and dashes allowed!
 project_key = "something-unique"
