@@ -21,6 +21,11 @@ resource "aws_autoscaling_group" "workers" {
     propagate_at_launch = "true"
   }
   tag {
+    key                 = "kubernetes.io/cluster/${var.cluster_name}"
+    value               = "owned"
+    propagate_at_launch = true
+  }
+  tag {
     key                 = "Environment"
     value               = "${var.environment}"
     propagate_at_launch = "true"
@@ -50,7 +55,7 @@ resource "aws_launch_configuration" "workers" {
   associate_public_ip_address = "${var.public_ip_associated}"
   security_groups             = ["${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"]
   iam_instance_profile        = "${element(aws_iam_instance_profile.workers.*.id, count.index)}"
-  image_id                    = "${data.aws_ami.eks_aws_ami.id}"
+  image_id                    = "${data.aws_ami.eks_worker.id}"
   instance_type               = "${var.instance_type}"
   key_name                    = "${var.key_name}"
   user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"

@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "aws_ami" "eks_aws_ami" {
+data "aws_ami" "ecs_aws_ami" {
   most_recent = true
 
   filter {
@@ -30,16 +30,16 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
     }
   }
 }
-/*
+
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-*"]
+    values = ["amazon-eks-node-v*"]
   }
   most_recent = true
-  owners      = ["602401143452"] # Amazon
+  owners      = ["602401143452"] # Amazon EKS AMI Account ID
 }
-*/
+
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
   statement {
     sid = "EKSClusterAssumeRole"
