@@ -203,21 +203,9 @@ variable "worker_group_count" {
   default     = "1"
 }
 
-variable "workers_group_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults in workers.tf for valid keys."
-  type        = "map"
-  default     = {}
-}
-
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the cluster."
   default     = ""
-}
-
-variable "worker_additional_security_group_ids" {
-  description = "A list of additional security group ids to attach to worker instances."
-  type        = "list"
-  default     = []
 }
 
 variable "worker_sg_ingress_from_port" {
