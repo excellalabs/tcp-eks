@@ -106,58 +106,7 @@ resource "aws_iam_policy" "eks_default_log_task" {
 }
 
 resource "aws_iam_policy_attachment" "eks_default_log_task" {
-  name = "${var.environment}_${var.cluster_name}_eks_log_task"
-
+  name       = "${var.environment}_${var.cluster_name}_eks_log_task"
   roles      = ["${aws_iam_role.eks_instance_role.name}"]
   policy_arn = "${aws_iam_policy.eks_default_log_task.arn}"
-}
-
-resource "aws_iam_role_policy_attachment" "eks-instance-role-AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = "${aws_iam_role.eks_instance_role.name}"
-}
-
-resource "aws_iam_role_policy_attachment" "eks-instance-role-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = "${aws_iam_role.eks_instance_role.name}"
-}
-
-resource "aws_iam_role_policy_attachment" "eks-instance-role-AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = "${aws_iam_role.eks_instance_role.name}"
-}
-
-resource "aws_iam_instance_profile" "eks_instance_role" {
-  name = "${var.environment}_${var.cluster_name}_eks_instance_role"
-  role = "${aws_iam_role.eks_instance_role.name}"
-}
-
-data "aws_iam_policy_document" "workers_assume_role_policy" {
-  statement {
-    sid = "EKSWorkerAssumeRole"
-
-    actions = [
-      "sts:AssumeRole",
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-data "aws_iam_policy_document" "cluster_assume_role_policy" {
-  statement {
-    sid = "EKSClusterAssumeRole"
-
-    actions = [
-      "sts:AssumeRole",
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["eks.amazonaws.com"]
-    }
-  }
 }

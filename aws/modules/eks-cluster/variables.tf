@@ -1,30 +1,3 @@
-data "aws_caller_identity" "current" {}
-
-data "aws_region" "current" {}
-
-data "aws_ami" "eks_aws_ami" {
-  most_recent = true
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["amzn-ami-*-amazon-ecs-optimized*"]
-  }
-}
-/*
-data "aws_ami" "eks_worker" {
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-*"]
-  }
-  most_recent = true
-  owners      = ["602401143452"] # Amazon
-}
-*/
 variable "aws_email" {}
 
 variable "vpc_id" {
@@ -40,23 +13,73 @@ variable "environment" {
 }
 
 variable "cluster_name" {
-  default     = "default"
   description = "The name of the cluster"
+  default     = "default"
+}
+
+variable "cluster_security_group_id" {
+  description = "If provided, the cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
+  default     = ""
 }
 
 variable "cluster_version" {
+  description = "Kubernetes version to use for the cluster"
   default     = "1.10"
-  description = "Kubernetes version to use for the EKS cluster"
 }
 
 variable "cluster_create_timeout" {
-  description = "Timeout value when creating the EKS cluster"
+  description = "Timeout value when creating the cluster"
   default     = "15m"
 }
 
 variable "cluster_delete_timeout" {
-  description = "Timeout value when deleting the EKS cluster"
+  description = "Timeout value when deleting the cluster"
   default     = "15m"
+}
+
+variable "ebs_optimized" {
+  description = "Sets whether to use EBS optimization on supported types"
+  default     = "false"
+}
+
+variable "enable_monitoring" {
+  description = "Enables/disables detailed monitoring."
+  default     = "false"
+}
+
+variable "spot_price" {
+  description = "Cost of spot instance."
+  default     = ""
+}
+
+variable "placement_tenancy" {
+  description = "The tenancy of the instance. Valid values are 'default' or 'dedicated'."
+  default     = "default"
+}
+
+variable "public_ip_associated" {
+  description = "Associate a public ip address with a worker."
+  default     = "false"
+}
+
+variable "root_volume_size" {
+  description = "Root volume size of workers instances."
+  default     = "100"
+}
+
+variable "root_volume_type" {
+  description = "Root volume type of workers instances, can be 'standard', 'gp2', or 'io1'"
+  default     = "gp2"
+}
+
+variable "root_iops" {
+  description = "The amount of provisioned IOPS. This must be set with a volume_type of 'io1'."
+  default     = "0"
+}
+
+variable "instance_type" {
+  description = "Size of the workers instances."
+  default     = "t2.large"
 }
 
 variable "instance_group" {
@@ -107,24 +130,43 @@ variable "availability_zones" {
   description = "List of avalibility zones you want. Example: us-west-2a and us-west-2b"
 }
 
-variable "max_size" {
-  description = "Maximum size of the nodes in the cluster"
+variable "autoscaling_enabled" {
+  description = "Sets whether policy and matching tags will be added to allow autoscaling."
+  default     = "false"
 }
 
-variable "min_size" {
-  description = "Minimum size of the nodes in the cluster"
+variable "protect_from_scale_in" {
+  description = "Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible."
+  default     = "false"
+}
+
+variable "suspended_processes" {
+  description = "A comma delimited string of processes to to suspend. i.e. AZRebalance,HealthCheck,ReplaceUnhealthy"
+  default     = ""
+}
+
+variable "target_group_arns" {
+  description = "A comma delimited list of ALB target group ARNs to be associated to the ASG"
+  default     = ""
 }
 
 variable "desired_capacity" {
-  description = "The desired capacity of the cluster"
+  description = "Desired worker capacity in the autoscaling group."
+  default     = "1"
+}
+
+variable "max_size" {
+  description = "Maximum worker capacity in the autoscaling group."
+  default     = "1"
+}
+
+variable "min_size" {
+  description = "Minimum worker capacity in the autoscaling group."
+  default     = "1"
 }
 
 variable "key_name" {
   description = "SSH key name to be used"
-}
-
-variable "instance_type" {
-  description = "AWS instance type to use"
 }
 
 variable "custom_userdata" {
@@ -150,7 +192,6 @@ variable "cloudwatch_prefix" {
 variable "worker_groups" {
   description = "A list of maps defining worker group configurations. See workers_group_defaults for valid keys."
   type        = "list"
-
   default = [{
     "name" = "default"
   }]
@@ -163,13 +204,13 @@ variable "worker_group_count" {
 }
 
 variable "workers_group_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
+  description = "Override default values for target groups. See workers_group_defaults in workers.tf for valid keys."
   type        = "map"
   default     = {}
 }
 
 variable "worker_security_group_id" {
-  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
+  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the cluster."
   default     = ""
 }
 
@@ -192,6 +233,29 @@ variable "config_output_path" {
 variable "write_kubeconfig" {
   description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
   default     = true
+}
+
+variable "manage_aws_auth" {
+  description = "Whether to write and apply the aws-auth configmap file."
+  default     = true
+}
+
+variable "map_accounts" {
+  description = "Additional AWS account numbers to add to the aws-auth configmap."
+  type        = "list"
+  default     = []
+}
+
+variable "map_roles" {
+  description = "Additional IAM roles to add to the aws-auth configmap."
+  type        = "list"
+  default     = []
+}
+
+variable "map_users" {
+  description = "Additional IAM users to add to the aws-auth configmap."
+  type        = "list"
+  default     = []
 }
 
 variable "kubeconfig_aws_authenticator_command" {
@@ -219,5 +283,20 @@ variable "kubeconfig_aws_authenticator_env_variables" {
 
 variable "kubeconfig_name" {
   description = "Override the default name used for items kubeconfig."
+  default     = ""
+}
+
+variable "pre_userdata" {
+  description = "userdata to pre-append to the default userdata"
+  default     = ""
+}
+
+variable "additional_userdata" {
+  description = "userdata to append to the default userdata"
+  default     = ""
+}
+
+variable "kubelet_extra_args" {
+  description = "This string is passed directly to kubelet if set. Useful for adding labels or taints."
   default     = ""
 }

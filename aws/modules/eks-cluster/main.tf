@@ -1,17 +1,35 @@
 resource "aws_eks_cluster" "cluster" {
   name     = "${var.cluster_name}-${var.environment}"
-  role_arn = "${aws_iam_role.eks_default_task.arn}"
+  role_arn = "${aws_iam_role.cluster.arn}"
+  version  = "${var.cluster_version}"
 
   vpc_config {
-    security_group_ids = ["${aws_security_group.eks_cluster_sg.id}"]
-	subnet_ids         = ["${module.network.public_subnet_ids}"]
+    security_group_ids = ["${aws_security_group.cluster.id}"]
+    subnet_ids         = ["${module.network.public_subnet_ids}"]
   }
+
+  timeouts {
+    create = "${var.cluster_create_timeout}"
+    delete = "${var.cluster_delete_timeout}"
+  }
+
+  depends_on = [
+    "aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy",
+    "aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy",
+  ]
 }
 
-resource "aws_security_group" "eks_cluster_sg" {
-  name        = "${var.environment}-${var.cluster_name}-eks-cluster-sg"
+resource "aws_security_group" "cluster" {
+  name        = "${var.environment}-${var.cluster_name}-cluster-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = "${var.vpc_id}"
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
     from_port   = 0
@@ -21,7 +39,7 @@ resource "aws_security_group" "eks_cluster_sg" {
   }
 
   tags {
-    Name        = "${var.environment}-${var.cluster_name}-eks-cluster-sg"
+    Name        = "${var.environment}-${var.cluster_name}-cluster-sg"
     Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -45,26 +63,6 @@ module "rds" {
   db_password        = "${var.db_password}"
 }
 
-module "alb" {
-  source = "../alb"
-
-  cluster_name      = "${var.cluster_name}"
-  environment       = "${var.environment}"
-  alb_name          = "${var.environment}-${var.cluster_name}"
-  vpc_id            = "${var.vpc_id}"
-  public_subnet_ids = "${module.network.public_subnet_ids}"
-  aws_email          = "${var.aws_email}"
-}
-
-resource "aws_security_group_rule" "alb_to_eks" {
-  type                     = "ingress"
-  from_port                = 32768
-  to_port                  = 61000
-  protocol                 = "TCP"
-  source_security_group_id = "${module.alb.alb_security_group_id}"
-  security_group_id        = "${module.eks-instances.eks_instance_security_group_id}"
-}
-
 module "network" {
   source = "../network"
 
@@ -77,6 +75,26 @@ module "network" {
   availability_zones   = "${var.availability_zones}"
   depends_id           = ""
   aws_email            = "${var.aws_email}"
+}
+
+module "alb" {
+  source = "../alb"
+
+  cluster_name      = "${var.cluster_name}"
+  environment       = "${var.environment}"
+  alb_name          = "${var.environment}-${var.cluster_name}"
+  vpc_id            = "${var.vpc_id}"
+  public_subnet_ids = "${module.network.public_subnet_ids}"
+  aws_email          = "${var.aws_email}"
+}
+/*
+resource "aws_security_group_rule" "alb_to_eks" {
+  type                     = "ingress"
+  from_port                = 32768
+  to_port                  = 61000
+  protocol                 = "TCP"
+  source_security_group_id = "${module.alb.alb_security_group_id}"
+  security_group_id        = "${module.eks-instances.eks_instance_security_group_id}"
 }
 
 module "eks-instances" {
@@ -101,7 +119,7 @@ module "eks-instances" {
   custom_userdata         = "${var.custom_userdata}"
   cloudwatch_prefix       = "${var.cloudwatch_prefix}"
 }
-
+*/
 # provides a log group for any applications deployed into this cluster to log to
 resource "aws_cloudwatch_log_group" "log-group" {
   name              = "${var.cluster_name}/${var.environment}"
