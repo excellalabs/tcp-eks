@@ -1,6 +1,6 @@
 #!groovy
 def environments = ["development", "production"]
-def repos = ["bench-java", "bench-rails", "bench-react"]
+def repos = ["uscis-java", "uscis-rails", "uscis-react"]
 
 def DestroyTasks = null
 
