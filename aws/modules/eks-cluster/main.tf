@@ -105,7 +105,7 @@ module "eks-instances" {
   bastion_cidrs           = ["${var.bastion_cidrs}"]
   instance_group          = "${var.instance_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
-  aws_ami                 = "${data.aws_ami.eks_aws_ami.id}"
+  aws_ami                 = "${data.aws_ami.eks_worker.id}"
   aws_email               = "${var.aws_email}"
   instance_type           = "${var.instance_type}"
   max_size                = "${var.max_size}"

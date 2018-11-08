@@ -1,10 +1,10 @@
 resource "aws_security_group" "instance" {
-  name        = "${var.environment}_${var.cluster_name}_${var.instance_group}"
+  name        = "${var.environment}-${var.cluster_name}-${var.instance_group}"
   description = "Used in ${var.environment}"
   vpc_id      = "${var.vpc_id}"
 
   tags {
-    Name          = "${var.environment}_${var.cluster_name}_${var.instance_group}"
+    Name          = "${var.environment}-${var.cluster_name}-${var.instance_group}"
     Cluster       = "${var.cluster_name}"
     Creator       = "${var.aws_email}"
     Environment   = "${var.environment}"
@@ -30,15 +30,19 @@ resource "aws_security_group_rule" "bastion_ssh_access" {
   security_group_id = "${aws_security_group.instance.id}"
 }
 
-# Default disk size for Docker is 22 GB
 resource "aws_launch_configuration" "launch" {
-  name_prefix          = "${var.environment}_${var.cluster_name}_${var.instance_group}_"
+  name_prefix          = "${var.environment}-${var.cluster_name}-${var.instance_group}-"
   image_id             = "${var.aws_ami}"
   instance_type        = "${var.instance_type}"
   security_groups      = ["${aws_security_group.instance.id}"]
-  user_data            = "${data.template_file.user_data.rendered}"
   iam_instance_profile = "${var.iam_instance_profile_id}"
   key_name             = "${var.key_name}"
+  user_data_base64     = "${base64encode(element(data.template_file.user_data.*.rendered, count.index))}"
+  ebs_optimized        = "${var.ebs_optimized}"
+  enable_monitoring    = "${var.enable_monitoring}"
+  spot_price           = "${var.spot_price}"
+  placement_tenancy    = "${var.placement_tenancy}"
+  associate_public_ip_address = "${var.public_ip_associated}"
 
   # aws_launch_configuration cannot be modified.
   # Therefore we use create_before_destroy so that a new modified aws_launch_configuration can be created
@@ -46,23 +50,39 @@ resource "aws_launch_configuration" "launch" {
   lifecycle {
     create_before_destroy = true
   }
+
+  root_block_device {
+    volume_size           = "${var.root_volume_size}"
+    volume_type           = "${var.root_volume_type}"
+    iops                  = "${var.root_iops}"
+    delete_on_termination = true
+  }
 }
 
-# Instances are scaled across availability zones http://docs.aws.amazon.com/autoscaling/latest/userguide/auto-scaling-benefits.html
+# Instances are scaled across availability zones
+# http://docs.aws.amazon.com/autoscaling/latest/userguide/auto-scaling-benefits.html
 resource "aws_autoscaling_group" "asg" {
-  name                 = "${var.environment}_${var.cluster_name}_${var.instance_group}"
-  max_size             = "${var.max_size}"
-  min_size             = "${var.min_size}"
-  desired_capacity     = "${var.desired_capacity}"
-  force_delete         = true
-  launch_configuration = "${aws_launch_configuration.launch.id}"
-  vpc_zone_identifier  = ["${var.private_subnet_ids}"]
-  load_balancers       = ["${var.load_balancers}"]
+  name                  = "${var.environment}-${var.cluster_name}-${var.instance_group}"
+  max_size              = "${var.max_size}"
+  min_size              = "${var.min_size}"
+  desired_capacity      = "${var.desired_capacity}"
+  launch_configuration  = "${aws_launch_configuration.launch.id}"
+  vpc_zone_identifier   = ["${var.private_subnet_ids}"]
+  load_balancers        = ["${var.load_balancers}"]
+  target_group_arns     = ["${var.target_group_arns}"]
+  protect_from_scale_in = "${var.protect_from_scale_in}"
+  suspended_processes   = ["${var.suspended_processes}"]
+  force_delete          = true
 
   tag {
     key                 = "Name"
-    value               = "${var.environment}_eks_${var.cluster_name}_${var.instance_group}"
+    value               = "${var.environment}-eks-${var.cluster_name}-${var.instance_group}"
     propagate_at_launch = "true"
+  }
+  tag {
+    key                 = "kubernetes.io/cluster/${var.cluster_name}"
+    value               = "owned"
+    propagate_at_launch = true
   }
   tag {
     key                 = "Environment"

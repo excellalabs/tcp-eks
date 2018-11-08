@@ -32,6 +32,8 @@ variable "instance_type" {
   description = "AWS instance type to use"
 }
 
+#For more explanation see
+#http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html
 variable "max_size" {
   default     = 1
   description = "Maximum size of the nodes in the cluster"
@@ -42,7 +44,6 @@ variable "min_size" {
   description = "Minimum size of the nodes in the cluster"
 }
 
-#For more explanation see http://docs.aws.amazon.com/autoscaling/latest/userguide/WhatIsAutoScaling.html
 variable "desired_capacity" {
   default     = 1
   description = "The desired capacity of the cluster"
@@ -51,6 +52,66 @@ variable "desired_capacity" {
 variable "cloudwatch_log_file_retention" {
   description = "Number of days to retain cloudwatch log files"
   default     = "30"
+}
+
+variable "autoscaling_enabled" {
+  description = "Sets whether policy and matching tags will be added to allow autoscaling."
+  default     = "false"
+}
+
+variable "protect_from_scale_in" {
+  description = "Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible."
+  default     = "false"
+}
+
+variable "suspended_processes" {
+  description = "A comma delimited string of processes to to suspend. i.e. AZRebalance,HealthCheck,ReplaceUnhealthy"
+  default     = ""
+}
+
+variable "target_group_arns" {
+  description = "A comma delimited list of ALB target group ARNs to be associated to the ASG"
+  default     = ""
+}
+
+variable "ebs_optimized" {
+  description = "Sets whether to use EBS optimization on supported types"
+  default     = "false"
+}
+
+variable "enable_monitoring" {
+  description = "Enables/disables detailed monitoring."
+  default     = "false"
+}
+
+variable "spot_price" {
+  description = "Cost of spot instance."
+  default     = ""
+}
+
+variable "placement_tenancy" {
+  description = "The tenancy of the instance. Valid values are 'default' or 'dedicated'."
+  default     = "default"
+}
+
+variable "public_ip_associated" {
+  description = "Associate a public ip address with a worker."
+  default     = "false"
+}
+
+variable "root_volume_size" {
+  description = "Root volume size of workers instances."
+  default     = "100"
+}
+
+variable "root_volume_type" {
+  description = "Root volume type of workers instances, can be 'standard', 'gp2', or 'io1'"
+  default     = "gp2"
+}
+
+variable "root_iops" {
+  description = "The amount of provisioned IOPS. This must be set with a volume_type of 'io1'."
+  default     = "0"
 }
 
 variable "iam_instance_profile_id" {
