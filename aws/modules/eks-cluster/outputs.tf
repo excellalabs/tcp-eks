@@ -1,5 +1,5 @@
 output "cluster_id" {
-  description = "The name/id of the EKS cluster."
+  description = "The identity of the EKS cluster."
   value       = "${aws_eks_cluster.cluster.id}"
 }
 

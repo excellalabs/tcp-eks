@@ -2,35 +2,6 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "aws_ami" "ecs_aws_ami" {
-  most_recent = true
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["amzn-ami-*-amazon-ecs-optimized*"]
-  }
-}
-
-data "aws_iam_policy_document" "workers_assume_role_policy" {
-  statement {
-    sid = "EKSWorkerAssumeRole"
-
-    actions = [
-      "sts:AssumeRole",
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
@@ -47,10 +18,23 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
     actions = [
       "sts:AssumeRole",
     ]
-
     principals {
       type        = "Service"
       identifiers = ["eks.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "workers_assume_role_policy" {
+  statement {
+    sid = "EKSWorkerAssumeRole"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
     }
   }
 }
@@ -59,7 +43,7 @@ data "template_file" "kubeconfig" {
   template = "${file("${path.module}/templates/kubeconfig.tpl")}"
 
   vars {
-    kubeconfig_name                   = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
+    kubeconfig_name                   = "${var.kubeconfig_name == "" ? "eks-${var.cluster_name}" : var.kubeconfig_name}"
     endpoint                          = "${aws_eks_cluster.cluster.endpoint}"
     region                            = "${data.aws_region.current.name}"
     cluster_auth_base64               = "${aws_eks_cluster.cluster.certificate_authority.0.data}"

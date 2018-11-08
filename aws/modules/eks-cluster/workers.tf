@@ -17,7 +17,7 @@ resource "aws_autoscaling_group" "workers" {
 
   tag {
     key                 = "Name"
-    value               = "${var.environment}_eks_${var.cluster_name}_${var.instance_group}"
+    value               = "${var.environment}-eks-${var.cluster_name}-${var.instance_group}"
     propagate_at_launch = "true"
   }
   tag {

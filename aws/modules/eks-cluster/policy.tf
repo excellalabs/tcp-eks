@@ -1,6 +1,6 @@
 # Load Balancer Policies
 resource "aws_iam_role" "eks_lb_role" {
-  name = "${var.environment}_${var.cluster_name}_eks_lb_role"
+  name = "${var.environment}-${var.cluster_name}-eks-lb-role"
   path = "/eks/"
 
   assume_role_policy = <<POLICY
@@ -27,7 +27,7 @@ resource "aws_iam_role_policy_attachment" "eks_lb" {
 # Instance Policies
 
 resource "aws_iam_role" "eks_instance_role" {
-  name = "${var.environment}_${var.cluster_name}_eks_instance_role"
+  name = "${var.environment}-${var.cluster_name}-eks-instance-role"
 
   assume_role_policy = <<POLICY
 {
@@ -46,7 +46,7 @@ POLICY
 }
 
 resource "aws_iam_instance_profile" "eks" {
-  name = "${var.environment}_${var.cluster_name}_eks_instance_profile"
+  name = "${var.environment}-${var.cluster_name}-eks-instance-profile"
   path = "/"
   role = "${aws_iam_role.eks_instance_role.name}"
 }
@@ -100,13 +100,13 @@ EOF
 }
 
 resource "aws_iam_policy" "eks_default_log_task" {
-  name   = "${var.environment}_${var.cluster_name}_eks_log_task"
+  name   = "${var.environment}-${var.cluster_name}-eks-log-task"
   path   = "/"
   policy = "${data.template_file.log_policy.rendered}"
 }
 
 resource "aws_iam_policy_attachment" "eks_default_log_task" {
-  name       = "${var.environment}_${var.cluster_name}_eks_log_task"
+  name       = "${var.environment}-${var.cluster_name}-eks-log-task"
   roles      = ["${aws_iam_role.eks_instance_role.name}"]
   policy_arn = "${aws_iam_policy.eks_default_log_task.arn}"
 }
