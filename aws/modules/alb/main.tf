@@ -1,4 +1,4 @@
-# Default ALB implementation that can be used connect cluster instances to it
+# Default ALB implementation that can be used connect cluster instances to
 
 resource "aws_alb_target_group" "default" {
   name                 = "${var.alb_name}"
@@ -20,11 +20,11 @@ resource "aws_alb_target_group" "default" {
 }
 
 resource "aws_alb" "alb" {
-  name            = "${var.alb_name}"
+  name            = "${var.alb_name}-alb"
   subnets         = ["${var.public_subnet_ids}"]
   security_groups = ["${aws_security_group.alb.id}"]
   tags {
-    Name        = "${var.cluster_name}-alb"
+    Name        = "${var.alb_name}-load-balancer"
     Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -42,10 +42,11 @@ resource "aws_alb_listener" "http" {
 }
 
 resource "aws_security_group" "alb" {
-  name   = "${var.alb_name}_alb"
+  name   = "${var.alb_name}-alb-sg"
   vpc_id = "${var.vpc_id}"
+  description = "Load Balancer Security Group"
   tags {
-    Name        = "${var.cluster_name}-alb-security-group"
+    Name        = "${var.alb_name}-alb-security-group"
     Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
