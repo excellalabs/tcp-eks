@@ -2,22 +2,6 @@ output "alb_target_group" {
   value = "${module.eks-cluster.default_alb_target_group}"
 }
 
-output "jenkins_master_public_dns" {
-  value = "${module.jenkins-master.jenkins_master_public_dns}"
-}
-
-output "jenkins_public_subnet_cidrs" {
-  value = "${module.jenkins-master.jenkins_public_subnet_cidrs}"
-}
-
-# output "eks_deployer_access_key" {
-#   value = "${module.users.eks_deployer_access_key}"
-# }
-
-# output "eks_deployer_secret_key" {
-#   value = "${module.users.eks_deployer_secret_key}"
-# }
-
 resource "aws_ssm_parameter" "project_key" {
   name      = "project_key"
   type      = "String"
