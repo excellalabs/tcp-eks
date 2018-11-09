@@ -25,7 +25,7 @@ output "cluster_version" {
 
 output "cluster_security_group_id" {
   description = "Security group ID attached to the EKS cluster."
-  value       = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
+  value       = "${aws_security_group.cluster.*.id}"
 }
 
 output "config_map_aws_auth" {

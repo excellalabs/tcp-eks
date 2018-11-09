@@ -17,8 +17,18 @@ variable "cluster_name" {
   default     = "default"
 }
 
+variable "cluster_endpoint" {
+  description = "The endpoint for your EKS Kubernetes API."
+  default     = ""
+}
+
 variable "cluster_security_group_id" {
-  description = "If provided, the cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
+  description = "Cluster security group created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
+  default     = ""
+}
+
+variable "cluster_certificate_authority_data" {
+  description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
   default     = ""
 }
 
@@ -82,9 +92,9 @@ variable "instance_type" {
   default     = "t2.large"
 }
 
-variable "instance_group" {
+variable "worker_group" {
   default     = "default"
-  description = "The name of the instances that you consider as a group"
+  description = "The name of the workers that you consider as a group"
 }
 
 variable "private_subnet_cidrs" {
@@ -204,7 +214,7 @@ variable "worker_group_count" {
 }
 
 variable "worker_security_group_id" {
-  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the cluster."
+  description = "Worker security group created with necessary ingres/egress to work with the cluster."
   default     = ""
 }
 

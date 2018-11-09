@@ -11,9 +11,49 @@ variable "cluster_name" {
   description = "The name of the cluster"
 }
 
-variable "instance_group" {
+variable "cluster_endpoint" {
+  description = "The endpoint of the cluster"
+}
+
+variable "cluster_security_group_id" {
+  description = "Cluster security group created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
+}
+
+variable "cluster_certificate_authority_data" {
+  description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
+}
+
+variable "worker_name" {
+  description = "The name of the worker node"
+}
+
+variable "worker_group" {
   default     = "default"
-  description = "The name of the instances that you consider as a group"
+  description = "The name of the workers that you consider as a group"
+}
+
+variable "worker_groups" {
+  description = "A list of maps defining worker group configurations. See workers_group_defaults for valid keys."
+  type        = "list"
+  default = [{
+    "name" = "default"
+  }]
+}
+
+variable "worker_group_count" {
+  description = "The number of maps contained within the worker_groups list."
+  type        = "string"
+  default     = "1"
+}
+
+variable "worker_security_group_id" {
+  description = "Worker security group created with necessary ingres/egress to work with the cluster."
+  default     = ""
+}
+
+variable "worker_sg_ingress_from_port" {
+  description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)."
+  default     = "1025"
 }
 
 variable "vpc_id" {
@@ -155,4 +195,19 @@ variable "eks_config" {
 variable "eks_logging" {
   default     = "[\"json-file\",\"awslogs\"]"
   description = "Adding logging option to EKS that the Docker containers can use. It is possible to add fluentd as well"
+}
+
+variable "pre_userdata" {
+  description = "userdata to pre-append to the default userdata"
+  default     = ""
+}
+
+variable "additional_userdata" {
+  description = "userdata to append to the default userdata"
+  default     = ""
+}
+
+variable "kubelet_extra_args" {
+  description = "This string is passed directly to kubelet if set. Useful for adding labels or taints."
+  default     = ""
 }

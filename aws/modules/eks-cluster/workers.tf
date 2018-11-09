@@ -17,7 +17,7 @@ resource "aws_autoscaling_group" "workers" {
 
   tag {
     key                 = "Name"
-    value               = "${var.environment}-eks-${var.cluster_name}-${var.instance_group}"
+    value               = "${var.environment}-${var.cluster_name}-${var.worker_group}"
     propagate_at_launch = "true"
   }
   tag {
@@ -36,8 +36,8 @@ resource "aws_autoscaling_group" "workers" {
     propagate_at_launch = "true"
   }
   tag {
-    key                 = "InstanceGroup"
-    value               = "${var.instance_group}"
+    key                 = "WorkerGroup"
+    value               = "${var.worker_group}"
     propagate_at_launch = "true"
   }
   # EC2 instances require internet connectivity to boot
@@ -168,7 +168,7 @@ resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
 
 resource "aws_iam_policy" "worker_autoscaling" {
   name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.cluster.name}"
-  description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.cluster.name}"
+  description = "Cluster Worker Node AutoScaling Policy"
   policy      = "${data.aws_iam_policy_document.worker_autoscaling.json}"
 }
 

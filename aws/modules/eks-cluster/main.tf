@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "cluster" {
-  name     = "${var.cluster_name}-${var.environment}"
+  name     = "${var.environment}-${var.cluster_name}"
   role_arn = "${aws_iam_role.cluster.arn}"
   version  = "${var.cluster_version}"
 
@@ -58,7 +58,7 @@ module "rds" {
   availability_zones = "${var.availability_zones}"
   aws_email          = "${var.aws_email}"
   db_name            = "${var.db_name}"
-  db_identifier      = "${var.cluster_name}-${var.environment}-pg-db"
+  db_identifier      = "${var.environment}-${var.cluster_name}-pg-db"
   db_username        = "${var.db_username}"
   db_password        = "${var.db_password}"
 }
@@ -94,16 +94,17 @@ resource "aws_security_group_rule" "alb_to_eks" {
   to_port                  = 61000
   protocol                 = "TCP"
   source_security_group_id = "${module.alb.alb_security_group_id}"
-  security_group_id        = "${module.eks-instances.eks_instance_security_group_id}"
+  security_group_id        = "${module.eks-workers.worker_security_group_id}"
 }
 
-module "eks-instances" {
-  source = "../eks-instances"
+module "eks-workers" {
+  source = "../eks-workers"
 
   environment             = "${var.environment}"
-  cluster_name            = "${var.cluster_name}"
+  cluster_name            = "${aws_eks_cluster.cluster.name}"
+  worker_name             = "${var.environment}-${var.cluster_name}"
   bastion_cidrs           = ["${var.bastion_cidrs}"]
-  instance_group          = "${var.instance_group}"
+  worker_group            = "${var.worker_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
   aws_ami                 = "${data.aws_ami.eks_worker.id}"
   aws_email               = "${var.aws_email}"
@@ -118,11 +119,14 @@ module "eks-instances" {
   depends_id              = "${module.network.depends_id}"
   custom_userdata         = "${var.custom_userdata}"
   cloudwatch_prefix       = "${var.cloudwatch_prefix}"
+  cluster_endpoint        = "${aws_eks_cluster.cluster.endpoint}"
+  cluster_security_group_id = "${aws_security_group.cluster.*.id}"
+  cluster_certificate_authority_data = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
 }
 */
 # provides a log group for any applications deployed into this cluster to log to
-resource "aws_cloudwatch_log_group" "log-group" {
-  name              = "${var.cluster_name}/${var.environment}"
+resource "aws_cloudwatch_log_group" "cluster" {
+  name              = "${var.cloudwatch_prefix}"
   retention_in_days = 7
 }
 
