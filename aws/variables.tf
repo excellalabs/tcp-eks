@@ -26,11 +26,15 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
+variable "project_cidr" {
+  default = "10.0.100.0/24"
+}
+
 variable "bastion_instance_type" {
   default = "t2.micro"
 }
 
-## EKS Cluster
+## Cluster
 
 variable "max_size" {
   default = 4
@@ -55,7 +59,7 @@ variable "home" {
 }
 
 variable "eks_key_name" {
-  description = "the ssh key pair to use for the EC2 instances making up the EKS cluster"
+  description = "the ssh key pair to use for the EC2 instances making up the cluster"
 }
 
 variable "db_username" {}
@@ -64,39 +68,8 @@ variable "db_password" {}
 
 ## Jenkins
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
 variable "jenkins_key_name" {
   description = "ssh auth keypair name"
-}
-
-variable "vpc-fullcidr" {
-  default     = "172.27.0.0/16"
-  description = "the vpc cdir"
-}
-
-variable "Subnet-Public-AzA-CIDR" {
-  default     = "172.27.0.0/24"
-  description = "the cidr of the subnet"
-}
-
-variable "Subnet-Private-AzA-CIDR" {
-  default     = "172.27.3.0/24"
-  description = "the cidr of the subnet"
 }
 
 variable "jenkins_private_key_path" {
@@ -107,16 +80,6 @@ variable "jenkins_private_key_path" {
 variable "jenkins_public_key_path" {
   default     = "../keys/jenkins.pub"
   description = "path to ssh public key"
-}
-
-variable "DnsZoneName" {
-  default     = "jenkins_master"
-  description = "Jenkins DNS name"
-}
-
-variable "jenkins_email" {
-  default     = "null@null.null"
-  description = "email for dev and admin users"
 }
 
 variable "jenkins_developer_password" {
@@ -143,19 +106,9 @@ variable "jenkins_seedjob_repo_include" {
   description = "Repos to include from github owner account"
 }
 
-variable "jenkins_seedjob_repo_exclude" {
-  default     = ""
-  description = "Exceptions for the jenkins_seedjob_repo_include pattern"
-}
-
 variable "jenkins_seedjob_branch_include" {
   default     = "master PR-* build-*"
   description = "Branches to include from candidate repos"
-}
-
-variable "jenkins_seedjob_branch_exclude" {
-  default     = ""
-  description = "Exceptions for the jenkins_seedjob_branch_include pattern"
 }
 
 variable "jenkins_seedjob_branch_trigger" {
