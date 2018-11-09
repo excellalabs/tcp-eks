@@ -41,11 +41,9 @@ module "jenkins-master" {
   jenkins_github_ci_token        = "${var.jenkins_github_ci_token}"
   jenkins_seedjob_repo_owner     = "${var.jenkins_seedjob_repo_owner}"
   jenkins_seedjob_repo_include   = "${var.jenkins_seedjob_repo_include}"
-  jenkins_seedjob_repo_exclude   = "${var.jenkins_seedjob_repo_exclude}"
   jenkins_seedjob_branch_include = "${var.jenkins_seedjob_branch_include}"
-  jenkins_seedjob_branch_exclude = "${var.jenkins_seedjob_branch_exclude}"
   jenkins_seedjob_branch_trigger = "${var.jenkins_seedjob_branch_trigger}"
-  public_subnet_cidrs            = ["10.0.100.0/24"]
+  public_subnet_cidrs            = ["${var.project_cidr}"]
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
 
@@ -55,7 +53,7 @@ module "eks-cluster" {
   environment          = "${var.environment}"
   vpc_id               = "${module.vpc.id}"
   vpc_igw              = "${module.vpc.igw}"
-  bastion_cidrs        = ["${module.jenkins-master.jenkins_public_subnet_cidrs}"]
+  bastion_cidrs        = ["${var.project_cidr}"]
   cluster_name         = "${var.project_key}"
   cloudwatch_prefix    = "${var.project_key}/${var.environment}"
   public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
