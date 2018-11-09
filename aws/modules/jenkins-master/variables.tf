@@ -60,6 +60,31 @@ variable "jenkins_key_name" {
   description = "ssh auth keypair name"
 }
 
+variable "jenkins_instance_type" {
+  default = "m5.xlarge"
+  description = "instance type for jenkins server"
+}
+
+variable "jenkins_root_volume_type" {
+  default = "gp2"
+  description = "volume type for jenkins server"
+}
+
+variable "jenkins_root_volume_size" {
+  default = "100"
+  description = "volume size for jenkins server"
+}
+
+variable "jenkins_root_volume_delete_on_termination" {
+  default     = "true"
+  description = "delete root block device volume on termination for jenkins server"
+}
+
+variable "jenkins_associate_public_ip_address" {
+  default     = "true"
+  description = "associate public IP address for jenkins server"
+}
+
 variable "jenkins_private_key_path" {
   default     = "../keys/jenkins"
   description = "path to ssh private key"
@@ -68,11 +93,6 @@ variable "jenkins_private_key_path" {
 variable "jenkins_public_key_path" {
   default     = "../keys/jenkins.pub"
   description = "path to ssh public key"
-}
-
-variable "jenkins_email" {
-  default     = "null@null.null"
-  description = "email for dev and admin users"
 }
 
 variable "jenkins_developer_password" {

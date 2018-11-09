@@ -5,9 +5,9 @@ data "template_file" "chef" {
     aws_access_key_id              = "${var.aws_access_key}"
     aws_secret_access_key          = "${var.aws_secret_key}"
     aws_region                     = "${data.aws_region.current.name}"
+    jenkins_email                  = "${var.aws_email}"
     jenkins_github_ci_user         = "${var.jenkins_github_ci_user}"
     jenkins_github_ci_token        = "${var.jenkins_github_ci_token}"
-    jenkins_email                  = "${var.jenkins_email}"
     jenkins_developer_password     = "${var.jenkins_developer_password}"
     jenkins_admin_password         = "${var.jenkins_admin_password}"
     jenkins_seedjob_branch_include = "${var.jenkins_seedjob_branch_include}"
@@ -19,7 +19,8 @@ data "template_file" "chef" {
   }
 }
 
-# Package the cookbooks into a single file for easy uploading (gem install --user-install berkshelf)
+# Package the cookbooks into a single file for easy uploading
+# gem install --user-install berkshelf
 resource "null_resource" "berks_package" {
   # asuming this is run from a cookbook/terraform directory
   provisioner "local-exec" {
@@ -34,16 +35,16 @@ resource "aws_key_pair" "auth" {
 
 resource "aws_instance" "jenkins_master" {
   ami                         = "${data.aws_ami.ubuntu.id}"
-  instance_type               = "m5.xlarge"
-  associate_public_ip_address = "true"
+  instance_type               = "${var.jenkins_instance_type}"
+  associate_public_ip_address = "${var.jenkins_associate_public_ip_address}"
   subnet_id                   = "${module.public_subnet.ids[0]}"
   vpc_security_group_ids      = ["${aws_security_group.jenkins_sg.id}"]
   key_name                    = "${aws_key_pair.auth.key_name}"
 
   root_block_device = {
-    volume_type = "gp2"
-    volume_size = 100
-    delete_on_termination = true
+    volume_type = "${var.jenkins_root_volume_type}"
+    volume_size = "${var.jenkins_root_volume_size}"
+    delete_on_termination = "${var.jenkins_root_volume_delete_on_termination}"
   }
 
   tags {
