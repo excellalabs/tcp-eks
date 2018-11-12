@@ -108,7 +108,7 @@ resource "aws_iam_policy" "eks_default_task" {
 }
 
 resource "aws_iam_policy_attachment" "eks_default_task" {
-  name       = "${var.environment}-${var.cluster_name}-eks_task"
+  name       = "${var.environment}-${var.cluster_name}-eks-task"
   roles      = ["${aws_iam_role.eks_default_task.name}"]
   policy_arn = "${aws_iam_policy.eks_default_task.arn}"
 }
