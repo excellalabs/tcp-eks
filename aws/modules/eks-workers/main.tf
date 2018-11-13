@@ -1,10 +1,10 @@
 resource "aws_security_group" "workers" {
   name_prefix = "${var.worker_name}-${var.worker_group}-"
-  description = "Security group for all nodes in the cluster."
+  description = "Security group for all nodes in the cluster"
   vpc_id      = "${var.vpc_id}"
   count       = "${var.worker_security_group_id == "" ? 1 : 0}"
   tags {
-    Name        = "${var.worker_name}-eks-worker-sg"
+    Name        = "${var.worker_name}-cluster-worker-sg"
     Cluster     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -183,7 +183,7 @@ resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
-  name_prefix = "eks-worker-autoscaling-${var.worker_name}"
+  name_prefix = "${var.worker_name}-cluster-worker-autoscaling"
   description = "Cluster Worker Node AutoScaling Policy"
   policy      = "${data.aws_iam_policy_document.worker_autoscaling.json}"
 }
@@ -261,8 +261,8 @@ data "template_file" "user_data" {
   template = "${file("${path.module}/templates/user_data.sh.tpl")}"
 
   vars {
-    eks_config        = "${var.eks_config}"
-    eks_logging       = "${var.eks_logging}"
+    cluster_config    = "${var.cluster_config}"
+    cluster_logging   = "${var.cluster_logging}"
     cluster_name      = "${var.environment}-${var.cluster_name}"
     env_name          = "${var.environment}"
     custom_userdata   = "${var.custom_userdata}"

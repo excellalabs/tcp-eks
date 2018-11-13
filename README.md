@@ -55,7 +55,7 @@ jenkins_github_ci_token = "your token"
 
 # these need to be unique per region
 jenkins_key_name = "jenkins_master_ssh_key_pair_YOURNAME"
-eks_key_name = "eks_ssh_key_pair_YOURNAME"
+cluster_key_name = "cluster_ssh_key_pair_YOURNAME"
 
 # credentials used to create any application database
 # password must be greater than 8 characters

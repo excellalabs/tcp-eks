@@ -13,9 +13,9 @@ module "vpc" {
   cidr        = "${var.vpc_cidr}"
 }
 
-resource "aws_key_pair" "eks" {
-  key_name   = "${var.eks_key_name}"
-  public_key = "${file("${path.module}/../keys/eks.pub")}"
+resource "aws_key_pair" "cluster" {
+  key_name   = "${var.cluster_key_name}"
+  public_key = "${file("${path.module}/../keys/cluster.pub")}"
 }
 
 # module "users" {
@@ -71,7 +71,7 @@ module "eks-cluster" {
   max_size         = "${var.max_size}"
   min_size         = "${var.min_size}"
   desired_capacity = "${var.desired_capacity}"
-  key_name         = "${aws_key_pair.eks.key_name}"
+  key_name         = "${aws_key_pair.cluster.key_name}"
   instance_type    = "${var.instance_type}"
 }
 

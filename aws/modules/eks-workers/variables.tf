@@ -187,14 +187,14 @@ variable "custom_userdata" {
   description = "Inject extra command in the instance template to be run on boot"
 }
 
-variable "eks_config" {
+variable "cluster_config" {
   default     = "echo '' > /etc/eks/eks.config"
-  description = "Specify eks configuration or get it from S3. Example: aws s3 cp s3://some-bucket/eks.config /etc/eks/eks.config"
+  description = "Specify cluster configuration or get it from S3. Example: aws s3 cp s3://some-bucket/cluster.config /etc/eks/eks.config"
 }
 
-variable "eks_logging" {
+variable "cluster_logging" {
   default     = "[\"json-file\",\"awslogs\"]"
-  description = "Adding logging option to EKS that the Docker containers can use. It is possible to add fluentd as well"
+  description = "Adding logging option to the cluster that Docker containers can use. It is possible to add fluentd as well"
 }
 
 variable "pre_userdata" {

@@ -1,12 +1,12 @@
-resource "aws_sns_topic" "eks_events" {
-  name = "eks_events_${var.environment}_${var.cluster_name}"
+resource "aws_sns_topic" "cluster_events" {
+  name = "cluster_events_${var.environment}_${var.cluster_name}"
 }
 
-data "template_file" "eks_task_stopped" {
+data "template_file" "cluster_task_stopped" {
   template = <<EOF
 {
   "source": ["aws.eks"],
-  "detail-type": ["EKS Task State Change"],
+  "detail-type": ["Cluster Task State Change"],
   "detail": {
     "clusterArn": ["arn:aws:eks:$${aws_region}:$${account_id}:cluster/$${cluster_name}"],
     "lastStatus": ["STOPPED"],
@@ -22,14 +22,14 @@ EOF
   }
 }
 
-resource "aws_cloudwatch_event_rule" "eks_task_stopped" {
+resource "aws_cloudwatch_event_rule" "cluster_task_stopped" {
   name          = "${var.environment}_${var.cluster_name}_task_stopped"
   description   = "${var.environment}_${var.cluster_name} Essential container in task exited"
-  event_pattern = "${data.template_file.eks_task_stopped.rendered}"
+  event_pattern = "${data.template_file.cluster_task_stopped.rendered}"
 }
 
 resource "aws_cloudwatch_event_target" "event_fired" {
-  rule  = "${aws_cloudwatch_event_rule.eks_task_stopped.name}"
-  arn   = "${aws_sns_topic.eks_events.arn}"
+  rule  = "${aws_cloudwatch_event_rule.cluster_task_stopped.name}"
+  arn   = "${aws_sns_topic.cluster_events.arn}"
   input = "{ \"message\": \"Essential container in task exited\", \"account_id\": \"${data.aws_caller_identity.current.account_id}\", \"cluster\": \"${var.cluster_name}\"}"
 }

@@ -41,10 +41,10 @@ case "$1" in
     if [ ! -d $KEY_ROOT ]; then
       mkdir $KEY_ROOT
     fi
-    if [ ! -f $KEY_ROOT/ecs ]; then
-      echo "${BOLD}Creating SSH keys for EKS instances${NORMAL}" 
-      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/eks
-      ssh-keygen -f $KEY_ROOT/eks.pub -m pem -e > $KEY_ROOT/eks.pem
+    if [ ! -f $KEY_ROOT/cluster ]; then
+      echo "${BOLD}Creating SSH keys for cluster instances${NORMAL}" 
+      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/cluster
+      ssh-keygen -f $KEY_ROOT/cluster.pub -m pem -e > $KEY_ROOT/cluster.pem
     fi
     if [ ! -f $KEY_ROOT/jenkins ]; then
       echo "${BOLD}Creating SSH keys for Jenkins instance${NORMAL}" 

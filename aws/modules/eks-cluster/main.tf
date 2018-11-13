@@ -88,7 +88,7 @@ module "alb" {
   aws_email          = "${var.aws_email}"
 }
 /*
-resource "aws_security_group_rule" "alb_to_eks" {
+resource "aws_security_group_rule" "alb_to_cluster" {
   type                     = "ingress"
   from_port                = 32768
   to_port                  = 61000
@@ -113,7 +113,7 @@ module "eks-workers" {
   min_size                = "${var.min_size}"
   desired_capacity        = "${var.desired_capacity}"
   vpc_id                  = "${var.vpc_id}"
-  iam_instance_profile_id = "${aws_iam_instance_profile.eks.id}"
+  iam_instance_profile_id = "${aws_iam_instance_profile.cluster.id}"
   key_name                = "${var.key_name}"
   load_balancers          = "${var.load_balancers}"
   depends_id              = "${module.network.depends_id}"

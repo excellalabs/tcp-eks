@@ -82,21 +82,21 @@ resource "aws_ssm_parameter" "cluster_id" {
   overwrite = true
 }
 
-resource "aws_ssm_parameter" "eks_private_subnet_cidrs" {
-  name      = "${var.environment}_eks_private_subnet_cidrs"
+resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
+  name      = "${var.environment}_cluster_private_subnet_cidrs"
   type      = "String"
   value     = "${join(",", var.private_subnet_cidrs)}"
   overwrite = true
 }
 
-output "eks_default_iam_role_arn" {
-  value = "${aws_iam_role.eks_default_task.arn}"
+output "cluster_default_iam_role_arn" {
+  value = "${aws_iam_role.cluster_default_task.arn}"
 }
 
-resource "aws_ssm_parameter" "eks_default_task_role" {
-  name      = "${var.environment}_eks_task_role_arn"
+resource "aws_ssm_parameter" "cluster_default_task_role" {
+  name      = "${var.environment}_cluster_task_role_arn"
   type      = "String"
-  value     = "${aws_iam_role.eks_default_task.arn}"
+  value     = "${aws_iam_role.cluster_default_task.arn}"
   overwrite = true
 }
 

@@ -13,7 +13,7 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   role       = "${aws_iam_role.cluster.name}"
 }
 
-resource "aws_iam_role" "eks_default_task" {
+resource "aws_iam_role" "cluster_default_task" {
   name = "${var.environment}-${var.cluster_name}-task"
   path = "/eks/"
 
@@ -101,14 +101,14 @@ POLICY
   }
 }
 
-resource "aws_iam_policy" "eks_default_task" {
-  name   = "${var.environment}-${var.cluster_name}-eks-task"
+resource "aws_iam_policy" "cluster_default_task" {
+  name   = "${var.environment}-${var.cluster_name}-cluster-task"
   path   = "/"
   policy = "${data.template_file.policy.rendered}"
 }
 
-resource "aws_iam_policy_attachment" "eks_default_task" {
-  name       = "${var.environment}-${var.cluster_name}-eks-task"
-  roles      = ["${aws_iam_role.eks_default_task.name}"]
-  policy_arn = "${aws_iam_policy.eks_default_task.arn}"
+resource "aws_iam_policy_attachment" "cluster_default_task" {
+  name       = "${var.environment}-${var.cluster_name}-cluster-task"
+  roles      = ["${aws_iam_role.cluster_default_task.name}"]
+  policy_arn = "${aws_iam_policy.cluster_default_task.arn}"
 }

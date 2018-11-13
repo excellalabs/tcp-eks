@@ -6,11 +6,11 @@ ln -fs /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime
 # Install awslogs and the jq JSON parser
 yum install -y awslogs jq aws-cli
 
-# EKS config
-${eks_config}
+# cluster config
+${cluster_config}
 {
   echo "EKS_CLUSTER=${cluster_name}"
-  echo 'EKS_AVAILABLE_LOGGING_DRIVERS=${eks_logging}'
+  echo 'EKS_AVAILABLE_LOGGING_DRIVERS=${cluster_logging}'
 } >> /etc/eks/eks.config
 
 # Inject the CloudWatch Logs configuration file contents

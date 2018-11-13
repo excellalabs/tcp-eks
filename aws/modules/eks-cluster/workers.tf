@@ -83,7 +83,7 @@ resource "aws_security_group" "workers" {
   vpc_id      = "${var.vpc_id}"
   count       = "${var.worker_security_group_id == "" ? 1 : 0}"
   tags {
-    Name        = "${var.environment}-${var.cluster_name}-eks-worker-sg"
+    Name        = "${var.environment}-${var.cluster_name}-cluster-worker-sg"
     Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -167,7 +167,7 @@ resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
-  name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.cluster.name}"
+  name_prefix = "${aws_eks_cluster.cluster.name}-cluster-worker-autoscaling"
   description = "Cluster Worker Node AutoScaling Policy"
   policy      = "${data.aws_iam_policy_document.worker_autoscaling.json}"
 }

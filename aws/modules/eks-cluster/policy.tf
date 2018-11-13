@@ -1,6 +1,6 @@
 # Load Balancer Policies
-resource "aws_iam_role" "eks_lb_role" {
-  name = "${var.environment}-${var.cluster_name}-eks-lb-role"
+resource "aws_iam_role" "cluster_lb_role" {
+  name = "${var.environment}-${var.cluster_name}-cluster-lb-role"
   path = "/eks/"
 
   assume_role_policy = <<POLICY
@@ -19,15 +19,15 @@ resource "aws_iam_role" "eks_lb_role" {
 POLICY
 }
 
-resource "aws_iam_role_policy_attachment" "eks_lb" {
-  role       = "${aws_iam_role.eks_lb_role.id}"
+resource "aws_iam_role_policy_attachment" "cluster_lb" {
+  role       = "${aws_iam_role.cluster_lb_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 
 # Instance Policies
 
-resource "aws_iam_role" "eks_instance_role" {
-  name = "${var.environment}-${var.cluster_name}-eks-instance-role"
+resource "aws_iam_role" "cluster_instance_role" {
+  name = "${var.environment}-${var.cluster_name}-cluster-instance-role"
 
   assume_role_policy = <<POLICY
 {
@@ -45,19 +45,19 @@ resource "aws_iam_role" "eks_instance_role" {
 POLICY
 }
 
-resource "aws_iam_instance_profile" "eks" {
-  name = "${var.environment}-${var.cluster_name}-eks-instance-profile"
+resource "aws_iam_instance_profile" "cluster" {
+  name = "${var.environment}-${var.cluster_name}-cluster-instance-profile"
   path = "/"
-  role = "${aws_iam_role.eks_instance_role.name}"
+  role = "${aws_iam_role.cluster_instance_role.name}"
 }
 
-resource "aws_iam_role_policy_attachment" "eks_ec2_role" {
-  role       = "${aws_iam_role.eks_instance_role.id}"
+resource "aws_iam_role_policy_attachment" "cluster_ec2_role" {
+  role       = "${aws_iam_role.cluster_instance_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
-resource "aws_iam_role_policy_attachment" "eks_ec2_cloudwatch_role" {
-  role       = "${aws_iam_role.eks_instance_role.id}"
+resource "aws_iam_role_policy_attachment" "cluster_ec2_cloudwatch_role" {
+  role       = "${aws_iam_role.cluster_instance_role.id}"
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
@@ -99,14 +99,14 @@ EOF
   }
 }
 
-resource "aws_iam_policy" "eks_default_log_task" {
-  name   = "${var.environment}-${var.cluster_name}-eks-log-task"
+resource "aws_iam_policy" "cluster_default_log_task" {
+  name   = "${var.environment}-${var.cluster_name}-cluster-log-task"
   path   = "/"
   policy = "${data.template_file.log_policy.rendered}"
 }
 
-resource "aws_iam_policy_attachment" "eks_default_log_task" {
-  name       = "${var.environment}-${var.cluster_name}-eks-log-task"
-  roles      = ["${aws_iam_role.eks_instance_role.name}"]
-  policy_arn = "${aws_iam_policy.eks_default_log_task.arn}"
+resource "aws_iam_policy_attachment" "cluster_default_log_task" {
+  name       = "${var.environment}-${var.cluster_name}-cluster-log-task"
+  roles      = ["${aws_iam_role.cluster_instance_role.name}"]
+  policy_arn = "${aws_iam_policy.cluster_default_log_task.arn}"
 }
