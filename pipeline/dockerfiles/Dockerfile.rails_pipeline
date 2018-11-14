@@ -1,4 +1,4 @@
-FROM rails-base:2.4.4-8
+FROM rails-base:2.5.3
 USER root
 WORKDIR /app
 
