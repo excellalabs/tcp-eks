@@ -2,6 +2,7 @@ FROM node:8
 RUN apt update && apt install -y jq && apt-get install sudo && apt-get clean autoclean && rm -rf /var/lib/apt/lists/*
 
 COPY package.json .
-COPY yarn.lock .
+# COPY yarn.lock .
 
-RUN yarn install --check-files && chmod -R 777 node_modules && rm package.json yarn.lock
+# RUN yarn install --check-files && chmod -R 777 node_modules && rm package.json yarn.lock
+RUN npm install
