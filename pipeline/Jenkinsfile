@@ -20,12 +20,12 @@ node("master") {
     }
 
     dir('rails-ref') {
-      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/uscis-rails.git'
+      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/bench-tc-ruby.git'
       sh 'mv Gemfile* ../'
     }
 
     dir('node-ref') {
-      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/uscis-react.git'
+      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/bench-tc-react.git'
       sh 'mv package.json yarn.lock* ../'
     }
 
