@@ -17,11 +17,11 @@ resource "aws_autoscaling_group" "workers" {
 
   tag {
     key                 = "Name"
-    value               = "${var.environment}-${var.cluster_name}-${var.worker_group}"
+    value               = "${aws_eks_cluster.cluster.name}-${var.worker_group}"
     propagate_at_launch = "true"
   }
   tag {
-    key                 = "kubernetes.io/cluster/${var.cluster_name}"
+    key                 = "kubernetes.io/cluster/${aws_eks_cluster.cluster.name}"
     value               = "owned"
     propagate_at_launch = true
   }
