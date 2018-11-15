@@ -26,7 +26,7 @@ node("master") {
 
     dir('node-ref') {
       git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/bench-tc-react.git'
-      sh 'mv package.json yarn.lock* ../'
+     #sh 'mv package.json yarn.lock* ../'
     }
 
   } // end: stage: checkout
