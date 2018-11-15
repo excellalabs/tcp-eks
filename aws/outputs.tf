@@ -9,20 +9,6 @@ resource "aws_ssm_parameter" "project_key" {
   overwrite = true
 }
 
-resource "aws_ssm_parameter" "db_username" {
-  name      = "db_username"
-  type      = "SecureString"
-  value     = "${var.db_username}"
-  overwrite = true
-}
-
-resource "aws_ssm_parameter" "db_password" {
-  name      = "db_password"
-  type      = "SecureString"
-  value     = "${var.db_password}"
-  overwrite = true
-}
-
 resource "aws_ssm_parameter" "terraform-state-bucket" {
   name      = "terraform-state-bucket"
   type      = "String"

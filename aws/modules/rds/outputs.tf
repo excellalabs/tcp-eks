@@ -7,7 +7,6 @@ resource "aws_kms_key" "db_kms_key" {
   }
 }
 
-// If Alias is not created the RDS instance will report that it has an encryption key of None..this fixes that issue :)
 resource "aws_kms_alias" "db_kms_alias" {
   name          = "alias/${var.db_identifier}-kms-key"
   target_key_id = "${aws_kms_key.db_kms_key.key_id}"
