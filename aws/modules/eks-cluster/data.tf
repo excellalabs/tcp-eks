@@ -43,7 +43,7 @@ data "template_file" "kubeconfig" {
   template = "${file("${path.module}/templates/kubeconfig.tpl")}"
 
   vars {
-    kubeconfig_name                   = "${var.kubeconfig_name == "" ? "${aws_eks_cluster.cluster.name}" : var.kubeconfig_name}"
+    kubeconfig_name                   = "${aws_eks_cluster.cluster.name}"
     endpoint                          = "${aws_eks_cluster.cluster.endpoint}"
     region                            = "${data.aws_region.current.name}"
     cluster_auth_base64               = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
