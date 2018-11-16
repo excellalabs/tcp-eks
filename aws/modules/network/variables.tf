@@ -20,7 +20,7 @@ variable "vpc_igw" {
 
 variable "destination_cidr_block" {
   default     = "0.0.0.0/0"
-  description = "Specify all traffic to be routed either trough Internet Gateway or NAT to access the internet"
+  description = "Specify all traffic to be routed either through Internet Gateway or NAT to access the internet"
 }
 
 variable "private_subnet_cidrs" {
