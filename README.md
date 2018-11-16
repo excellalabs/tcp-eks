@@ -61,7 +61,7 @@ cluster_key_name = "cluster_ssh_key_pair_YOURNAME"
 # password must be greater than 8 characters
 db_username = "something"
 db_password = "anothergreatpasswordelse"
-db_identifier = "pg-bench-db"
+db_name = "pg-bench-db1"
 
 # Leave these alone
 jenkins_seedjob_repo_owner = "excellaco"

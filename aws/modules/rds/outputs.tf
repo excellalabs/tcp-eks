@@ -15,7 +15,7 @@ resource "aws_kms_alias" "db_kms_alias" {
 resource "aws_ssm_parameter" "db_username" {
   name      = "db_username"
   type      = "SecureString"
-  value     = "${var.db_username}"
+  value     = "${aws_db_instance.sql_database.username}"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {
@@ -29,7 +29,7 @@ resource "aws_ssm_parameter" "db_username" {
 resource "aws_ssm_parameter" "db_password" {
   name      = "db_password"
   type      = "SecureString"
-  value     = "${var.db_password}"
+  value     = "${aws_db_instance.sql_database.password}"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {
@@ -43,7 +43,7 @@ resource "aws_ssm_parameter" "db_password" {
 resource "aws_ssm_parameter" "db_name" {
   name      = "db_name"
   type      = "SecureString"
-  value     = "${var.project_key}"
+  value     = "${aws_db_instance.sql_database.name}"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {
@@ -57,7 +57,7 @@ resource "aws_ssm_parameter" "db_name" {
 resource "aws_ssm_parameter" "db_identifier" {
   name      = "db_identifier"
   type      = "SecureString"
-  value     = "pg-${var.project_key}-db"
+  value     = "${aws_db_instance.sql_database.identifier}"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {

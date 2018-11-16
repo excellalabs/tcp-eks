@@ -59,7 +59,7 @@ module "eks-cluster" {
   public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
   private_subnet_cidrs = ["10.0.50.0/24", "10.0.51.0/24"]
   db_subnet_cidrs      = ["10.0.101.0/24", "10.0.102.0/24"]
-  db_name              = ""
+  db_name              = "${var.db_name}"
   db_username          = "${var.db_username}"
   db_password          = "${var.db_password}"
   aws_email            = "${var.aws_email}"
