@@ -62,7 +62,7 @@ variable "cluster_key_name" {
   description = "the ssh key pair to use for the EC2 instances making up the cluster"
 }
 
-variable "db_name" {}
+variable "db_identifier" {}
 
 variable "db_username" {}
 

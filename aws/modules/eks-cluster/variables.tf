@@ -127,6 +127,10 @@ variable "db_name" {
   description = "The name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance. Note that this does not apply for Oracle or SQL Server engines. See the AWS documentation for more details on what applies for those engines."
 }
 
+variable "db_identifier" {
+  description = "(Forces new resource) The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier."
+}
+
 variable "db_username" {
   description = "(Required unless a snapshot_identifier or replicate_source_db is provided) Username for the master DB user."
 }

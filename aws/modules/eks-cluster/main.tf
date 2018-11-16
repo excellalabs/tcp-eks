@@ -58,7 +58,7 @@ module "rds" {
   availability_zones = "${var.availability_zones}"
   aws_email          = "${var.aws_email}"
   db_name            = "${var.db_name}"
-  db_identifier      = "${var.environment}-${var.db_name}"
+  db_identifier      = "${var.environment}-${var.db_identifier}"
   db_username        = "${var.db_username}"
   db_password        = "${var.db_password}"
 }
