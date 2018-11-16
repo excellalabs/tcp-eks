@@ -43,7 +43,7 @@ resource "aws_ssm_parameter" "db_password" {
 resource "aws_ssm_parameter" "db_name" {
   name      = "db_name"
   type      = "SecureString"
-  value     = "${aws_db_instance.sql_database.name}"
+  value     = "${var.project_key}"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {
