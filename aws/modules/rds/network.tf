@@ -42,6 +42,12 @@ resource "aws_security_group" "database_sg" {
     from_port   = "${var.db_port}"
     to_port     = "${var.db_port}"
     protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = "${var.db_port}"
+    to_port     = "${var.db_port}"
+    protocol    = "TCP"
     cidr_blocks = "${var.db_subnet_cidrs}"
   }
   ingress {
