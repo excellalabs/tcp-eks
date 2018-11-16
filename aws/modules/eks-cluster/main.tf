@@ -68,7 +68,7 @@ module "network" {
 
   vpc_id               = "${var.vpc_id}"
   vpc_igw              = "${var.vpc_igw}"
-  name                 = "${var.cluster_name}"
+  name                 = "${var.cluster_name}-cluster"
   environment          = "${var.environment}"
   public_subnet_cidrs  = "${var.public_subnet_cidrs}"
   private_subnet_cidrs = "${var.private_subnet_cidrs}"
