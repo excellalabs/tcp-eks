@@ -5,7 +5,7 @@ resource "aws_db_parameter_group" "db_parameter" {
   family      = "${var.db_param_family}"
   description = "${var.db_engine} Paramater Group"
   tags {
-    Name        = "${var.db_identifier}-parameter-group"
+    Name        = "${lower(var.db_identifier)}-parameter-group"
     Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -17,7 +17,7 @@ resource "aws_kms_key" "rds_encryption_key" {
   deletion_window_in_days = 7
   enable_key_rotation     = false
   tags {
-    Name        = "${var.db_identifier}-encryption-key"
+    Name        = "${lower(var.db_identifier)}-encryption-key"
     Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -25,7 +25,7 @@ resource "aws_kms_key" "rds_encryption_key" {
 }
 
 resource "aws_kms_alias" "rds_encryption_key_alias" {
-  name          = "alias/${var.db_identifier}"
+  name          = "alias/${lower(var.db_identifier)}"
   target_key_id = "${aws_kms_key.rds_encryption_key.key_id}"
 }
 
@@ -39,7 +39,7 @@ resource "aws_db_instance" "sql_database" {
   port                       = "${var.db_port}"
   instance_class             = "${var.db_instance_class}"
   name                       = "${var.db_name}"
-  identifier                 = "${var.db_identifier}"
+  identifier                 = "${lower(var.db_identifier)}"
   username                   = "${var.db_username}"
   password                   = "${var.db_password}"
   db_subnet_group_name       = "${aws_db_subnet_group.db_subnet_group.id}"
@@ -60,7 +60,7 @@ resource "aws_db_instance" "sql_database" {
   }
 
   tags {
-    Name        = "${var.db_identifier}"
+    Name        = "${lower(var.db_identifier)}"
     Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"

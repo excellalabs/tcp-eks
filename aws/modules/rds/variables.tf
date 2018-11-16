@@ -70,7 +70,7 @@ variable "db_multi_availability_zone" {
 
 variable "db_publicly_accessible" {
   description = "(Optional) Bool to control if instance is publicly accessible. Default is false."
-  default     = false
+  default     = true
 }
 
 variable "db_auto_minor_version_upgrade" {
@@ -91,12 +91,12 @@ variable "db_copy_tags_to_snapshot" {
 # PostgreSQL
 variable "db_param_family" {
   description = "(Optional) Name of the DB parameter group to associate."
-  default     = "postgres9.6"
+  default     = "postgres10"
 }
 
 variable "db_version" {
   description = "engine_version (Optional) The engine version to use. If auto_minor_version_upgrade is enabled, you can provide a prefix of the version"
-  default     = "9.6.9"
+  default     = "10.4"
 }
 
 variable "db_port" {
