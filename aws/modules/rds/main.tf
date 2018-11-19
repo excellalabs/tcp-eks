@@ -3,7 +3,7 @@
 resource "aws_db_parameter_group" "db_parameter" {
   name        = "${var.environment}-${var.db_engine}-db-parameter-group"
   family      = "${var.db_param_family}"
-  description = "${var.db_engine} Paramater Group"
+  description = "${var.db_engine} Parameter Group"
   tags {
     Name        = "${lower(var.db_identifier)}-parameter-group"
     Project     = "${var.project_key}"
