@@ -43,7 +43,7 @@ case "$1" in
     fi
     if [ ! -f $KEY_ROOT/bastion ]; then
       echo "${BOLD}Creating SSH keys for bastion instance${NORMAL}"
-      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/bastion
+      ssh-keygen -t rsa -b 4096 -o -a 100 -f $KEY_ROOT/bastion
       ssh-keygen -f $KEY_ROOT/bastion.pub -m pem -e > $KEY_ROOT/bastion.pem
     fi
     if [ ! -f $KEY_ROOT/cluster ]; then
