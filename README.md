@@ -54,6 +54,7 @@ jenkins_github_ci_user = "your user"
 jenkins_github_ci_token = "your token"
 
 # these need to be unique per region
+bastion_key_name = "bastion_master_ssh_key_pair_YOURNAME"
 jenkins_key_name = "jenkins_master_ssh_key_pair_YOURNAME"
 cluster_key_name = "cluster_ssh_key_pair_YOURNAME"
 

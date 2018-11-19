@@ -30,8 +30,28 @@ variable "project_cidr" {
   default = "10.0.100.0/24"
 }
 
+## Bastion
+
+variable "bastion_cidr" {
+  default = "10.0.103.0/24"
+}
+
 variable "bastion_instance_type" {
   default = "t2.micro"
+}
+
+variable "bastion_key_name" {
+  description = "the ssh key pair to use for the bastion EC2 instance"
+}
+
+variable "bastion_private_key_path" {
+  default     = "../keys/bastion"
+  description = "path to ssh private key"
+}
+
+variable "bastion_public_key_path" {
+  default     = "../keys/bastion.pub"
+  description = "path to ssh public key"
 }
 
 ## Cluster

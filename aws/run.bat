@@ -1,6 +1,11 @@
 @ECHO OFF
 SET KEY_ROOT="..\keys"
 
+IF NOT EXIST %KEY_ROOT%\bastion (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\bastion
+  ssh-keygen -f %KEY_ROOT%\bastion.pub -m pem -e > %KEY_ROOT%\bastion.pem
+)
+
 IF NOT EXIST %KEY_ROOT%\cluster (
   ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\cluster
   ssh-keygen -f %KEY_ROOT%\cluster.pub -m pem -e > %KEY_ROOT%\cluster.pem

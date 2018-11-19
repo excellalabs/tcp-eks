@@ -22,6 +22,23 @@ resource "aws_key_pair" "cluster" {
 #   source = "modules/users"
 # }
 
+module "bastion-master" {
+  source = "modules/bastion-master"
+
+  vpc_id                         = "${module.vpc.id}"
+  vpc_igw                        = "${module.vpc.igw}"
+  environment                    = "${var.environment}"
+  project_key                    = "${var.project_key}"
+  aws_email                      = "${var.aws_email}"
+  aws_access_key                 = "${var.aws_access_key}"
+  aws_secret_key                 = "${var.aws_secret_key}"
+  bastion_key_name               = "${var.bastion_key_name}"
+  bastion_private_key_path       = "${var.bastion_private_key_path}"
+  bastion_public_key_path        = "${var.bastion_public_key_path}"
+  bastion_cidrs                  = ["${var.bastion_cidr}"]
+  availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
+}
+
 module "jenkins-master" {
   source = "modules/jenkins-master"
 
