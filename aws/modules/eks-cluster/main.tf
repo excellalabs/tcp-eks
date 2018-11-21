@@ -103,7 +103,7 @@ module "eks-workers" {
   environment             = "${var.environment}"
   cluster_name            = "${aws_eks_cluster.cluster.name}"
   worker_name             = "${var.environment}-${var.cluster_name}"
-  bastion_cidrs           = ["${var.bastion_cidrs}"]
+  bastion_cidrs           = "${var.cluster_cidrs}"
   worker_group            = "${var.worker_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
   aws_ami                 = "${data.aws_ami.eks_worker.id}"

@@ -17,6 +17,7 @@ variable "cluster_endpoint" {
 
 variable "cluster_security_group_id" {
   description = "Cluster security group created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
+  type        = "list"
 }
 
 variable "cluster_certificate_authority_data" {
