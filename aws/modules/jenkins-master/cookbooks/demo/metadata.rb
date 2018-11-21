@@ -5,7 +5,7 @@ license 'All Rights Reserved'
 description 'Installs/Configures demo'
 long_description 'Installs/Configures demo'
 version '0.1.0'
-chef_version '>= 12.1' if respond_to?(:chef_version)
+chef_version '>= 12.4.1' if respond_to?(:chef_version)
 
 depends 'java', '~> 2.1.0'
 depends 'jenkins', '~> 6.0.0'
