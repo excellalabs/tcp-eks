@@ -26,14 +26,12 @@ variable "vpc_cidr" {
   default = "10.0.0.0/16"
 }
 
-variable "project_cidr" {
-  default = "10.0.100.0/24"
-}
-
 ## Bastion
 
-variable "bastion_cidr" {
-  default = "10.0.103.0/24"
+variable "bastion_cidrs" {
+  type        = "list"
+  default     = ["10.0.100.0/24"]
+  description = "The list of cidrs to allow ssh access from"
 }
 
 variable "bastion_instance_type" {
@@ -55,6 +53,12 @@ variable "bastion_public_key_path" {
 }
 
 ## Cluster
+
+variable "cluster_cidrs" {
+  type        = "list"
+  default     = []
+  description = "The cidrs the cluster should reside in"
+}
 
 variable "max_size" {
   default = 4
@@ -89,6 +93,11 @@ variable "db_username" {}
 variable "db_password" {}
 
 ## Jenkins
+
+variable "jenkins_cidrs" {
+  type    = "list"
+  default = ["10.0.103.0/24"]
+}
 
 variable "jenkins_key_name" {
   description = "ssh auth keypair name"

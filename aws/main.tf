@@ -35,10 +35,10 @@ module "bastion-master" {
   bastion_key_name               = "${var.bastion_key_name}"
   bastion_private_key_path       = "${var.bastion_private_key_path}"
   bastion_public_key_path        = "${var.bastion_public_key_path}"
-  bastion_cidrs                  = ["${var.bastion_cidr}"]
+  bastion_cidrs                  = "${var.bastion_cidrs}"
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
-
+/*
 module "jenkins-master" {
   source = "modules/jenkins-master"
 
@@ -60,19 +60,19 @@ module "jenkins-master" {
   jenkins_seedjob_repo_include   = "${var.jenkins_seedjob_repo_include}"
   jenkins_seedjob_branch_include = "${var.jenkins_seedjob_branch_include}"
   jenkins_seedjob_branch_trigger = "${var.jenkins_seedjob_branch_trigger}"
-  public_subnet_cidrs            = ["${var.project_cidr}"]
+  public_subnet_cidrs            = "${var.jenkins_cidrs}"
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
-
+*/
 module "eks-cluster" {
   source = "modules/eks-cluster"
 
   environment          = "${var.environment}"
   vpc_id               = "${module.vpc.id}"
   vpc_igw              = "${module.vpc.igw}"
-  bastion_cidrs        = ["${var.project_cidr}"]
   cluster_name         = "${var.project_key}"
   cloudwatch_prefix    = "${var.project_key}/${var.environment}"
+  cluster_cidrs        = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
   public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
   private_subnet_cidrs = ["10.0.50.0/24", "10.0.51.0/24"]
   db_subnet_cidrs      = ["10.0.101.0/24", "10.0.102.0/24"]

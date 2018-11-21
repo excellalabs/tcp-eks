@@ -53,7 +53,7 @@ module "rds" {
   environment        = "${var.environment}"
   aws_region         = "${data.aws_region.current.name}"
   db_subnet_cidrs    = "${var.db_subnet_cidrs}"
-  db_access_cidrs    = ["${concat(var.bastion_cidrs, var.private_subnet_cidrs)}"]
+  db_access_cidrs    = ["${concat(var.cluster_cidrs, var.private_subnet_cidrs)}"]
   vpc_id             = "${var.vpc_id}"
   availability_zones = "${var.availability_zones}"
   aws_email          = "${var.aws_email}"
