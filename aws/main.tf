@@ -38,7 +38,7 @@ module "bastion-master" {
   bastion_cidrs                  = "${var.bastion_cidrs}"
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
-/*
+
 module "jenkins-master" {
   source = "modules/jenkins-master"
 
@@ -63,7 +63,7 @@ module "jenkins-master" {
   public_subnet_cidrs            = "${var.jenkins_cidrs}"
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
-*/
+
 module "eks-cluster" {
   source = "modules/eks-cluster"
 
