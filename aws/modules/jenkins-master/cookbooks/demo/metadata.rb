@@ -8,7 +8,7 @@ version '0.1.0'
 chef_version '>= 12.4.1' if respond_to?(:chef_version)
 
 depends 'java', '~> 2.1.0'
-depends 'jenkins', '~> 6.0.0'
+depends 'jenkins', '~> 6.2.1'
 depends 'docker', '~> 4.3.0'
 depends 'terraform', '~> 2.1.1'
 depends 'postgresql', '= 2.1.0'
