@@ -27,6 +27,7 @@ Add a file called `./aws/terraform.tfvars` with the following contents:
 
 ```
 # Change these
+account_id = "090999229429"
 aws_access_key = "your access key"
 aws_secret_key = "your secret key"
 aws_email = "your email address"
@@ -65,6 +66,7 @@ db_password = "anothergreatpasswordelse"
 db_identifier = "pg-bench-db1"
 
 # Leave these alone
+aws_authenticator_role = "eks-iam-authenticator-role"
 jenkins_seedjob_repo_owner = "excellaco"
 jenkins_seedjob_repo_include = "bench-java bench-rails bench-react bench-infrastructure"
 ```
