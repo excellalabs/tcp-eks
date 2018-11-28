@@ -43,28 +43,28 @@ data "template_file" "kubeconfig" {
   template = "${file("${path.module}/templates/kubeconfig.tpl")}"
 
   vars {
-    kubeconfig_name                   = "${aws_eks_cluster.cluster.name}"
-    endpoint                          = "${aws_eks_cluster.cluster.endpoint}"
-    region                            = "${data.aws_region.current.name}"
-    cluster_auth_base64               = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
-    aws_authenticator_command         = "${var.kubeconfig_aws_authenticator_command}"
-    aws_authenticator_command_args    = "${length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_authenticator_command_args)}" : "        - ${join("\n        - ", formatlist("\"%s\"", list("token", "-i", aws_eks_cluster.cluster.name)))}"}"
-    aws_authenticator_additional_args = "${length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_authenticator_additional_args)}" : ""}"
-    aws_authenticator_env_variables   = "${length(var.kubeconfig_aws_authenticator_env_variables) > 0 ? "      env:\n${join("\n", data.template_file.aws_authenticator_env_variables.*.rendered)}" : ""}"
+    kubeconfig_name          = "${aws_eks_cluster.cluster.name}"
+    endpoint                 = "${aws_eks_cluster.cluster.endpoint}"
+    region                   = "${data.aws_region.current.name}"
+    cluster_auth_base64      = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
+    aws_auth_command         = "${var.kubeconfig_aws_auth_command}"
+    aws_auth_command_args    = "${length(var.kubeconfig_aws_auth_command_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_auth_command_args)}" : "        - ${join("\n        - ", formatlist("\"%s\"", list("token", "-i", aws_eks_cluster.cluster.name)))}"}"
+    aws_auth_additional_args = "${length(var.kubeconfig_aws_auth_additional_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_auth_additional_args)}" : ""}"
+    aws_auth_env_variables   = "${length(var.kubeconfig_aws_auth_env_variables) > 0 ? "      env:\n${join("\n", data.template_file.aws_auth_env_variables.*.rendered)}" : ""}"
   }
 }
 
-data "template_file" "aws_authenticator_env_variables" {
+data "template_file" "aws_auth_env_variables" {
   template = <<EOF
         - name: $${key}
           value: $${value}
 EOF
 
-  count = "${length(var.kubeconfig_aws_authenticator_env_variables)}"
+  count = "${length(var.kubeconfig_aws_auth_env_variables)}"
 
   vars {
-    value = "${element(values(var.kubeconfig_aws_authenticator_env_variables), count.index)}"
-    key   = "${element(keys(var.kubeconfig_aws_authenticator_env_variables), count.index)}"
+    value = "${element(values(var.kubeconfig_aws_auth_env_variables), count.index)}"
+    key   = "${element(keys(var.kubeconfig_aws_auth_env_variables), count.index)}"
   }
 }
 

@@ -21,8 +21,8 @@ users:
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
-      command: ${aws_authenticator_command}
+      command: ${aws_auth_command}
       args:
-${aws_authenticator_command_args}
-${aws_authenticator_additional_args}
-${aws_authenticator_env_variables}
+${aws_auth_command_args}
+${aws_auth_additional_args}
+${aws_auth_env_variables}

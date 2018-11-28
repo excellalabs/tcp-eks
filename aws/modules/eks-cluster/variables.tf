@@ -260,24 +260,24 @@ variable "map_users" {
   default     = []
 }
 
-variable "kubeconfig_aws_authenticator_command" {
+variable "kubeconfig_aws_auth_command" {
   description = "Command to use to to fetch AWS EKS credentials."
   default     = "aws-iam-authenticator"
 }
 
-variable "kubeconfig_aws_authenticator_command_args" {
+variable "kubeconfig_aws_auth_command_args" {
   description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
   type        = "list"
   default     = []
 }
 
-variable "kubeconfig_aws_authenticator_additional_args" {
+variable "kubeconfig_aws_auth_additional_args" {
   description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]."
   type        = "list"
   default     = []
 }
 
-variable "kubeconfig_aws_authenticator_env_variables" {
+variable "kubeconfig_aws_auth_env_variables" {
   description = "Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = \"eks\"}."
   type        = "map"
   default     = {}
