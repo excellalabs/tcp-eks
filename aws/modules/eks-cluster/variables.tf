@@ -92,11 +92,6 @@ variable "instance_type" {
   default     = "t2.large"
 }
 
-variable "worker_group" {
-  default     = "default"
-  description = "The name of the workers that you consider as a group"
-}
-
 variable "private_subnet_cidrs" {
   type        = "list"
   description = "List of private cidrs, for every avalibility zone you want you need one. Example: 10.0.0.0/24 and 10.0.1.0/24"
@@ -201,6 +196,11 @@ variable "cluster_logging" {
 variable "cloudwatch_prefix" {
   default     = ""
   description = "If you want to avoid cloudwatch collision or you don't want to merge all logs to one log group specify a prefix"
+}
+
+variable "worker_group" {
+  default     = "node"
+  description = "The name of the workers that you consider as a group"
 }
 
 variable "worker_groups" {
