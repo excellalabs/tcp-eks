@@ -29,15 +29,15 @@ variable "worker_name" {
 }
 
 variable "worker_group" {
-  default     = "default"
+  default     = "node"
   description = "The name of the workers that you consider as a group"
 }
 
 variable "worker_groups" {
-  description = "A list of maps defining worker group configurations. See workers_group_defaults for valid keys."
+  description = "A list of maps defining worker group configurations. See workers_group_nodes for valid keys."
   type        = "list"
   default = [{
-    "name" = "default"
+    "name" = "node"
   }]
 }
 
