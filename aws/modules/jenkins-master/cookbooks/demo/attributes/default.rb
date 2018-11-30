@@ -1,5 +1,5 @@
  
-default['java']['jdk_version'] = '11'
+default['java']['jdk_version'] = '8'
 default['java']['install_flavor'] = 'openjdk'
 
 # Note: to get the short name of a plugin, install it on jenkins via the UI and run the following script 
