@@ -13,7 +13,7 @@ node['jenkins']['plugins'].each do |plugin|
   end
 end
 
-# we need to restart in case any of theses plugins need to be active for the following configuration
+# we need to restart in case any of these plugins need to be active for the following configuration
 service 'jenkins' do
   action :restart
 end
