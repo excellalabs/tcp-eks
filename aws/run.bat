@@ -55,12 +55,12 @@ IF /I "%1"=="kube" (
   IF EXIST "%iam_file%" DEL "%iam_file%"
   IF EXIST "%kube_file%" DEL "%kube_file%"
   IF %arc%==32BIT (
-	SET "KUBE_URL=%amazon_url%/amd32/kubectl.exe"
-	SET "IAM_URL=%amazon_url%/amd32/aws-iam-authenticator.exe"
+    SET "KUBE_URL=%amazon_url%/amd32/kubectl.exe"
+    SET "IAM_URL=%amazon_url%/amd32/aws-iam-authenticator.exe"
   )
   IF %arc%==64BIT (
-	SET "KUBE_URL=%amazon_url%/amd64/kubectl.exe"
-	SET "IAM_URL=%amazon_url%/amd64/aws-iam-authenticator.exe"
+    SET "KUBE_URL=%amazon_url%/amd64/kubectl.exe"
+    SET "IAM_URL=%amazon_url%/amd64/aws-iam-authenticator.exe"
   )
   Bitsadmin /transfer "kubectl" %KUBE_URL% "%kube_file%"
   IF EXIST "%kube_file%" START "" "%kube_file%"
