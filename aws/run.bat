@@ -69,11 +69,11 @@ IF /I "%1"=="kube" (
 )
 
 
-REM IF NOT EXIST "%1" (
-REM   ECHO Running ALL Teraform options: init, plan, apply
-REM   IF NOT EXIST .terraform (
-REM     terraform init 
-REM   )
-REM   terraform plan -out=tfplan
-REM   terraform apply tfplan
-REM )
+IF NOT EXIST "%1" (
+  ECHO Running ALL Teraform options: init, plan, apply
+  IF NOT EXIST .terraform (
+    terraform init 
+  )
+  terraform plan -out=tfplan
+  terraform apply tfplan
+)
