@@ -6,7 +6,7 @@ realpath() {
 }
 
 KEY_ROOT=$(realpath keys)
-USAGE="Usage: $0 init|plan|apply|destroy|chef"
+USAGE="Usage: $0 init|plan|apply|destroy|chef|kube"
 
 NORMAL=$(tput sgr0)
 RED=$(tput setaf 1)
@@ -79,6 +79,12 @@ case "$1" in
     popd
     scp -i ../keys/jenkins modules/jenkins-master/cookbooks.tar.gz  ubuntu@$(terraform output jenkins_master_public_dns):/tmp/
     ssh -i ../keys/jenkins ubuntu@$(terraform output jenkins_master_public_dns) sudo chef-solo --recipe-url /tmp/cookbooks.tar.gz -j /tmp/chef.json
+    ;;
+  kube)
+    curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/kubectl
+    curl -o aws-iam-authenticator https://amazon-eks.s3-uswest-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator
+    chmod +x ./kubectl
+    chmod +x ./aws-iam-authenticator
     ;;
   *)
     error_and_exit "$USAGE"
