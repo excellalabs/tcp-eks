@@ -66,6 +66,9 @@ case "$1" in
     ;;
   all)
     popd &> /dev/null
+	curl -o terraform_0.11.10_darwin_amd64.zip https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_darwin_amd64.zip
+	gunzip terraform_0.11.10_darwin_amd64.zip
+	chmod +x ./terraform
     eval $0 init
     eval $0 plan
     eval $0 apply
