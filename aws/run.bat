@@ -68,8 +68,26 @@ IF /I "%1"=="kube" (
   IF EXIST "%iam_file%" START "" "%iam_file%"
 )
 
-
 IF NOT EXIST "%1" (
+  IF NOT EXIST terraform.exe (
+    SET "terraform_ver=0.11.10"
+    SET "hashicorp_url=https://releases.hashicorp.com/terraform/%terraform_ver%"
+    IF %arc%==32BIT (
+	  SET "terraform_zip_file=terraform_%terraform_ver%_windows_386.zip"
+      SET "terraform_url=%hashicorp_url%/%terraform_zip_file%"
+    )
+    IF %arc%==64BIT (
+	  SET "terraform_zip_file=terraform_%terraform_ver%_windows_amd64.zip"
+      SET "terraform_url=%hashicorp_url%/%terraform_zip_file%"
+    )
+    ECHO Installing from %terraform_url%
+	ECHO [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 > download.ps1
+	ECHO Invoke-WebRequest -Uri %terraform_url% -Outfile %terraform_zip_file% >> download.ps1
+	ECHO Expand-Archive %terraform_zip_file% -DestinationPath . >> download.ps1
+	Powershell -f download.ps1
+	DEL download.ps1
+    IF EXIST "%terraform_zip_file%" DEL "%terraform_zip_file%"
+  )
   ECHO Running ALL Teraform options: init, plan, apply
   IF NOT EXIST .terraform (
     terraform init 
