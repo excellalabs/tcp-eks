@@ -93,7 +93,7 @@ module "eks-cluster" {
     "${data.aws_availability_zones.available.names[1]}",
   ]
 
-  kubeconfig_aws_authenticator_additional_args = ["-r",
+  kubeconfig_aws_auth_additional_args = ["-r",
     "arn:aws:iam::${var.account_id}:role/${var.aws_authenticator_role}"]
 
   max_size         = "${var.max_size}"
