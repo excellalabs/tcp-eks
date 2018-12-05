@@ -18,7 +18,18 @@ default['jenkins']['plugins'] = [
   'ansicolor',
   'pipeline-stage-view',
   'lockable-resources',
-  'slack'
+  'slack',
+  'aws-credentials',
+  'aws-codebuild',
+  'aws-codecommit-jobs',
+  'aws-codepipeline',
+  'aws-java-sdk',
+  'ec2',
+  'scalable-amazon-ecs',
+  'kubernetes',
+  'kubernetes-cd',
+  'kubernetes-cli',
+  'node-iterator-api'
 ]
 
 # aws config values
