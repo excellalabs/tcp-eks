@@ -1,5 +1,5 @@
 output "jenkins_master_public_dns" {
-  value = "${aws_instance.jenkins_master.public_dns}"
+  value = "${aws_instance.jenkins_ubuntu.public_dns}"
 }
 
 output "jenkins_public_subnet_cidrs" {
