@@ -78,3 +78,5 @@ default['jenkins']['seedjob']['branch']['exclude'] = ''
 
 # Of the brances discovered, trigger builds automatically for the branches matching this pattern (regex)
 default['jenkins']['seedjob']['branch']['trigger'] = ''
+
+default['terraform']['version'] = '0.11.10'
