@@ -30,6 +30,10 @@ node("master") {
       sh 'mv package.json ../'
     }
 
+    dir('java-ref') {
+      git branch: 'master', credentialsId: 'github-ci-credentials', url: 'https://github.com/excellaco/bench-tc-java.git'
+    }
+
   } // end: stage: checkout
 
    
