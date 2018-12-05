@@ -1,4 +1,3 @@
- 
 default['java']['jdk_version'] = '8'
 default['java']['install_flavor'] = 'openjdk'
 
@@ -11,15 +10,15 @@ default['java']['install_flavor'] = 'openjdk'
 # }
 
 default['jenkins']['plugins'] = [
-    'github-branch-source', 
-    'github-organization-folder',
-    'matrix-auth',
-    'greenballs',
-    'blueocean',
-    'ansicolor',
-    'pipeline-stage-view',
-    'lockable-resources',
-    'slack'
+  'github-branch-source', 
+  'github-organization-folder',
+  'matrix-auth',
+  'greenballs',
+  'blueocean',
+  'ansicolor',
+  'pipeline-stage-view',
+  'lockable-resources',
+  'slack'
 ]
 
 # aws config values
@@ -29,9 +28,9 @@ default['aws']['region'] = ''
 
 # script security exceptions (needed for dynamically canceling builds to prevent PR builder queueing)
 default['jenkins']['scriptsecurityapprovals'] = [
-    'method hudson.model.Run _this',
-    'method org.jenkinsci.plugins.workflow.job.WorkflowRun doTerm',
-    'method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild'
+  'method hudson.model.Run _this',
+  'method org.jenkinsci.plugins.workflow.job.WorkflowRun doTerm',
+  'method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild'
 ]
 
 # Credentials and contact info for the default 'developer' and 'admin' users
@@ -40,8 +39,8 @@ default['jenkins']['users']['developerPassword'] = ''
 default['jenkins']['users']['adminPassword'] = ''
 
 # Provide jenkins with the github user and token for cloning git repos:
-#   - the token requires repo read/write access
-#   - the token requires webhook admin access
+# - the token requires repo read/write access
+# - the token requires webhook admin access
 default['jenkins']['github']['user'] = ''
 default['jenkins']['github']['token'] = ''
 default['jenkins']['github']['credentials-id'] = 'github-ci-credentials'
@@ -60,9 +59,9 @@ default['jenkins']['seedjob']['repo']['exclude'] = ''
 # Of the repo pipeline candidates, only create pipelines for the following branchs in each repo. 
 # Note these are space delimited lists taking wildcard patterns (not full regexs).
 # In this case:
-#   - always create pipelines for "master"
-#   - "PR-\d+" is a "branch like object" to jenkins to describe PRs, keep this if you want a PR builder
-#   - devs may create ad-hoc branches starting with "build-*" that they want to test pipeline builds without needing to create a PR
+# - always create pipelines for "master"
+# - "PR-\d+" is a "branch like object" to jenkins to describe PRs, keep this if you want a PR builder
+# - devs may create ad-hoc branches starting with "build-*" that they want to test pipeline builds without needing to create a PR
 default['jenkins']['seedjob']['branch']['include'] = ''
 default['jenkins']['seedjob']['branch']['exclude'] = ''
 

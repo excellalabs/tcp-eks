@@ -46,8 +46,8 @@ module "bastion-master" {
   availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
 }
 
-module "jenkins-master" {
-  source = "modules/jenkins-master"
+module "jenkins-ubuntu" {
+  source = "modules/jenkins-ubuntu"
 
   vpc_id                         = "${module.vpc.id}"
   vpc_igw                        = "${module.vpc.igw}"

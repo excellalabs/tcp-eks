@@ -33,7 +33,7 @@ resource "aws_key_pair" "auth" {
   public_key = "${file(var.jenkins_public_key_path)}"
 }
 
-resource "aws_instance" "jenkins_master" {
+resource "aws_instance" "jenkins_ubuntu" {
   ami                         = "${data.aws_ami.ubuntu.id}"
   instance_type               = "${var.jenkins_instance_type}"
   associate_public_ip_address = "${var.jenkins_associate_public_ip_address}"
@@ -48,7 +48,7 @@ resource "aws_instance" "jenkins_master" {
   }
 
   tags {
-    Name        = "jenkins_master"
+    Name        = "jenkins_ubuntu"
     Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"

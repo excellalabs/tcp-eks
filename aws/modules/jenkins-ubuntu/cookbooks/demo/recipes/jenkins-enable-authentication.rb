@@ -1,4 +1,3 @@
-
 # only enable JNLP4 for agent server connections (addresses banner warning)
 jenkins_script 'restrict jnlp protocols' do
   command <<-EOH.gsub(/^ {4}/, '')

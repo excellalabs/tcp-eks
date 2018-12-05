@@ -1,4 +1,3 @@
-
 template '/var/lib/jenkins/scriptApproval.xml' do
   source 'scriptApproval.xml.erb'
   owner 'jenkins'
