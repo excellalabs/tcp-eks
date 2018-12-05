@@ -68,7 +68,7 @@ db_identifier = "pg-bench-db1"
 # Leave these alone
 aws_authenticator_role = "eks-iam-authenticator-role"
 jenkins_seedjob_repo_owner = "excellaco"
-jenkins_seedjob_repo_include = "bench-java bench-rails bench-react bench-infrastructure"
+jenkins_seedjob_repo_include = "bench-infrastructure bench-tc-react bench-tc-ruby bench-tc-java"
 ```
 
 This is used by both of the jenkins and eks terraform modules.
