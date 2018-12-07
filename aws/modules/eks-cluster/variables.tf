@@ -34,7 +34,7 @@ variable "cluster_certificate_authority_data" {
 
 variable "cluster_version" {
   description = "Kubernetes version to use for the cluster"
-  default     = "1.13"
+  default     = "1.10"
 }
 
 variable "cluster_create_timeout" {
