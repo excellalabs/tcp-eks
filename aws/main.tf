@@ -5,8 +5,8 @@ provider "aws" {
 /*
   assume_role {
     role_arn     = "arn:aws:iam::${var.account_id}:role/${var.aws_authenticator_role}"
-    session_name = "SESSION_NAME"
-    external_id  = "EXTERNAL_ID"
+   #session_name = "SESSION_NAME"
+   #external_id  = "EXTERNAL_ID"
   }
 */
 }
@@ -20,17 +20,12 @@ module "vpc" {
   cidr        = "${var.vpc_cidr}"
 }
 
-resource "aws_key_pair" "cluster" {
-  key_name   = "${var.cluster_key_name}"
-  public_key = "${file("${path.module}/../keys/cluster.pub")}"
-}
-
 # module "users" {
 #   source = "modules/users"
 # }
 
-module "bastion-master" {
-  source = "modules/bastion-master"
+module "bastion-ubuntu" {
+  source = "modules/bastion-ubuntu"
 
   vpc_id                         = "${module.vpc.id}"
   vpc_igw                        = "${module.vpc.igw}"
@@ -101,6 +96,11 @@ module "eks-cluster" {
   desired_capacity = "${var.desired_capacity}"
   key_name         = "${aws_key_pair.cluster.key_name}"
   instance_type    = "${var.instance_type}"
+}
+
+resource "aws_key_pair" "cluster" {
+  key_name   = "${var.cluster_key_name}"
+  public_key = "${file("${path.module}/../keys/cluster.pub")}"
 }
 
 resource "aws_s3_bucket" "terraform-state-storage-s3" {

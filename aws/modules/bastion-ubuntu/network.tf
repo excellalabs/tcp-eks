@@ -16,7 +16,7 @@ resource "aws_route" "public_igw_route" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
-resource "aws_security_group" "bastion_sg" {
+resource "aws_security_group" "bastion" {
   name        = "${var.project_key}-bastion-security-group"
   description = "Allow SSH/RDS access"
   vpc_id      = "${var.vpc_id}"

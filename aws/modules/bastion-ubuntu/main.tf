@@ -8,10 +8,10 @@ resource "aws_instance" "bastion" {
   key_name                    = "${aws_key_pair.bastion.key_name}"
   instance_type               = "${var.bastion_instance_type}"
   subnet_id                   = "${module.bastion_subnet.ids[0]}"
-  vpc_security_group_ids      = ["${aws_security_group.bastion_sg.id}"]
+  vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
   associate_public_ip_address = "${var.bastion_associate_public_ip_address}"
   tags {
-    Name        = "bastion_master"
+    Name        = "${var.project_key}-bastion"
     Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
