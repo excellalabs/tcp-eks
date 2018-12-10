@@ -12,13 +12,13 @@ data "aws_ami" "jenkins" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["RHEL-7.5_HVM_GA-*"]
+    values = ["amzn-ami-hvm-*-x86_64-gp2"]
   }
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["309956199498"]
+  owners = ["137112412989"]
 }
 
 variable "project_key" {
