@@ -50,7 +50,7 @@ def buildDockerImage(app, gitcommitsha, String toolchain_ecr_url = '') {
 
 def getSSMParam(param) {
   String value = ""
-  while (value != "") {
+  while (value == 'null') {
     value = sh(script: "aws ssm get-parameters --with-decryption --names '${param}' | jq -r '.Parameters[0].Value'", returnStdout:true).trim() 
   }
   return value
