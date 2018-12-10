@@ -24,7 +24,7 @@ IF /I "%1"=="plan" (
 )
 
 IF /I "%1"=="apply" (
-  terraform apply tfplan
+  terraform apply tfplan -auto-approve
 )
 
 IF /I "%1"=="chef" (
@@ -41,7 +41,7 @@ IF /I "%1"=="chef" (
 )
 
 IF /I "%1"=="destroy" (
-  terraform destroy -force 
+  terraform destroy -force -auto-approve
 )
 
 IF /I "%1"=="help" (
@@ -93,5 +93,5 @@ IF NOT EXIST "%1" (
     terraform init 
   )
   terraform plan -out=tfplan
-  terraform apply tfplan
+  terraform apply tfplan -auto-approve
 )
