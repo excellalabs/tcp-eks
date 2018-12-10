@@ -7,9 +7,10 @@ long_description 'Installs/Configures demo'
 version '0.1.0'
 chef_version '>= 14.7.17' if respond_to?(:chef_version)
 
+depends 'git', '~> 9.0.1'
 depends 'java', '~> 3.1.1'
 depends 'jenkins', '~> 6.2.1'
 depends 'docker', '~> 4.6.7'
 depends 'terraform', '~> 2.1.1'
 depends 'postgresql', '~> 2.1.0'
-depends 'git', '~> 9.0.1'
+depends 'poise-python', '~> 1.7.0'

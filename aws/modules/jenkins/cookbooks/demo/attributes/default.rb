@@ -80,3 +80,5 @@ default['jenkins']['seedjob']['branch']['exclude'] = ''
 default['jenkins']['seedjob']['branch']['trigger'] = ''
 
 #default['terraform']['version'] = '0.11.10'
+default['poise-python']['install_python2'] = true
+#default['poise-python']['provider'] = 'system'

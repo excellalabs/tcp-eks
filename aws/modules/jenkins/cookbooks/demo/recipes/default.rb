@@ -2,6 +2,7 @@
 include_recipe 'java'
 include_recipe 'jenkins::master'
 
+include_recipe 'poise-python::default'
 include_recipe 'demo::awscli'
 include_recipe 'demo::docker'
 
