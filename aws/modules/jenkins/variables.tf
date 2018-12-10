@@ -12,13 +12,13 @@ data "aws_ami" "jenkins" {
   most_recent = true
   filter {
     name   = "name"
-    values = ["amzn-ami-hvm-*-x86_64-gp2"]
+    values = ["RHEL-7.5_HVM_GA-*"]
   }
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["137112412989"]
+  owners = ["309956199498"]
 }
 
 variable "project_key" {
@@ -58,9 +58,13 @@ variable "jenkins_key_name" {
 }
 
 variable "jenkins_instance_type" {
- #default = "m5.xlarge"
-  default = "t2.micro"
+  default = "m5.xlarge"
   description = "instance type for jenkins server"
+}
+
+variable "jenkins_instance_user" {
+  default = "ec2-user"
+  description = "The user jenkins should use to access instance"
 }
 
 variable "jenkins_root_volume_type" {
@@ -101,38 +105,38 @@ variable "jenkins_admin_password" {
   description = "jenkins password for admin user"
 }
 
-variable "jenkins_github_ci_user" {
+variable "github_user" {
   description = "The user jenkins should use for github scm checkouts"
 }
 
-variable "jenkins_github_ci_token" {
-  description = "GitHub api token for the 'jenkins_github_ci_user'"
+variable "github_token" {
+  description = "GitHub api token for the 'github_user'"
 }
 
-variable "jenkins_seedjob_repo_owner" {
+variable "github_repo_owner" {
   description = "The github user account that *owns* the repos for which pipelines should be instantiated"
 }
 
-variable "jenkins_seedjob_repo_include" {
+variable "github_repo_include" {
   description = "Repos to include from github owner account"
 }
 
-variable "jenkins_seedjob_repo_exclude" {
+variable "github_repo_exclude" {
   default     = ""
-  description = "Exceptions for the jenkins_seedjob_repo_include pattern"
+  description = "Exceptions for the github_repo_include pattern"
 }
 
-variable "jenkins_seedjob_branch_include" {
+variable "github_branch_include" {
   default     = "master PR-* build-*"
   description = "Branches to include from candidate repos"
 }
 
-variable "jenkins_seedjob_branch_exclude" {
+variable "github_branch_exclude" {
   default     = ""
-  description = "Exceptions for the jenkins_seedjob_branch_include pattern"
+  description = "Exceptions for the github_branch_include pattern"
 }
 
-variable "jenkins_seedjob_branch_trigger" {
+variable "github_branch_trigger" {
   default     = "master"
   description = "Branches to automatically build (of the subset of included branches)"
 }

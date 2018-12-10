@@ -1,5 +1,5 @@
 output "jenkins_master_public_dns" {
-  value = "${aws_instance.jenkins_ubuntu.public_dns}"
+  value = "${aws_instance.jenkins.public_dns}"
 }
 
 output "jenkins_public_subnet_cidrs" {
@@ -7,5 +7,5 @@ output "jenkins_public_subnet_cidrs" {
 }
 
 output "ami_id" {
-  value = "${data.aws_ami.ubuntu.id}"
+  value = "${data.aws_ami.jenkins.id}"
 }

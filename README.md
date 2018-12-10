@@ -49,10 +49,10 @@ jenkins_developer_password = "a good password"
 jenkins_admin_password = "a really good password"
 
 # the user must have access to the repos that should be under ci/cd control
-jenkins_github_ci_user = "your user"
+github_user = "your user"
 
 # the token should have FULL repo access and FULL admin:web_hook access
-jenkins_github_ci_token = "your token"
+github_token = "your token"
 
 # these need to be unique per region
 bastion_key_name = "bastion_master_ssh_key_pair_YOURNAME"
@@ -67,8 +67,8 @@ db_identifier = "pg-bench-db1"
 
 # Leave these alone
 aws_authenticator_role = "eks-iam-authenticator-role"
-jenkins_seedjob_repo_owner = "excellaco"
-jenkins_seedjob_repo_include = "bench-infrastructure bench-tc-react bench-tc-ruby bench-tc-java"
+github_repo_owner = "excellaco"
+github_repo_include = "bench-infrastructure bench-tc-react bench-tc-ruby bench-tc-java"
 ```
 
 This is used by both of the jenkins and eks terraform modules.

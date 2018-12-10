@@ -6,16 +6,16 @@ data "template_file" "chef" {
     aws_secret_access_key          = "${var.aws_secret_key}"
     aws_region                     = "${data.aws_region.current.name}"
     jenkins_email                  = "${var.aws_email}"
-    jenkins_github_ci_user         = "${var.jenkins_github_ci_user}"
-    jenkins_github_ci_token        = "${var.jenkins_github_ci_token}"
+    jenkins_github_ci_user         = "${var.github_user}"
+    jenkins_github_ci_token        = "${var.github_token}"
     jenkins_developer_password     = "${var.jenkins_developer_password}"
     jenkins_admin_password         = "${var.jenkins_admin_password}"
-    jenkins_seedjob_branch_include = "${var.jenkins_seedjob_branch_include}"
-    jenkins_seedjob_branch_exclude = "${var.jenkins_seedjob_branch_exclude}"
-    jenkins_seedjob_branch_trigger = "${var.jenkins_seedjob_branch_trigger}"
-    jenkins_seedjob_repo_include   = "${var.jenkins_seedjob_repo_include}"
-    jenkins_seedjob_repo_exclude   = "${var.jenkins_seedjob_repo_exclude}"
-    jenkins_seedjob_repo_owner     = "${var.jenkins_seedjob_repo_owner}"
+    jenkins_seedjob_branch_include = "${var.github_branch_include}"
+    jenkins_seedjob_branch_exclude = "${var.github_branch_exclude}"
+    jenkins_seedjob_branch_trigger = "${var.github_branch_trigger}"
+    jenkins_seedjob_repo_include   = "${var.github_repo_include}"
+    jenkins_seedjob_repo_exclude   = "${var.github_repo_exclude}"
+    jenkins_seedjob_repo_owner     = "${var.github_repo_owner}"
   }
 }
 
@@ -53,7 +53,7 @@ resource "aws_instance" "jenkins" {
     Environment = "${var.environment}"
   }
   connection {
-    user        = "ec2-user"
+    user        = "${var.jenkins_instance_user}"
     private_key = "${file(var.jenkins_private_key_path)}"
   }
   provisioner "file" {

@@ -125,28 +125,28 @@ variable "jenkins_admin_password" {
   description = "jenkins password for admin user"
 }
 
-variable "jenkins_github_ci_user" {
+variable "github_user" {
   description = "The user jenkins should use for github scm checkouts"
 }
 
-variable "jenkins_github_ci_token" {
-  description = "GitHub api token for the 'jenkins_github_ci_user'"
+variable "github_token" {
+  description = "GitHub api token for the 'github_user'"
 }
 
-variable "jenkins_seedjob_repo_owner" {
+variable "github_repo_owner" {
   description = "The github user account that *owns* the repos for which pipelines should be instantiated"
 }
 
-variable "jenkins_seedjob_repo_include" {
+variable "github_repo_include" {
   description = "Repos to include from github owner account"
 }
 
-variable "jenkins_seedjob_branch_include" {
+variable "github_branch_include" {
   default     = "master PR-* build-*"
   description = "Branches to include from candidate repos"
 }
 
-variable "jenkins_seedjob_branch_trigger" {
+variable "github_branch_trigger" {
   default     = "master"
   description = "Branches to automatically build (of the subset of included branches)"
 }

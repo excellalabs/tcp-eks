@@ -16,7 +16,7 @@ resource "aws_route" "public_igw_route" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
-resource "aws_security_group" "jenkins_sg" {
+resource "aws_security_group" "jenkins" {
   name        = "${var.project_key}-jenkins-security-group"
   description = "Allow SSH/HTTP"
   vpc_id      = "${var.vpc_id}"
