@@ -239,25 +239,7 @@ variable "write_kubeconfig" {
 
 variable "manage_aws_auth" {
   description = "Whether to write and apply the aws-auth configmap file."
-  default     = false
-}
-
-variable "map_accounts" {
-  description = "Additional AWS account numbers to add to the aws-auth configmap."
-  type        = "list"
-  default     = []
-}
-
-variable "map_roles" {
-  description = "Additional IAM roles to add to the aws-auth configmap."
-  type        = "list"
-  default     = []
-}
-
-variable "map_users" {
-  description = "Additional IAM users to add to the aws-auth configmap."
-  type        = "list"
-  default     = []
+  default     = true
 }
 
 variable "kubeconfig_aws_auth_command" {
@@ -281,11 +263,6 @@ variable "kubeconfig_aws_auth_env_variables" {
   description = "Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = \"eks\"}."
   type        = "map"
   default     = {}
-}
-
-variable "kubeconfig_name" {
-  description = "Override the default name used for items kubeconfig."
-  default     = ""
 }
 
 variable "pre_userdata" {

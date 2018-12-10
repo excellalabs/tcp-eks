@@ -40,17 +40,17 @@ output "kubeconfig" {
 
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
-  value       = "${aws_autoscaling_group.workers.*.arn}"
+  value       = "${aws_autoscaling_group.cluster.*.arn}"
 }
 
 output "workers_asg_names" {
   description = "Names of the autoscaling groups containing workers."
-  value       = "${aws_autoscaling_group.workers.*.id}"
+  value       = "${aws_autoscaling_group.cluster.*.id}"
 }
 
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
-  value       = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
+  value       = "${coalesce(join("", aws_security_group.cluster-node.*.id), var.worker_security_group_id)}"
 }
 
 output "worker_iam_role_name" {
@@ -61,10 +61,6 @@ output "worker_iam_role_name" {
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
   value       = "${aws_iam_role.workers.arn}"
-}
-
-output "default_alb_target_group" {
-  value = "${module.alb.default_alb_target_group}"
 }
 
 output "public_subnet_ids" {
@@ -86,17 +82,6 @@ resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
   name      = "${var.environment}_cluster_private_subnet_cidrs"
   type      = "String"
   value     = "${join(",", var.private_subnet_cidrs)}"
-  overwrite = true
-}
-
-output "cluster_default_iam_role_arn" {
-  value = "${aws_iam_role.cluster_default_task.arn}"
-}
-
-resource "aws_ssm_parameter" "cluster_default_task_role" {
-  name      = "${var.environment}_cluster_task_role_arn"
-  type      = "String"
-  value     = "${aws_iam_role.cluster_default_task.arn}"
   overwrite = true
 }
 

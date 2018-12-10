@@ -1,7 +1,3 @@
-output "alb_target_group" {
-  value = "${module.eks-cluster.default_alb_target_group}"
-}
-
 resource "aws_ssm_parameter" "project_key" {
   name      = "project_key"
   type      = "String"

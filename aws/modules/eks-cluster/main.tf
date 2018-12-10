@@ -1,21 +1,19 @@
 resource "aws_eks_cluster" "cluster" {
   name     = "${var.environment}-${var.cluster_name}"
-  role_arn = "${aws_iam_role.cluster.arn}"
+  role_arn = "${aws_iam_role.cluster-role.arn}"
   version  = "${var.cluster_version}"
 
   vpc_config {
     security_group_ids = ["${aws_security_group.cluster.id}"]
     subnet_ids         = ["${module.network.public_subnet_ids}"]
   }
-
   timeouts {
     create = "${var.cluster_create_timeout}"
     delete = "${var.cluster_delete_timeout}"
   }
-
   depends_on = [
-    "aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy",
-    "aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy",
+    "aws_iam_role_policy_attachment.cluster-AmazonEKSClusterPolicy",
+    "aws_iam_role_policy_attachment.cluster-AmazonEKSServicePolicy",
   ]
 }
 
@@ -30,14 +28,12 @@ resource "aws_security_group" "cluster" {
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   tags {
     Name        = "${var.environment}-${var.cluster_name}-cluster-sg"
     Project     = "${var.cluster_name}"
@@ -76,7 +72,7 @@ module "network" {
   depends_id           = ""
   aws_email            = "${var.aws_email}"
 }
-
+/*
 module "alb" {
   source = "../alb"
 
@@ -87,7 +83,7 @@ module "alb" {
   public_subnet_ids = "${module.network.public_subnet_ids}"
   aws_email          = "${var.aws_email}"
 }
-/*
+
 resource "aws_security_group_rule" "alb_to_cluster" {
   type                     = "ingress"
   from_port                = 32768

@@ -1,10 +1,9 @@
-resource "aws_autoscaling_group" "workers" {
-  name_prefix           = "${aws_eks_cluster.cluster.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+resource "aws_autoscaling_group" "cluster" {
+  name                 = "${aws_eks_cluster.cluster.name}-asg"
   desired_capacity      = "${var.desired_capacity}"
   max_size              = "${var.max_size}"
   min_size              = "${var.min_size}"
-  target_group_arns     = ["${var.target_group_arns}"]
-  launch_configuration  = "${element(aws_launch_configuration.workers.*.id, count.index)}"
+  launch_configuration = "${aws_launch_configuration.cluster.id}"
   vpc_zone_identifier   = ["${module.network.private_subnet_ids}"]
   protect_from_scale_in = "${var.protect_from_scale_in}"
   suspended_processes   = ["${var.suspended_processes}"]
@@ -50,20 +49,14 @@ resource "aws_autoscaling_group" "workers" {
   }
 }
 
-resource "aws_launch_configuration" "workers" {
-  name_prefix                 = "${aws_eks_cluster.cluster.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
-  associate_public_ip_address = "${var.public_ip_associated}"
-  security_groups             = ["${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"]
-  iam_instance_profile        = "${element(aws_iam_instance_profile.workers.*.id, count.index)}"
-  image_id                    = "${data.aws_ami.eks_worker.id}"
+resource "aws_launch_configuration" "cluster" {
+  associate_public_ip_address = true
+  iam_instance_profile        = "${aws_iam_instance_profile.cluster-node.name}"
+  image_id                    = "${data.aws_ami.eks-worker.id}"
   instance_type               = "${var.instance_type}"
-  key_name                    = "${var.key_name}"
-  user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
-  ebs_optimized               = "${var.ebs_optimized}"
-  enable_monitoring           = "${var.enable_monitoring}"
-  spot_price                  = "${var.spot_price}"
-  placement_tenancy           = "${var.placement_tenancy}"
-  count                       = "${var.worker_group_count}"
+  name_prefix                 = "${var.cluster_name}-cluster"
+  security_groups             = ["${aws_security_group.cluster-node.id}"]
+  user_data_base64            = "${base64encode(local.cluster-node-userdata)}"
 
   lifecycle {
     create_before_destroy = true
@@ -77,61 +70,57 @@ resource "aws_launch_configuration" "workers" {
   }
 }
 
-resource "aws_security_group" "workers" {
-  name_prefix = "${aws_eks_cluster.cluster.name}"
+resource "aws_security_group" "cluster-node" {
+  name        = "${var.cluster_name}-cluster-node-security-group"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
-  count       = "${var.worker_security_group_id == "" ? 1 : 0}"
-  tags {
-    Name        = "${var.environment}-${var.cluster_name}-cluster-worker-sg"
-    Project     = "${var.cluster_name}"
-    Creator     = "${var.aws_email}"
-    Environment = "${var.environment}"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = "${
+    map(
+     "Name", "${var.environment}-${var.cluster_name}-cluster-node-sg",
+     "Project", "${var.cluster_name}",
+     "Creator", "${var.aws_email}",
+     "Environment", "${var.environment}",
+     "kubernetes.io/cluster/${var.cluster_name}", "owned",
+    )
+  }"
 }
 
-resource "aws_security_group_rule" "workers_egress_internet" {
-  description       = "Allow nodes all egress to the Internet"
-  protocol          = "-1"
-  security_group_id = "${aws_security_group.workers.id}"
-  cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = 0
-  to_port           = 0
-  type              = "egress"
-  count             = "${var.worker_security_group_id == "" ? 1 : 0}"
-}
-
-resource "aws_security_group_rule" "workers_ingress_self" {
+resource "aws_security_group_rule" "cluster-node-ingress-self" {
   description              = "Allow node to communicate with each other"
-  protocol                 = "-1"
-  security_group_id        = "${aws_security_group.workers.id}"
-  source_security_group_id = "${aws_security_group.workers.id}"
   from_port                = 0
+  protocol                 = "-1"
+  security_group_id        = "${aws_security_group.cluster-node.id}"
+  source_security_group_id = "${aws_security_group.cluster-node.id}"
   to_port                  = 65535
   type                     = "ingress"
-  count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
 
-resource "aws_security_group_rule" "workers_ingress_cluster" {
-  description              = "Allow workers Kubelets and pods to receive communication from the cluster control plane"
+resource "aws_security_group_rule" "cluster-node-ingress" {
+  description              = "Allow worker Kubelets and pods to receive communication from the cluster control plane"
+  from_port                = 1025
   protocol                 = "tcp"
-  security_group_id        = "${aws_security_group.workers.id}"
-  source_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
-  from_port                = "${var.worker_sg_ingress_from_port}"
+  security_group_id        = "${aws_security_group.cluster-node.id}"
+  source_security_group_id = "${aws_security_group.cluster.id}"
   to_port                  = 65535
   type                     = "ingress"
-  count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
 
-resource "aws_security_group_rule" "workers_ingress_cluster_https" {
-  description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
-  protocol                 = "tcp"
-  security_group_id        = "${aws_security_group.workers.id}"
-  source_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
+# Worker Node Access to EKS Master Cluster
+resource "aws_security_group_rule" "cluster-ingress-node-https" {
+  description              = "Allow pods to communicate with the cluster API Server"
   from_port                = 443
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.cluster.id}"
+  source_security_group_id = "${aws_security_group.cluster-node.id}"
   to_port                  = 443
   type                     = "ingress"
-  count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_iam_role" "workers" {

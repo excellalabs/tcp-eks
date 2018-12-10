@@ -1,21 +1,6 @@
-resource "aws_iam_role" "cluster" {
-  name_prefix        = "${var.cluster_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.cluster_assume_role_policy.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = "${aws_iam_role.cluster.name}"
-}
-
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = "${aws_iam_role.cluster.name}"
-}
-
-resource "aws_iam_role" "cluster_default_task" {
-  name = "${var.environment}-${var.cluster_name}-task"
-  path = "/eks/"
+# EKS Cluster IAM Role
+resource "aws_iam_role" "cluster-role" {
+  name = "${var.cluster_name}-cluster-role"
 
   assume_role_policy = <<POLICY
 {
@@ -33,7 +18,7 @@ resource "aws_iam_role" "cluster_default_task" {
 POLICY
 }
 
-data "template_file" "policy" {
+data "template_file" "cluster-policy" {
   template = <<POLICY
 {
   "Version": "2012-10-17",
@@ -95,20 +80,48 @@ POLICY
 
   vars {
     account_id  = "${data.aws_caller_identity.current.account_id}"
-    prefix      = "${var.cluster_name}/${var.environment}/"
+    prefix      = "${var.cluster_name}/${data.aws_region.current.name}/"
     aws_region  = "${data.aws_region.current.name}"
     kms_key_arn = "${aws_kms_key.secrets.arn}"
   }
 }
 
-resource "aws_iam_policy" "cluster_default_task" {
-  name   = "${var.environment}-${var.cluster_name}-cluster-task"
-  path   = "/"
-  policy = "${data.template_file.policy.rendered}"
+# Worker Node IAM Role and Instance Profile
+resource "aws_iam_role" "cluster-node" {
+  name = "${var.cluster_name}-cluster-node-role"
+
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
 }
 
-resource "aws_iam_policy_attachment" "cluster_default_task" {
-  name       = "${var.environment}-${var.cluster_name}-cluster-task"
-  roles      = ["${aws_iam_role.cluster_default_task.name}"]
-  policy_arn = "${aws_iam_policy.cluster_default_task.arn}"
+resource "aws_iam_role_policy_attachment" "cluster-node-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = "${aws_iam_role.cluster-node.name}"
+}
+
+resource "aws_iam_role_policy_attachment" "cluster-node-AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = "${aws_iam_role.cluster-node.name}"
+}
+
+resource "aws_iam_role_policy_attachment" "cluster-node-AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = "${aws_iam_role.cluster-node.name}"
+}
+
+resource "aws_iam_instance_profile" "cluster-node" {
+  name = "${var.cluster_name}-cluster-node-profile"
+  role = "${aws_iam_role.cluster-node.name}"
 }
