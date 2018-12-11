@@ -126,17 +126,17 @@ resource "aws_cloudwatch_log_group" "cluster" {
   retention_in_days = 7
 }
 
-resource "aws_kms_key" "secrets" {
-  description = "master encryption key for dev, staging, and prod secrets"
+resource "aws_kms_key" "cluster" {
+  description = "master encryption key for dev, staging, and prod cluster"
 }
 
-resource "aws_kms_alias" "secrets" {
-  name          = "alias/${var.cluster_name}/${var.environment}/secrets"
-  target_key_id = "${aws_kms_key.secrets.key_id}"
+resource "aws_kms_alias" "cluster" {
+  name          = "alias/${var.cluster_name}/${var.environment}/cluster"
+  target_key_id = "${aws_kms_key.cluster.key_id}"
 }
 
-resource "aws_s3_bucket" "secrets" {
-  bucket = "${var.cluster_name}-${var.environment}-secrets"
+resource "aws_s3_bucket" "cluster" {
+  bucket = "${var.cluster_name}-${var.environment}"
   acl    = "private"
 
   force_destroy = true
@@ -147,13 +147,13 @@ resource "aws_s3_bucket" "secrets" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = "${aws_kms_key.secrets.arn}"
+        kms_master_key_id = "${aws_kms_key.cluster.arn}"
         sse_algorithm     = "aws:kms"
       }
     }
   }
   tags {
-    Name        = "${var.cluster_name}-${var.environment}-secrets"
+    Name        = "${var.cluster_name}-${var.environment}"
     Project     = "${var.cluster_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"

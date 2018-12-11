@@ -82,7 +82,7 @@ POLICY
     account_id  = "${data.aws_caller_identity.current.account_id}"
     prefix      = "${var.cluster_name}/${data.aws_region.current.name}/"
     aws_region  = "${data.aws_region.current.name}"
-    kms_key_arn = "${aws_kms_key.secrets.arn}"
+    kms_key_arn = "${aws_kms_key.cluster.arn}"
   }
 }
 

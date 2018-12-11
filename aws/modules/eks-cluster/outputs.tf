@@ -67,8 +67,8 @@ output "public_subnet_ids" {
   value = "${module.network.public_subnet_ids}"
 }
 
-output "secrets_kms_key_id" {
-  value = "${aws_kms_key.secrets.key_id}"
+output "cluster_kms_key_id" {
+  value = "${aws_kms_key.cluster.key_id}"
 }
 
 resource "aws_ssm_parameter" "cluster_id" {
@@ -85,9 +85,9 @@ resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
   overwrite = true
 }
 
-resource "aws_ssm_parameter" "secrets_bucket" {
-  name      = "${var.cluster_name}_${var.environment}_secrets_bucket"
+resource "aws_ssm_parameter" "cluster_bucket" {
+  name      = "${var.cluster_name}-${var.environment}"
   type      = "String"
-  value     = "${aws_s3_bucket.secrets.bucket}"
+  value     = "${aws_s3_bucket.cluster.bucket}"
   overwrite = true
 }
