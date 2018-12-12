@@ -241,6 +241,52 @@ variable "manage_aws_auth" {
   description = "Whether to write and apply the aws-auth configmap file."
   default     = true
 }
+variable "map_accounts" {
+  description = "Additional AWS account numbers to add to the aws-auth configmap."
+  type        = "list"
+  default     = []
+}
+variable "map_roles" {
+  description = "Additional IAM roles to add to the aws-auth configmap."
+  type        = "list"
+  default     = []
+}
+variable "map_users" {
+  description = "Additional IAM users to add to the aws-auth configmap."
+  type        = "list"
+  default = [
+    {
+      user_arn = "arn:aws:iam::090999229429:user/josh.phillips@excella.com"
+      username = "josh"
+      group    = "system:masters"
+    },
+    {
+      user_arn = "arn:aws:iam::090999229429:user/mahshadul.alam@excella.com"
+      username = "mahshad"
+      group    = "system:masters"
+    },
+    {
+      user_arn = "arn:aws:iam::090999229429:user/wyn.vandevanter@excella.com"
+      username = "wyn"
+      group    = "system:masters"
+    },
+    {
+      user_arn = "arn:aws:iam::090999229429:user/brenden.alexis-robinson@excella.com"
+      username = "brenden"
+      group    = "system:masters"
+    },
+    {
+      user_arn = "arn:aws:iam::090999229429:user/walter.carlson@excella.com"
+      username = "walter"
+      group    = "system:masters"
+    },
+    {
+      user_arn = "arn:aws:iam::090999229429:user/craig.davies@excella.com"
+      username = "craig"
+      group    = "system:masters"
+    },
+  ]
+}
 
 variable "kubeconfig_aws_auth_command" {
   description = "Command to use to to fetch AWS EKS credentials."

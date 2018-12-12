@@ -6,3 +6,8 @@ metadata:
 data:
   mapRoles: |
 ${worker_role_arn}
+${map_roles}
+  mapUsers: |
+${map_users}
+  mapAccounts: |
+${map_accounts}
