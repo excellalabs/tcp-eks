@@ -28,6 +28,10 @@ output "cluster_security_group_id" {
   value       = "${aws_security_group.cluster.*.id}"
 }
 
+output "cluster_kms_key_id" {
+  value = "${aws_kms_key.cluster.key_id}"
+}
+
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this EKS cluster."
   value       = "${data.template_file.config_map_aws_auth.rendered}"
@@ -36,6 +40,31 @@ output "config_map_aws_auth" {
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
   value       = "${data.template_file.kubeconfig.rendered}"
+}
+
+output "public_subnet_ids" {
+  value = "${module.network.public_subnet_ids}"
+}
+
+resource "aws_ssm_parameter" "cluster_id" {
+  name      = "${var.environment}_cluster_id"
+  type      = "String"
+  value     = "${aws_eks_cluster.cluster.id}"
+  overwrite = true
+}
+
+resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
+  name      = "${var.environment}_cluster_private_subnet_cidrs"
+  type      = "String"
+  value     = "${join(",", var.private_subnet_cidrs)}"
+  overwrite = true
+}
+
+resource "aws_ssm_parameter" "cluster_bucket" {
+  name      = "${var.cluster_name}-${var.environment}"
+  type      = "String"
+  value     = "${aws_s3_bucket.cluster.bucket}"
+  overwrite = true
 }
 
 output "workers_asg_arns" {
@@ -61,33 +90,4 @@ output "worker_iam_role_name" {
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
   value       = "${aws_iam_role.workers.arn}"
-}
-
-output "public_subnet_ids" {
-  value = "${module.network.public_subnet_ids}"
-}
-
-output "cluster_kms_key_id" {
-  value = "${aws_kms_key.cluster.key_id}"
-}
-
-resource "aws_ssm_parameter" "cluster_id" {
-  name      = "${var.environment}_cluster_id"
-  type      = "String"
-  value     = "${aws_eks_cluster.cluster.id}"
-  overwrite = true
-}
-
-resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
-  name      = "${var.environment}_cluster_private_subnet_cidrs"
-  type      = "String"
-  value     = "${join(",", var.private_subnet_cidrs)}"
-  overwrite = true
-}
-
-resource "aws_ssm_parameter" "cluster_bucket" {
-  name      = "${var.cluster_name}-${var.environment}"
-  type      = "String"
-  value     = "${aws_s3_bucket.cluster.bucket}"
-  overwrite = true
 }
