@@ -2,8 +2,6 @@ data "aws_availability_zones" "available" {}
 
 variable "account_id" {}
 
-variable "aws_authenticator_role" {}
-
 variable "project_key" {
   description = "prefix for all created resources"
 }

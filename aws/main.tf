@@ -2,13 +2,6 @@ provider "aws" {
   region     = "${var.aws_region}"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
-/*
-  assume_role {
-    role_arn     = "arn:aws:iam::${var.account_id}:role/${var.aws_authenticator_role}"
-   #session_name = "SESSION_NAME"
-   #external_id  = "EXTERNAL_ID"
-  }
-*/
 }
 
 module "vpc" {
@@ -87,9 +80,6 @@ module "eks-cluster" {
   availability_zones = ["${data.aws_availability_zones.available.names[0]}",
     "${data.aws_availability_zones.available.names[1]}",
   ]
-
-  kubeconfig_aws_auth_additional_args = ["-r",
-    "arn:aws:iam::${var.account_id}:role/${var.aws_authenticator_role}"]
 
   max_size         = "${var.max_size}"
   min_size         = "${var.min_size}"

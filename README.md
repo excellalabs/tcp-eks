@@ -66,7 +66,6 @@ db_password = "anothergreatpasswordelse"
 db_identifier = "pg-bench-db1"
 
 # Leave these alone
-aws_authenticator_role = "eks-iam-authenticator-role"
 github_repo_owner = "excellaco"
 github_repo_include = "bench-infrastructure bench-tc-react bench-tc-ruby bench-tc-java"
 ```
