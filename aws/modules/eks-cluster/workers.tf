@@ -124,7 +124,7 @@ resource "aws_security_group_rule" "cluster_ingress_node_https" {
 }
 
 resource "aws_iam_role" "workers" {
-  name_prefix        = "${aws_eks_cluster.cluster.name}"
+  name               = "${aws_eks_cluster.cluster.name}"
   assume_role_policy = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
 }
 
@@ -133,21 +133,6 @@ resource "aws_iam_instance_profile" "workers" {
   role        = "${lookup(var.worker_groups[count.index], "iam_role_id",
                 "${element(concat(aws_iam_role.workers.*.id, list("")), 0)}")}"
   count       = "${var.worker_group_count}"
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = "${aws_iam_role.workers.name}"
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = "${aws_iam_role.workers.name}"
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = "${aws_iam_role.workers.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
