@@ -86,7 +86,7 @@ POLICY
   }
 }
 
-# Worker Node IAM Role and Instance Profile
+# Cluster Node IAM Role and Instance Profile
 resource "aws_iam_role" "cluster_node" {
   name = "${var.cluster_name}-cluster-node-role"
 
