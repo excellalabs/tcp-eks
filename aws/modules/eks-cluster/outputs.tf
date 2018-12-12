@@ -50,7 +50,7 @@ output "workers_asg_names" {
 
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
-  value       = "${coalesce(join("", aws_security_group.cluster-node.*.id), var.worker_security_group_id)}"
+  value       = "${coalesce(join("", aws_security_group.cluster_node.*.id), var.worker_security_group_id)}"
 }
 
 output "worker_iam_role_name" {

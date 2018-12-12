@@ -1,6 +1,6 @@
 resource "aws_eks_cluster" "cluster" {
   name     = "${var.environment}-${var.cluster_name}"
-  role_arn = "${aws_iam_role.cluster-role.arn}"
+  role_arn = "${aws_iam_role.cluster_role.arn}"
   version  = "${var.cluster_version}"
 
   vpc_config {
@@ -12,8 +12,8 @@ resource "aws_eks_cluster" "cluster" {
     delete = "${var.cluster_delete_timeout}"
   }
   depends_on = [
-    "aws_iam_role_policy_attachment.cluster-AmazonEKSClusterPolicy",
-    "aws_iam_role_policy_attachment.cluster-AmazonEKSServicePolicy",
+    "aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy",
+    "aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy",
   ]
 }
 
@@ -102,14 +102,14 @@ module "eks-workers" {
   bastion_cidrs           = "${var.cluster_cidrs}"
   worker_group            = "${var.worker_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
-  aws_ami                 = "${data.aws_ami.eks-worker.id}"
+  aws_ami                 = "${data.aws_ami.eks_worker.id}"
   aws_email               = "${var.aws_email}"
   instance_type           = "${var.instance_type}"
   max_size                = "${var.max_size}"
   min_size                = "${var.min_size}"
   desired_capacity        = "${var.desired_capacity}"
   vpc_id                  = "${var.vpc_id}"
-  iam_instance_profile_id = "${aws_iam_instance_profile.cluster-node.id}"
+  iam_instance_profile_id = "${aws_iam_instance_profile.cluster_node.id}"
   key_name                = "${var.key_name}"
   load_balancers          = "${var.load_balancers}"
   depends_id              = "${module.network.depends_id}"

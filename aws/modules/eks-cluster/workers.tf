@@ -51,12 +51,12 @@ resource "aws_autoscaling_group" "cluster" {
 
 resource "aws_launch_configuration" "cluster" {
   associate_public_ip_address = true
-  iam_instance_profile        = "${aws_iam_instance_profile.cluster-node.name}"
-  image_id                    = "${data.aws_ami.eks-worker.id}"
+  iam_instance_profile        = "${aws_iam_instance_profile.cluster_node.name}"
+  image_id                    = "${data.aws_ami.eks_worker.id}"
   instance_type               = "${var.instance_type}"
   name_prefix                 = "${var.cluster_name}-cluster"
-  security_groups             = ["${aws_security_group.cluster-node.id}"]
-  user_data_base64            = "${base64encode(local.cluster-node-userdata)}"
+  security_groups             = ["${aws_security_group.cluster_node.id}"]
+  user_data_base64            = "${base64encode(local.cluster_node_userdata)}"
 
   lifecycle {
     create_before_destroy = true
@@ -70,7 +70,7 @@ resource "aws_launch_configuration" "cluster" {
   }
 }
 
-resource "aws_security_group" "cluster-node" {
+resource "aws_security_group" "cluster_node" {
   name        = "${var.cluster_name}-cluster-node-security-group"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
@@ -92,33 +92,33 @@ resource "aws_security_group" "cluster-node" {
   }"
 }
 
-resource "aws_security_group_rule" "cluster-node-ingress-self" {
+resource "aws_security_group_rule" "cluster_node_ingress_self" {
   description              = "Allow node to communicate with each other"
   from_port                = 0
   protocol                 = "-1"
-  security_group_id        = "${aws_security_group.cluster-node.id}"
-  source_security_group_id = "${aws_security_group.cluster-node.id}"
+  security_group_id        = "${aws_security_group.cluster_node.id}"
+  source_security_group_id = "${aws_security_group.cluster_node.id}"
   to_port                  = 65535
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "cluster-node-ingress" {
+resource "aws_security_group_rule" "cluster_node_ingress" {
   description              = "Allow worker Kubelets and pods to receive communication from the cluster control plane"
   from_port                = 1025
   protocol                 = "tcp"
-  security_group_id        = "${aws_security_group.cluster-node.id}"
+  security_group_id        = "${aws_security_group.cluster_node.id}"
   source_security_group_id = "${aws_security_group.cluster.id}"
   to_port                  = 65535
   type                     = "ingress"
 }
 
 # Worker Node Access to EKS Master Cluster
-resource "aws_security_group_rule" "cluster-ingress-node-https" {
+resource "aws_security_group_rule" "cluster_ingress_node_https" {
   description              = "Allow pods to communicate with the cluster API Server"
   from_port                = 443
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.cluster.id}"
-  source_security_group_id = "${aws_security_group.cluster-node.id}"
+  source_security_group_id = "${aws_security_group.cluster_node.id}"
   to_port                  = 443
   type                     = "ingress"
 }

@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "aws_ami" "eks-worker" {
+data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
     values = ["amazon-eks-node-v*"]
@@ -58,7 +58,7 @@ data "template_file" "worker_role_arns" {
   template = "${file("${path.module}/templates/worker-role.tpl")}"
 
   vars {
-    worker_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${element(aws_iam_instance_profile.cluster-node.*.role, count.index)}"
+    worker_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${element(aws_iam_instance_profile.cluster_node.*.role, count.index)}"
   }
 }
 
@@ -100,7 +100,7 @@ EOF
 }
 
 locals {
-  cluster-node-userdata = <<USERDATA
+  cluster_node_userdata = <<USERDATA
 #!/bin/bash
 set -o xtrace
 /etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.cluster.endpoint}' --b64-cluster-ca '${aws_eks_cluster.cluster.certificate_authority.0.data}' '${var.cluster_name}'
