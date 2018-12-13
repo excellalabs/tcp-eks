@@ -31,7 +31,7 @@ resource "aws_nat_gateway" "nat" {
     Name        = "${var.name}-nat-gateway"
     Project     = "${var.name}"
     Creator     = "${var.aws_email}"
-	Environment = "${var.environment}"
+    Environment = "${var.environment}"
   }
 }
 
