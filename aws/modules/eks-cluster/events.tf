@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "cluster_events" {
-  name = "cluster_events_${var.environment}_${var.cluster_name}"
+  name = "${var.cluster_name}-events"
 }
 
 data "template_file" "cluster_task_stopped" {

@@ -63,9 +63,10 @@ module "eks-cluster" {
   source = "modules/eks-cluster"
 
   environment          = "${var.environment}"
+  project_key          = "${var.project_key}"
   vpc_id               = "${module.vpc.id}"
   vpc_igw              = "${module.vpc.igw}"
-  cluster_name         = "${var.project_key}"
+  cluster_name         = "${var.project_key}-${var.environment}-cluster"
   cloudwatch_prefix    = "${var.project_key}/${var.environment}"
   cluster_cidrs        = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
   public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
@@ -90,7 +91,7 @@ module "eks-cluster" {
 
 resource "aws_key_pair" "cluster" {
   key_name   = "${var.cluster_key_name}"
-  public_key = "${file("${path.module}/../keys/cluster.pub")}"
+  public_key = "${file("${path.module}/../keys/${var.cluster_key_name}.pub")}"
 }
 
 resource "aws_s3_bucket" "terraform-state-storage-s3" {

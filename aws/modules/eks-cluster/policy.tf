@@ -1,12 +1,12 @@
 # Cluster IAM Policy
 resource "aws_iam_policy" "cluster_policy" {
-  name   = "${var.cluster_name}-cluster-policy"
+  name   = "${var.cluster_name}-policy"
   path   = "/"
   policy = "${data.template_file.cluster_policy.rendered}"
 }
 
 resource "aws_iam_policy_attachment" "cluster_policy_attachment" {
-  name       = "${var.cluster_name}-cluster-policy-attachment"
+  name       = "${var.cluster_name}-policy-attachment"
   roles      = ["${aws_iam_role.cluster_role.name}"]
   policy_arn = "${aws_iam_policy.cluster_policy.arn}"
 }

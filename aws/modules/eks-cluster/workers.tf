@@ -71,7 +71,7 @@ resource "aws_launch_configuration" "cluster" {
 }
 
 resource "aws_security_group" "cluster_node" {
-  name        = "${var.cluster_name}-cluster-node-security-group"
+  name        = "${aws_eks_cluster.cluster.name}-node-security-group"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
 
@@ -83,8 +83,8 @@ resource "aws_security_group" "cluster_node" {
   }
   tags = "${
     map(
-     "Name", "${var.environment}-${var.cluster_name}-cluster-node-sg",
-     "Project", "${var.cluster_name}",
+     "Name", "${aws_eks_cluster.cluster.name}-node-sg",
+     "Project", "${var.project_key}",
      "Creator", "${var.aws_email}",
      "Environment", "${var.environment}",
      "kubernetes.io/cluster/${var.cluster_name}", "owned",
@@ -141,7 +141,7 @@ resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
-  name_prefix = "${aws_eks_cluster.cluster.name}-cluster-worker-autoscaling"
+  name_prefix = "${aws_eks_cluster.cluster.name}-worker-autoscaling"
   description = "Cluster Worker Node AutoScaling Policy"
   policy      = "${data.aws_iam_policy_document.worker_autoscaling.json}"
 }

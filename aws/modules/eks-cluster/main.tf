@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "cluster" {
-  name     = "${var.environment}-${var.cluster_name}"
+  name     = "${var.cluster_name}"
   role_arn = "${aws_iam_role.cluster_role.arn}"
   version  = "${var.cluster_version}"
 
@@ -18,7 +18,7 @@ resource "aws_eks_cluster" "cluster" {
 }
 
 resource "aws_security_group" "cluster" {
-  name        = "${var.environment}-${var.cluster_name}-cluster-sg"
+  name        = "${var.cluster_name}-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = "${var.vpc_id}"
 
@@ -35,8 +35,8 @@ resource "aws_security_group" "cluster" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.environment}-${var.cluster_name}-cluster-sg"
-    Project     = "${var.cluster_name}"
+    Name        = "${var.cluster_name}-sg"
+    Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -45,7 +45,7 @@ resource "aws_security_group" "cluster" {
 module "rds" {
   source = "../rds"
 
-  project_key        = "${var.cluster_name}"
+  project_key        = "${var.project_key}"
   environment        = "${var.environment}"
   aws_region         = "${data.aws_region.current.name}"
   db_subnet_cidrs    = "${var.db_subnet_cidrs}"
@@ -78,7 +78,7 @@ module "alb" {
 
   cluster_name      = "${var.cluster_name}"
   environment       = "${var.environment}"
-  alb_name          = "${var.environment}-${var.cluster_name}"
+  alb_name          = "${var.project_key}"
   vpc_id            = "${var.vpc_id}"
   public_subnet_ids = "${module.network.public_subnet_ids}"
   aws_email          = "${var.aws_email}"
@@ -98,7 +98,7 @@ module "eks-workers" {
 
   environment             = "${var.environment}"
   cluster_name            = "${aws_eks_cluster.cluster.name}"
-  worker_name             = "${var.environment}-${var.cluster_name}"
+  worker_name             = "${var.cluster_name}"
   bastion_cidrs           = "${var.cluster_cidrs}"
   worker_group            = "${var.worker_group}"
   private_subnet_ids      = "${module.network.private_subnet_ids}"
@@ -136,7 +136,7 @@ resource "aws_kms_alias" "cluster" {
 }
 
 resource "aws_s3_bucket" "cluster" {
-  bucket = "${var.cluster_name}-${var.environment}"
+  bucket = "${var.cluster_name}"
   acl    = "private"
 
   force_destroy = true
@@ -153,8 +153,8 @@ resource "aws_s3_bucket" "cluster" {
     }
   }
   tags {
-    Name        = "${var.cluster_name}-${var.environment}"
-    Project     = "${var.cluster_name}"
+    Name        = "${var.cluster_name}"
+    Project     = "${var.project_key}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
