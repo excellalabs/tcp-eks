@@ -2,8 +2,8 @@ resource "aws_vpc" "vpc" {
   cidr_block           = "${var.cidr}"
   enable_dns_hostnames = true
   tags {
-    Name    = "${var.cluster}-vpc"
-    Project = "${var.cluster}"
+    Name    = "${var.name}-vpc"
+    Project = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -12,8 +12,8 @@ resource "aws_vpc" "vpc" {
 resource "aws_internet_gateway" "vpc" {
   vpc_id = "${aws_vpc.vpc.id}"
   tags {
-    Name    = "${var.cluster}-igw"
-    Project = "${var.cluster}"
+    Name    = "${var.name}-igw"
+    Project = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -38,8 +38,8 @@ resource "aws_security_group" "internal" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.cluster}-internal-security-group"
-    Project     = "${var.cluster}"
+    Name        = "${var.name}-internal-security-group"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -63,8 +63,8 @@ resource "aws_security_group" "ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.cluster}-ssh-security-group"
-    Project     = "${var.cluster}"
+    Name        = "${var.name}-ssh-security-group"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

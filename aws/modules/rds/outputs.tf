@@ -1,7 +1,7 @@
 resource "aws_kms_key" "db_kms_key" {
   tags {
     Name        = "${lower(var.db_identifier)}-kms-key"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -20,7 +20,7 @@ resource "aws_ssm_parameter" "db_username" {
   overwrite = true
   tags {
     Name        = "${lower(var.db_identifier)}-db-username"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -34,7 +34,7 @@ resource "aws_ssm_parameter" "db_password" {
   overwrite = true
   tags {
     Name        = "${lower(var.db_identifier)}-db-password"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -43,12 +43,12 @@ resource "aws_ssm_parameter" "db_password" {
 resource "aws_ssm_parameter" "db_name" {
   name      = "db_name"
   type      = "SecureString"
-  value     = "${var.project_key}"
+  value     = "${var.name}"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {
     Name        = "${lower(var.db_identifier)}-db-name"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -62,7 +62,7 @@ resource "aws_ssm_parameter" "db_identifier" {
   overwrite = true
   tags {
     Name        = "${lower(var.db_identifier)}-db-identified"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -71,12 +71,12 @@ resource "aws_ssm_parameter" "db_identifier" {
 resource "aws_ssm_parameter" "db_subnet_group" {
   name      = "db_subnet_group"
   type      = "SecureString"
-  value     = "${var.project_key}-db-subnet-group"
+  value     = "${var.name}-db-subnet-group"
   key_id    = "${aws_kms_key.db_kms_key.key_id}"
   overwrite = true
   tags {
     Name        = "${lower(var.db_identifier)}-db-subnet-group"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -94,7 +94,7 @@ resource "aws_ssm_parameter" "rds_endpoint" {
   overwrite = true
   tags {
     Name        = "${lower(var.db_identifier)}-rds-endpoint"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

@@ -1,7 +1,7 @@
-resource "aws_ssm_parameter" "project_key" {
-  name      = "project_key"
+resource "aws_ssm_parameter" "project_name" {
+  name      = "project_name"
   type      = "String"
-  value     = "${var.project_key}"
+  value     = "${var.project_name}"
   overwrite = true
 }
 

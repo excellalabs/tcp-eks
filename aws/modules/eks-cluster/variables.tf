@@ -8,7 +8,7 @@ variable "vpc_igw" {
   description = "The Internet Gateway ID of the VPC"
 }
 
-variable "project_key" {
+variable "name" {
   description = "prefix for all created resources"
 }
 

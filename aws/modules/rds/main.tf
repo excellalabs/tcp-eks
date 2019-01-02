@@ -6,7 +6,7 @@ resource "aws_db_parameter_group" "db_parameter" {
   description = "${var.db_engine} Parameter Group"
   tags {
     Name        = "${lower(var.db_identifier)}-parameter-group"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -18,7 +18,7 @@ resource "aws_kms_key" "rds_encryption_key" {
   enable_key_rotation     = false
   tags {
     Name        = "${lower(var.db_identifier)}-encryption-key"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -61,7 +61,7 @@ resource "aws_db_instance" "sql_database" {
 
   tags {
     Name        = "${lower(var.db_identifier)}"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

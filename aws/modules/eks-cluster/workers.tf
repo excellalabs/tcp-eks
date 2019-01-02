@@ -84,7 +84,7 @@ resource "aws_security_group" "cluster_node" {
   tags = "${
     map(
      "Name", "${aws_eks_cluster.cluster.name}-node-sg",
-     "Project", "${var.project_key}",
+     "Project", "${var.name}",
      "Creator", "${var.aws_email}",
      "Environment", "${var.environment}",
      "kubernetes.io/cluster/${var.cluster_name}", "owned",

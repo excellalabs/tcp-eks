@@ -8,7 +8,7 @@ module "vpc" {
   source = "modules/vpc"
 
   environment = "${var.environment}"
-  cluster     = "${var.project_key}"
+  name        = "${var.project_name}"
   aws_email   = "${var.aws_email}"
   cidr        = "${var.vpc_cidr}"
 }
@@ -20,18 +20,18 @@ module "vpc" {
 module "bastion-ubuntu" {
   source = "modules/bastion-ubuntu"
 
-  vpc_id                         = "${module.vpc.id}"
-  vpc_igw                        = "${module.vpc.igw}"
-  environment                    = "${var.environment}"
-  project_key                    = "${var.project_key}"
-  aws_email                      = "${var.aws_email}"
-  aws_access_key                 = "${var.aws_access_key}"
-  aws_secret_key                 = "${var.aws_secret_key}"
-  bastion_key_name               = "${var.bastion_key_name}"
-  bastion_private_key_path       = "${var.bastion_private_key_path}"
-  bastion_public_key_path        = "${var.bastion_public_key_path}"
-  bastion_cidrs                  = "${var.bastion_cidrs}"
-  availability_zones             = ["${data.aws_availability_zones.available.names[0]}"]
+  vpc_id                   = "${module.vpc.id}"
+  vpc_igw                  = "${module.vpc.igw}"
+  environment              = "${var.environment}"
+  name                     = "${var.project_name}"
+  aws_email                = "${var.aws_email}"
+  aws_access_key           = "${var.aws_access_key}"
+  aws_secret_key           = "${var.aws_secret_key}"
+  bastion_key_name         = "${var.bastion_key_name}"
+  bastion_private_key_path = "${var.bastion_private_key_path}"
+  bastion_public_key_path  = "${var.bastion_public_key_path}"
+  bastion_cidrs            = "${var.bastion_cidrs}"
+  availability_zones       = ["${data.aws_availability_zones.available.names[0]}"]
 }
 
 module "jenkins-ubuntu" {
@@ -40,7 +40,7 @@ module "jenkins-ubuntu" {
   vpc_id                     = "${module.vpc.id}"
   vpc_igw                    = "${module.vpc.igw}"
   environment                = "${var.environment}"
-  project_key                = "${var.project_key}"
+  name                       = "${var.project_name}"
   aws_email                  = "${var.aws_email}"
   aws_access_key             = "${var.aws_access_key}"
   aws_secret_key             = "${var.aws_secret_key}"
@@ -63,11 +63,11 @@ module "eks-cluster" {
   source = "modules/eks-cluster"
 
   environment          = "${var.environment}"
-  project_key          = "${var.project_key}"
+  name                 = "${var.project_name}"
   vpc_id               = "${module.vpc.id}"
   vpc_igw              = "${module.vpc.igw}"
-  cluster_name         = "${var.project_key}-${var.environment}-cluster"
-  cloudwatch_prefix    = "${var.project_key}/${var.environment}"
+  cluster_name         = "${var.project_name}-${var.environment}-cluster"
+  cloudwatch_prefix    = "${var.project_name}/${var.environment}"
   cluster_cidrs        = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
   public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
   private_subnet_cidrs = ["10.0.50.0/24", "10.0.51.0/24"]
@@ -95,7 +95,7 @@ resource "aws_key_pair" "cluster" {
 }
 
 resource "aws_s3_bucket" "terraform-state-storage-s3" {
-  bucket = "${var.project_key}-terraform"
+  bucket = "${var.project_name}-terraform"
   acl    = "private"
 
   force_destroy = true
@@ -105,7 +105,7 @@ resource "aws_s3_bucket" "terraform-state-storage-s3" {
   }
   tags {
     Name        = "S3 Remote Terraform State Store"
-    Project     = "${var.project_key}"
+    Project     = "${var.project_name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

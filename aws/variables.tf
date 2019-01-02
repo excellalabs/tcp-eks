@@ -1,31 +1,45 @@
 data "aws_availability_zones" "available" {}
 
-variable "account_id" {}
+variable "aws_account_id" {
+  type        = "string"
+  default     = "090999229429"
+  description = "AWS Account Identity"
+}
 
-variable "project_key" {
+variable "project_name" {
+  type        = "string"
+  default     = "bench-tc"
   description = "prefix for all created resources"
 }
 
 variable "environment" {
+  type        = "string"
+  default     = "development"
   description = "Environment i.e. production or development"
 }
 
 variable "aws_access_key" {
+  type        = "string"
   default     = ""
   description = "the user aws access key"
 }
 
 variable "aws_secret_key" {
+  type        = "string"
   default     = ""
   description = "the user aws secret key"
 }
 
 variable "aws_email" {
+  type        = "string"
+  default     = ""
   description = "the user email address"
 }
 
 variable "vpc_cidr" {
-  default = "10.0.0.0/16"
+  type        = "string"
+  default     = "10.0.0.0/16"
+  description = "Virtual Private Cloud Classless Inter-Domain Routing"
 }
 
 ## Bastion
@@ -37,19 +51,23 @@ variable "bastion_cidrs" {
 }
 
 variable "bastion_instance_type" {
+  type        = "string"
   default = "t2.micro"
 }
 
 variable "bastion_key_name" {
+  type        = "string"
   description = "the ssh key pair to use for the bastion EC2 instance"
 }
 
 variable "bastion_private_key_path" {
+  type        = "string"
   default     = "../keys/bastion"
   description = "path to ssh private key"
 }
 
 variable "bastion_public_key_path" {
+  type        = "string"
   default     = "../keys/bastion.pub"
   description = "path to ssh public key"
 }
@@ -88,17 +106,26 @@ variable "cluster_key_name" {
   description = "the ssh key pair to use for the EC2 instances making up the cluster"
 }
 
-variable "db_identifier" {}
+variable "db_identifier" {
+  default     = "pg-bench-db"
+  description = "database name"
+}
 
-variable "db_username" {}
+variable "db_username" {
+  default     = "benchtc"
+  description = "database username"
+}
 
-variable "db_password" {}
+variable "db_password" {
+  description = "password for database username"
+}
 
 ## Jenkins
 
 variable "jenkins_cidrs" {
   type    = "list"
   default = ["10.0.103.0/24"]
+  description = "The cidrs that jenkins should reside in"
 }
 
 variable "jenkins_key_name" {

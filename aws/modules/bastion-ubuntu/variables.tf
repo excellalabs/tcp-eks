@@ -24,7 +24,7 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-variable "project_key" {
+variable "name" {
   description = "prefix for all created resources"
 }
 

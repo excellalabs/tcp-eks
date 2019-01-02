@@ -1,7 +1,7 @@
 module "public_subnet" {
   source = "../subnet"
 
-  name               = "${var.project_key}-jenkins-public-subnet"
+  name               = "${var.name}-jenkins-public-subnet"
   environment        = "jenkins"
   aws_email          = "${var.aws_email}"
   vpc_id             = "${var.vpc_id}"
@@ -17,7 +17,7 @@ resource "aws_route" "public_igw_route" {
 }
 
 resource "aws_security_group" "jenkins" {
-  name        = "${var.project_key}-jenkins-security-group"
+  name        = "${var.name}-jenkins-security-group"
   description = "Allow SSH/HTTP"
   vpc_id      = "${var.vpc_id}"
 
@@ -46,8 +46,8 @@ resource "aws_security_group" "jenkins" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.project_key}-jenkins-security-group"
-    Project     = "${var.project_key}"
+    Name        = "${var.name}-jenkins-security-group"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

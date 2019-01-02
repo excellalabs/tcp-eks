@@ -36,7 +36,7 @@ resource "aws_security_group" "cluster" {
   }
   tags {
     Name        = "${var.cluster_name}-sg"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }
@@ -45,7 +45,7 @@ resource "aws_security_group" "cluster" {
 module "rds" {
   source = "../rds"
 
-  project_key        = "${var.project_key}"
+  name               = "${var.name}"
   environment        = "${var.environment}"
   aws_region         = "${data.aws_region.current.name}"
   db_subnet_cidrs    = "${var.db_subnet_cidrs}"
@@ -78,7 +78,7 @@ module "alb" {
 
   cluster_name      = "${var.cluster_name}"
   environment       = "${var.environment}"
-  alb_name          = "${var.project_key}"
+  alb_name          = "${var.name}"
   vpc_id            = "${var.vpc_id}"
   public_subnet_ids = "${module.network.public_subnet_ids}"
   aws_email          = "${var.aws_email}"
@@ -154,7 +154,7 @@ resource "aws_s3_bucket" "cluster" {
   }
   tags {
     Name        = "${var.cluster_name}"
-    Project     = "${var.project_key}"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

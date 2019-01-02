@@ -138,7 +138,7 @@ variable "aws_region" {}
 
 variable "environment" {}
 
-variable "project_key" {}
+variable "name" {}
 
 variable "vpc_id" {}
 

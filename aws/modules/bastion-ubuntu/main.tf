@@ -11,8 +11,8 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = ["${aws_security_group.bastion.id}"]
   associate_public_ip_address = "${var.bastion_associate_public_ip_address}"
   tags {
-    Name        = "${var.project_key}-bastion"
-    Project     = "${var.project_key}"
+    Name        = "${var.name}-bastion"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

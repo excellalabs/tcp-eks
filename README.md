@@ -39,7 +39,7 @@ aws_email = "your email address"
 aws_region = "us-west-2"
 
 # only alpha-numeric and dashes allowed!
-project_key = "something-unique"
+project_name = "something-unique"
 environment = "development"
 
 # no single quotes allowed
@@ -55,13 +55,13 @@ github_user = "your user"
 github_token = "your token"
 
 # these need to be unique per region
-bastion_key_name = "bastion_master_ssh_key_pair_YOURNAME"
-jenkins_key_name = "jenkins_master_ssh_key_pair_YOURNAME"
+bastion_key_name = "bastion_ssh_key_pair_YOURNAME"
+jenkins_key_name = "jenkins_ssh_key_pair_YOURNAME"
 cluster_key_name = "cluster_ssh_key_pair_YOURNAME"
 
 # credentials used to create any application database
 # password must be greater than 8 characters
-db_username = "something"
+db_username = "benchtc"
 db_password = "anothergreatpasswordelse"
 db_identifier = "pg-bench-db1"
 

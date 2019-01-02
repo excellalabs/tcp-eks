@@ -47,8 +47,8 @@ resource "aws_instance" "jenkins" {
     delete_on_termination = "${var.jenkins_root_volume_delete_on_termination}"
   }
   tags {
-    Name        = "${var.project_key}-jenkins"
-    Project     = "${var.project_key}"
+    Name        = "${var.name}-jenkins"
+    Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
   }

@@ -21,7 +21,7 @@ data "aws_ami" "jenkins" {
   owners = ["137112412989"]
 }
 
-variable "project_key" {
+variable "name" {
   description = "prefix for all created resources"
 }
 
