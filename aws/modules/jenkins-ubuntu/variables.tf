@@ -13,7 +13,7 @@ data "aws_ami" "jenkins" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-*-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-*-amd64-server-*"]
   }
 
   filter {
