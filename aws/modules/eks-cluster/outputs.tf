@@ -67,6 +67,13 @@ resource "aws_ssm_parameter" "cluster_bucket" {
   overwrite = true
 }
 
+resource "aws_ssm_parameter" "cluster_role_arn" {
+  name      = "${var.environment}_cluster_role_arn"
+  type      = "String"
+  value     = "${aws_iam_role.cluster_role.arn}"
+  overwrite = true
+}
+
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
   value       = "${aws_autoscaling_group.cluster.*.arn}"
