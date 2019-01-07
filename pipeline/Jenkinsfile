@@ -44,7 +44,7 @@ node("master") {
       timeout(time: 10, unit: 'MINUTES') {
         environment = 'common'
         vars = [
-          project_key: SharedTasks.getSSMParam("project_key"),
+          project_name: SharedTasks.getSSMParam("project_name"),
           app_name: toolchain,
           environment: environment
         ]

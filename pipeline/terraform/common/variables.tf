@@ -1,4 +1,4 @@
-variable "project_key" {}
+variable "project_name" {}
 
 variable "app_name" {}
 

@@ -1,9 +1,9 @@
 
-def createCommonInfrastructure(projectKey, app) {
+def createCommonInfrastructure(projectName, app) {
   environment = 'common'
 
   vars = [
-    project_key: projectKey,
+    project_name: projectName,
     app_name: app,
     environment: environment,
   ]
