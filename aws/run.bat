@@ -5,14 +5,14 @@ reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" 
 
 SET KEY_ROOT="..\keys"
 
-IF NOT EXIST %KEY_ROOT%\bastion (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\bastion
-  ssh-keygen -f %KEY_ROOT%\bastion.pub -t pem -e > %KEY_ROOT%\bastion.pem
+IF NOT EXIST %KEY_ROOT%\bench-tc-bastion (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\bench-tc-bastion
+  ssh-keygen -f %KEY_ROOT%\bench-tc-bastion.pub -t pem -e > %KEY_ROOT%\bench-tc-bastion.pem
 )
 
-IF NOT EXIST %KEY_ROOT%\cluster (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\cluster
-  ssh-keygen -f %KEY_ROOT%\cluster.pub -t pem -e > %KEY_ROOT%\cluster.pem
+IF NOT EXIST %KEY_ROOT%\bench-tc-cluster (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\bench-tc-cluster
+  ssh-keygen -f %KEY_ROOT%\bench-tc-cluster.pub -t pem -e > %KEY_ROOT%\bench-tc-cluster.pem
 )
 
 IF /I "%1"=="init" (

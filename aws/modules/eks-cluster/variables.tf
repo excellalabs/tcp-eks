@@ -18,7 +18,7 @@ variable "environment" {
 
 variable "cluster_name" {
   description = "The name of the cluster"
-  default     = "default"
+  default     = "bench-tc"
 }
 
 variable "cluster_endpoint" {

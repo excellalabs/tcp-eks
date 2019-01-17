@@ -62,13 +62,13 @@ variable "bastion_key_name" {
 
 variable "bastion_private_key_path" {
   type        = "string"
-  default     = "../keys/bastion"
+  default     = "../keys/bench-tc-bastion"
   description = "path to ssh private key"
 }
 
 variable "bastion_public_key_path" {
   type        = "string"
-  default     = "../keys/bastion.pub"
+  default     = "../keys/bench-tc-bastion.pub"
   description = "path to ssh public key"
 }
 
@@ -133,12 +133,12 @@ variable "jenkins_key_name" {
 }
 
 variable "jenkins_private_key_path" {
-  default     = "../keys/jenkins"
+  default     = "../keys/bench-tc-jenkins"
   description = "path to ssh private key"
 }
 
 variable "jenkins_public_key_path" {
-  default     = "../keys/jenkins.pub"
+  default     = "../keys/bench-tc-jenkins.pub"
   description = "path to ssh public key"
 }
 

@@ -131,7 +131,7 @@ resource "aws_kms_key" "cluster" {
 }
 
 resource "aws_kms_alias" "cluster" {
-  name          = "alias/${var.cluster_name}/${var.environment}/cluster"
+  name          = "alias/${var.cluster_name}/${var.environment}/${var.name}-cluster"
   target_key_id = "${aws_kms_key.cluster.key_id}"
 }
 
