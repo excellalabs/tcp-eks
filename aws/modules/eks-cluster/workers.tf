@@ -1,9 +1,9 @@
 resource "aws_autoscaling_group" "cluster" {
-  name                 = "${aws_eks_cluster.cluster.name}-asg"
+  name                  = "${aws_eks_cluster.cluster.name}-asg"
   desired_capacity      = "${var.desired_capacity}"
   max_size              = "${var.max_size}"
   min_size              = "${var.min_size}"
-  launch_configuration = "${aws_launch_configuration.cluster.id}"
+  launch_configuration  = "${aws_launch_configuration.cluster.id}"
   vpc_zone_identifier   = ["${module.network.private_subnet_ids}"]
   protect_from_scale_in = "${var.protect_from_scale_in}"
   suspended_processes   = ["${var.suspended_processes}"]
@@ -51,12 +51,13 @@ resource "aws_autoscaling_group" "cluster" {
 
 resource "aws_launch_configuration" "cluster" {
   associate_public_ip_address = true
-  iam_instance_profile        = "${aws_iam_instance_profile.cluster_node.name}"
-  image_id                    = "${data.aws_ami.eks_worker.id}"
-  instance_type               = "${var.instance_type}"
-  name_prefix                 = "${var.cluster_name}-cluster"
-  security_groups             = ["${aws_security_group.cluster_node.id}"]
-  user_data_base64            = "${base64encode(local.cluster_node_userdata)}"
+
+  iam_instance_profile = "${aws_iam_instance_profile.cluster_node.name}"
+  image_id             = "${data.aws_ami.eks_worker.id}"
+  instance_type        = "${var.instance_type}"
+  name_prefix          = "${var.cluster_name}-cluster"
+  security_groups      = ["${aws_security_group.cluster_node.id}"]
+  user_data_base64     = "${base64encode(local.cluster_node_userdata)}"
 
   lifecycle {
     create_before_destroy = true
