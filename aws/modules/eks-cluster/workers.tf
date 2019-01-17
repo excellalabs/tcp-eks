@@ -25,6 +25,11 @@ resource "aws_autoscaling_group" "cluster" {
     propagate_at_launch = true
   }
   tag {
+    key                 = "Owner"
+    value               = "${var.aws_email}"
+    propagate_at_launch = "true"
+  }
+  tag {
     key                 = "Environment"
     value               = "${var.environment}"
     propagate_at_launch = "true"
@@ -64,9 +69,10 @@ resource "aws_launch_configuration" "cluster" {
   }
 
   root_block_device {
-    volume_size           = "${var.root_volume_size}"
-    volume_type           = "${var.root_volume_type}"
-    iops                  = "${var.root_iops}"
+    volume_size = "${var.root_volume_size}"
+    volume_type = "${var.root_volume_type}"
+    iops        = "${var.root_iops}"
+
     delete_on_termination = true
   }
 }
