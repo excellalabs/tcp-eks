@@ -78,7 +78,7 @@ resource "aws_launch_configuration" "cluster" {
 }
 
 resource "aws_security_group" "cluster_node" {
-  name        = "${aws_eks_cluster.cluster.name}-node-security-group"
+  name        = "${aws_eks_cluster.cluster.name}-node-sg"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
 
@@ -92,7 +92,7 @@ resource "aws_security_group" "cluster_node" {
     map(
      "Name", "${aws_eks_cluster.cluster.name}-node-sg",
      "Project", "${var.name}",
-     "Creator", "${var.aws_email}",
+     "Owner", "${var.aws_email}",
      "Environment", "${var.environment}",
      "kubernetes.io/cluster/${var.cluster_name}", "owned",
     )

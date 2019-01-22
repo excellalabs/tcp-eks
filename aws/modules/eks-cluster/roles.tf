@@ -1,6 +1,6 @@
 # EKS Cluster IAM Role
 resource "aws_iam_role" "cluster_role" {
-  name = "${var.cluster_name}-role"
+  name = "${var.cluster_name}-${var.environment}-cluster-role"
 
   assume_role_policy = <<POLICY
 {
@@ -88,7 +88,7 @@ POLICY
 
 # Cluster Node IAM Role and Instance Profile
 resource "aws_iam_role" "cluster_node" {
-  name = "${var.cluster_name}-${var.environment}-node-role"
+  name = "${var.cluster_name}-${var.environment}-cluster-node-role"
 
   assume_role_policy = <<POLICY
 {
@@ -122,6 +122,6 @@ resource "aws_iam_role_policy_attachment" "cluster_node_AmazonEC2ContainerRegist
 }
 
 resource "aws_iam_instance_profile" "cluster_node" {
-  name = "${var.cluster_name}-node-profile"
+  name = "${var.cluster_name}-${var.environment}-cluster-node-profile"
   role = "${aws_iam_role.cluster_node.name}"
 }
