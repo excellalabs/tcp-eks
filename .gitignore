@@ -1,6 +1,5 @@
 .DS_Store
 
-/**/aws.tf
 /**/.terraform
 /**/.idea
 /**/*.tfstate
@@ -15,6 +14,7 @@
 .idea
 /**/*.iml
 /**/Berksfile.lock
+/**/creds/*
 
 /downloads/*
 .last-built-version
