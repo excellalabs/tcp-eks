@@ -55,10 +55,10 @@ gcloud container clusters list
 ```
 
 This should give you a list of any GKE clusters you have along with version information, status, number of nodes etc. Your output should look similar to this:
-
+```
 NAME        LOCATION       MASTER_VERSION
 gke-cluster europe-west1-b 1.8.10-gke.0
-
+```
 Our cluster looks good! Let us now use gcloud to set up the context for kubectl. You will need to specify the name of your cluster and its location:
 ```
 gcloud container clusters get-credentials gke-cluster --zone=europe-west1-b
