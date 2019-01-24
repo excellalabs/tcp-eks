@@ -50,7 +50,9 @@ You now have a Google Kubernetes Cluster up and running in Google Cloud Platform
 `kubectl` is the de facto command line tool for interacting with your Kubernetes cluster. If you hare already used the `gcloud` command line tool then its likely you have `kubectl` installed, but if not you can download it. It can be configured to control multiples clusters, each within their own "context". So to begin, we will use `gcloud` to authenticate with Kubernetes and create a context for `kubectl`.
 
 First check on the cluster you created previously:
-`gcloud container clusters list`
+```
+gcloud container clusters list
+```
 
 This should give you a list of any GKE clusters you have along with version information, status, number of nodes etc. Your output should look similar to this:
 
@@ -58,10 +60,14 @@ NAME        LOCATION       MASTER_VERSION
 gke-cluster europe-west1-b 1.8.10-gke.0
 
 Our cluster looks good! Let us now use gcloud to set up the context for kubectl. You will need to specify the name of your cluster and its location:
-```gcloud container clusters get-credentials gke-cluster --zone=europe-west1-b```
+```
+gcloud container clusters get-credentials gke-cluster --zone=europe-west1-b
+```
 
 `gcloud` will tell you that it has generated a kubeconfig entry for `kubectl`. We can check that it works by querying the list of running pods in our cluster:
-```kubectl get pods --all-namespaces```
+```
+kubectl get pods --all-namespaces
+```
 
 There is a bunch of stuff running already. Tools like `kube-dns`, `heapster` and `fluentd` are part of the managed services running on your GKE cluster. If this is your first time using `kubectl` or running things on a Kubernetes cluster, I would recommend you take a quick break and follow a tutorial on the Kubernetes site. There is no point me refactoring a great tutorial. Instead, I am skipping over the basics so we can concentrate on Helm and Jenkins.
 
@@ -74,18 +80,24 @@ Helm charts are easy to write, but there are also curated charts available in th
 2. The helm server component, called `tiller`. `tiller` is responsible for handling requests from the helm client and interacting with the Kubernetes APIs
 
 Before you install `tiller` on your cluster you will need to quickly set up a service account with a defined role for tiller to operate within. This is due to the introduction of Role Based Access Control (RBAC) - another huge subject for a different guide. But do not panic, it is actually very easy to set up. Apply `tiller-rbac.yaml` to your cluster with:
-```kubectl apply -f tiller-rbac.yaml```
+```
+kubectl apply -f tiller-rbac.yaml
+```
 
 You are now ready to set up helm and install tiller. Run the following command and you should be good to go:
-```helm init --service-account tiller```
+```
+helm init --service-account tiller
+```
 
 Wait a few minutes to allow the tiller pod to spin up, then run: helm version
 
 ## Jenkins
-Jenkins has been around a long time, and is essentially an automation server written in Java. It is commonly used for automating software builds and more recently can be found providing Continuous Integration services as well. In my personal opinion this tends to be because Jenkins is a `kitchen-sink`; in other words, you can pretty much do anything with it. This does not mean it is the best tool for the job. One of my biggest gripes with Jenkins is that traditionally it has been a pain to automate its own installation, as its XML config does not lend itself to being managed that easily, the Puppet module for Jenkins is buggy and out of date, and managing Jenkins plugins can land you in dependency hell.
+Jenkins has been around a long time, and is essentially an automation server written in Java. It is commonly used for automating software builds and more recently can be found providing Continuous Integration services as well. In my personal opinion this tends to be because Jenkins is a "kitchen-sink"; in other words, you can pretty much do anything with it. This does not mean it is the best tool for the job. One of my biggest gripes with Jenkins is that traditionally it has been a pain to automate its own installation, as its XML config does not lend itself to being managed that easily, the Puppet module for Jenkins is buggy and out of date, and managing Jenkins plugins can land you in dependency hell.
 
 Thankfully Helm has come to the rescue with a magic chart that takes most of the pain away from you. In fact once you have helm and tiller configured for your cluster, deploying the Jenkins application including persistent volumes, pods, services and a load balancer is as easy as running one command:
-```helm install --name my-release stable/jenkins```
+```
+helm install --name my-release stable/jenkins
+```
 
 Helm will output some helpful instructions that guide you in accessing your newly deployed application (although it may take a few minutes for everything to get up and running the first time). You should be able to access Jenkins via its external IP address, and grab the admin password following the instructions Helm gave you.
 
@@ -94,13 +106,19 @@ Helm will output some helpful instructions that guide you in accessing your newl
 Helm manages the lifecycle of its deployments, so you can manage your release (which in this example we called my-release) with some simple commands:
 
 Outputs some useful information about the deployed release
-```helm status my-release```
+```
+helm status my-release
+```
 
 Deletes the release from your cluster and purges any of its resources (services, disks etc.)
-```helm delete --purge my-release```
+```
+helm delete --purge my-release
+```
 
 Show all releases deployed to the cluster
-```helm list```
+```
+helm list
+```
 
 Most Helm charts make use of a parameters file to define the attributes of a deployment, such as docker image names, resources to assign, node selectors and so forth. We did not specify a parameters file in the above example, so we just inherited the default one from the published Jenkins chart. Sometimes its useful to provide your own values, and we can do that by obtaining a copy of the default file and modifying it.
 
@@ -108,7 +126,9 @@ Have a browse through values.yaml and you should start to see how these values m
     - blueocean:1.5.0
 
 Now we can upgrade our release and apply the new values:
-```helm upgrade -f values.yaml my-release stable/jenkins```
+```
+helm upgrade -f values.yaml my-release stable/jenkins
+```
 
 If you quickly run `kubectl get pods` you will see that the old version of your release is terminating and the new one is starting up. Once the new release is deployed, the external IP should be the same but you will need to retrieve the new admin password.
 
@@ -163,7 +183,9 @@ Back in the Jenkins UI, navigate to Credentials > System > Global Credentials th
 3. Specify the ID of terraform-auth
 
 For the secret itself, we need to base64 encode the file. This converts the multi-line JSON file into a single large string that we can copy and paste into the secret. Hopefully your system has the base64 tool, if not please Google how to install it. Then run:
-```base64 -w0 ./creds/serviceaccount.json```
+```
+base64 -w0 ./creds/serviceaccount.json
+```
 
 The -w0 will remove any line breaks. Copy the entire string and paste it into the Secret box, then click OK.
 
@@ -173,9 +195,11 @@ We also need to take a quick segue back to Terraform school to learn about remot
 The answer is to store the state in a bucket in the project itself. Then anyone can run Terraform in the pipeline and the remote state is centrally stored and shared. Terraform will also manage locking of the state to make sure conflicting jobs are not run at the same time.
 
 So create a Google Cloud Storage bucket (change your-region and your-project-id accordingly):
-```gsutil mb -c regional -l <your-region> gs://<your-project-id>-tfstate```
+```
+gsutil mb -c regional -l <your-region> gs://<your-project-id>-tfstate
+```
 
-Run terraform init and Terraform will helpfully offer to copy your local state to your new remote backend. Respond with yes.
+Run `terraform init` and Terraform will helpfully offer to copy your local state to your new remote backend. Respond with yes.
 
 ## Jenkinsfile
 We made it! It is time to create a pipeline. In Jenkins, pipelines are written in groovy (a sort of scripting language spin off of Java that nobody asked for). They can be scripted, using most of the functionality of the groovy language, or declarative, which is much simpler.
