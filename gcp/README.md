@@ -101,7 +101,7 @@ helm install --name my-release stable/jenkins
 
 Helm will output some helpful instructions that guide you in accessing your newly deployed application (although it may take a few minutes for everything to get up and running the first time). You should be able to access Jenkins via its external IP address, and grab the admin password following the instructions Helm gave you.
 
-`Quick note: By default this will stand up an external load balancer with a public IP. This is not very secure, and it will incur costs if you leave it running. You are advised to delete all these resources when you are finished with this guide.`
+*Quick note: By default this will stand up an external load balancer with a public IP. This is not very secure, and it will incur costs if you leave it running. You are advised to delete all these resources when you are finished with this guide.*
 
 Helm manages the lifecycle of its deployments, so you can manage your release (which in this example we called my-release) with some simple commands:
 
