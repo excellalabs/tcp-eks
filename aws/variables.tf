@@ -36,6 +36,15 @@ variable "aws_email" {
   description = "the user email address"
 }
 
+variable "rds_port" {
+  default = "5432"
+}
+
+variable "ssh_cidr" {
+  type    = "list"
+  default = ["76.76.0.0/16"]
+}
+
 variable "vpc_cidr" {
   type        = "string"
   default     = "10.0.0.0/16"

@@ -25,13 +25,13 @@ resource "aws_security_group" "bastion" {
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = "${var.bastion_ssh_cidr}"
   }
   ingress {
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = "${var.bastion_port}"
+    to_port     = "${var.bastion_port}"
     protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = "${var.bastion_ssh_cidr}"
   }
   egress {
     protocol    = -1
@@ -42,7 +42,7 @@ resource "aws_security_group" "bastion" {
   tags {
     Name        = "${var.name}-bastion-security-group"
     Project     = "${var.name}"
-    Creator     = "${var.aws_email}"
+    Owner       = "${var.aws_email}"
     Environment = "${var.environment}"
   }
 }

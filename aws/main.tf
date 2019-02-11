@@ -30,7 +30,9 @@ module "bastion-ubuntu" {
   bastion_key_name         = "${var.bastion_key_name}"
   bastion_private_key_path = "${var.bastion_private_key_path}"
   bastion_public_key_path  = "${var.bastion_public_key_path}"
+  bastion_ssh_cidr         = "${var.ssh_cidr}"
   bastion_cidrs            = "${var.bastion_cidrs}"
+  bastion_port             = "${var.rds_port}"
   availability_zones       = ["${data.aws_availability_zones.available.names[0]}"]
 }
 

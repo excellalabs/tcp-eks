@@ -39,7 +39,7 @@ variable "aws_secret_key" {
 }
 
 variable "vpc_id" {
-  description = "The ID of the VPC the cluster should reside in"
+  description = "The ID of the VPC the server should reside in"
 }
 
 variable "vpc_igw" {
@@ -51,12 +51,20 @@ variable "bastion_cidrs" {
   description = "List of cidrs, for every avalibility zone you want you need one. Example: 10.0.0.0/24 and 10.0.1.0/24"
 }
 
+variable "bastion_port" {
+}
+
+variable "bastion_ssh_cidr" {
+  type    = "list"
+}
+
 variable "availability_zones" {
   type        = "list"
-  description = "List of avalibility zones you want. Example: us-west-2a and us-west-2b"
+  description = "List of avalibility zones you want. Example: us-east-1a and us-east-1b"
 }
 
 variable "bastion_key_name" {
+  default     = "bastion"
   description = "ssh auth keypair name"
 }
 
