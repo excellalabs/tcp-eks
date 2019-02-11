@@ -51,6 +51,12 @@ resource "aws_ssm_parameter" "cluster_id" {
   type      = "String"
   value     = "${aws_eks_cluster.cluster.id}"
   overwrite = true
+  tags {
+    Name        = "${var.environment}_cluster_id"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
 }
 
 resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
@@ -58,6 +64,12 @@ resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
   type      = "String"
   value     = "${join(",", var.private_subnet_cidrs)}"
   overwrite = true
+  tags {
+    Name        = "${var.environment}_cluster_private_subnet_cidrs"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
 }
 
 resource "aws_ssm_parameter" "cluster_bucket" {
@@ -65,6 +77,12 @@ resource "aws_ssm_parameter" "cluster_bucket" {
   type      = "String"
   value     = "${aws_s3_bucket.cluster.bucket}"
   overwrite = true
+  tags {
+    Name        = "${var.environment}_cluster_bucket"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
 }
 
 resource "aws_ssm_parameter" "cluster_role_arn" {
@@ -72,6 +90,39 @@ resource "aws_ssm_parameter" "cluster_role_arn" {
   type      = "String"
   value     = "${aws_iam_role.cluster_role.arn}"
   overwrite = true
+  tags {
+    Name        = "${var.environment}_cluster_role_arn"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_ssm_parameter" "cluster_endpoint" {
+  name      = "${var.environment}_cluster_endpoint"
+  type      = "String"
+  value     = "${aws_eks_cluster.cluster.endpoint}"
+  overwrite = true
+  tags {
+    Name        = "${var.environment}_cluster_endpoint"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_ssm_parameter" "cluster_certificate_authority_data" {
+  name      = "${var.environment}_cluster_certificate_authority_data"
+  type      = "SecureString"
+  value     = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
+  key_id    = "${aws_kms_key.cluster.key_id}"
+  overwrite = true
+  tags {
+    Name        = "${var.environment}_cluster_certificate_authority_data"
+    Project     = "${var.name}"
+    Creator     = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
 }
 
 output "workers_asg_arns" {
