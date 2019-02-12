@@ -2,7 +2,7 @@ resource "aws_vpc" "vpc" {
   cidr_block           = "${var.cidr}"
   enable_dns_hostnames = true
   tags {
-    Name    = "${var.name}-vpc"
+    Name    = "${var.name}-${var.environment}-vpc"
     Project = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -12,7 +12,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_internet_gateway" "vpc" {
   vpc_id = "${aws_vpc.vpc.id}"
   tags {
-    Name    = "${var.name}-igw"
+    Name    = "${var.name}-${var.environment}-igw"
     Project = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -22,7 +22,7 @@ resource "aws_internet_gateway" "vpc" {
 # Security group allowing internal traffic (inside VPC)
 resource "aws_security_group" "internal" {
   vpc_id      = "${aws_vpc.vpc.id}"
-  name        = "internal"
+  name        = "${var.name}-${var.environment}-internal-sg"
   description = "Allow internal traffic"
 
   ingress {
@@ -38,7 +38,7 @@ resource "aws_security_group" "internal" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.name}-internal-security-group"
+    Name        = "${var.name}-${var.environment}-internal-sg"
     Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
@@ -47,7 +47,7 @@ resource "aws_security_group" "internal" {
 
 resource "aws_security_group" "ssh" {
   vpc_id      = "${aws_vpc.vpc.id}"
-  name        = "ssh"
+  name        = "${var.name}-${var.environment}-ssh-sg"
   description = "Allow SSH inbound traffic"
 
   ingress {
@@ -63,7 +63,7 @@ resource "aws_security_group" "ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.name}-ssh-security-group"
+    Name        = "${var.name}-${var.environment}-ssh-sg"
     Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
