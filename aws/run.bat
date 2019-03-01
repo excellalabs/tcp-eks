@@ -70,7 +70,7 @@ IF /I "%1"=="kube" (
 
 IF NOT EXIST "%1" (
   IF NOT EXIST terraform.exe (
-    SET "terraform_ver=0.11.10"
+    SET "terraform_ver=0.11.11"
     SET "hashicorp_url=https://releases.hashicorp.com/terraform/%terraform_ver%"
     IF %arc%==32BIT (
 	  SET "terraform_zip_file=terraform_%terraform_ver%_windows_386.zip"
