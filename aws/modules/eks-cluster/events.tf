@@ -23,8 +23,8 @@ EOF
 }
 
 resource "aws_cloudwatch_event_rule" "cluster_task_stopped" {
-  name          = "${var.environment}_${var.cluster_name}_task_stopped"
-  description   = "${var.environment}_${var.cluster_name} Essential container in task exited"
+  name          = "${var.cluster_name}_task_stopped"
+  description   = "${var.cluster_name} Essential container in task exited"
   event_pattern = "${data.template_file.cluster_task_stopped.rendered}"
 }
 
