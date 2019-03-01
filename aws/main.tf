@@ -13,10 +13,6 @@ module "vpc" {
   cidr        = "${var.vpc_cidr}"
 }
 
-# module "users" {
-#   source = "modules/users"
-# }
-
 module "bastion-ubuntu" {
   source = "modules/bastion-ubuntu"
 
@@ -84,11 +80,11 @@ module "eks-cluster" {
     "${data.aws_availability_zones.available.names[1]}",
   ]
 
-  max_size         = "${var.max_size}"
-  min_size         = "${var.min_size}"
-  desired_capacity = "${var.desired_capacity}"
+  max_size         = "${var.cluster_max_size}"
+  min_size         = "${var.cluster_min_size}"
+  desired_capacity = "${var.cluster_desired_capacity}"
   key_name         = "${aws_key_pair.cluster.key_name}"
-  instance_type    = "${var.instance_type}"
+  instance_type    = "${var.cluster_instance_type}"
 }
 
 resource "aws_key_pair" "cluster" {

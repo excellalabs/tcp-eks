@@ -89,19 +89,19 @@ variable "cluster_cidrs" {
   description = "The cidrs the cluster should reside in"
 }
 
-variable "max_size" {
+variable "cluster_max_size" {
   default = 4
 }
 
-variable "min_size" {
+variable "cluster_min_size" {
   default = 1
 }
 
-variable "desired_capacity" {
+variable "cluster_desired_capacity" {
   default = 2
 }
 
-variable "instance_type" {
+variable "cluster_instance_type" {
   default = "t2.large"
 }
 
