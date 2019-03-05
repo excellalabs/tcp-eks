@@ -3,6 +3,9 @@
 REM finds the architecture of the windows installation
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set arc=32BIT || set arc=64BIT
 
+SET PROJECT_NAME="bench-tc"
+SET AWS_REGION="us-east-1"
+SET ENVIRONMENT="dev"
 SET KEY_ROOT="..\keys"
 
 IF NOT EXIST %KEY_ROOT%\bench-tc-bastion (
@@ -16,7 +19,7 @@ IF NOT EXIST %KEY_ROOT%\bench-tc-cluster (
 )
 
 IF /I "%1"=="init" (
-  terraform init 
+  terraform init -backend-config="bucket=%PROJECT_NAME%-%ENVIRONMENT%" -backend-config="key=terraform.tfstate" -backend-config="region=%AWS_REGION%" -backend-config="encrypt=true"
 )
 
 IF /I "%1"=="plan" (

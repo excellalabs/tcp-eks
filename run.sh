@@ -5,6 +5,9 @@ realpath() {
   [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
+PROJECT_NAME="bench-tc"
+AWS_REGION="us-east-1"
+ENVIRONMENT="dev"
 KEY_ROOT=$(realpath keys)
 USAGE="Usage: $0 init|plan|apply|destroy|chef|kube"
 
@@ -56,7 +59,7 @@ case "$1" in
       ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/bench-tc-jenkins
       ssh-keygen -f $KEY_ROOT/bench-tc-jenkins.pub -m pem -e > $KEY_ROOT/bench-tc-jenkins.pem
     fi
-    terraform init 
+    terraform init -backend-config="bucket=${PROJECT_NAME}-${ENVIRONMENT}" -backend-config="key=terraform.tfstate" -backend-config="region=${AWS_REGION}" -backend-config="encrypt=true"
     ;;
   plan)
     terraform plan -out tfplan
