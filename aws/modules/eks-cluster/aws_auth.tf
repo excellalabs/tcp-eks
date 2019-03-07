@@ -9,10 +9,11 @@ resource "null_resource" "update_config_map_aws_auth" {
 
   provisioner "local-exec" {
     command = <<EOS
-for i in `seq 1 10`; do \
-kubectl apply -f ${local_file.config_map_aws_auth.filename} \
---kubeconfig ${local_file.kubeconfig.filename} && break || sleep 10; \
-done;
+#for i in `seq 1 10`; do \
+#kubectl apply -f ${local_file.config_map_aws_auth.filename} \
+#--kubeconfig ${local_file.kubeconfig.filename} && break || sleep 10; \
+#done;
+python -c "import subprocess, time; for i in range(5): time.sleep(10); if subprocess.check_call('kubectl apply -f aws_auth_configmap.yaml --kubeconfig kubeconfig.yaml') == 0: break"
 EOS
   }
   triggers {
