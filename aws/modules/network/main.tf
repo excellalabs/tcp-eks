@@ -28,7 +28,7 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = "${element(module.public_subnet.ids, count.index)}"
   count         = "${length(var.public_subnet_cidrs)}"
   tags {
-    Name        = "${var.name}-nat-gateway"
+    Name        = "${var.name}-${var.environment}-nat-gateway"
     Project     = "${var.name}"
     Creator     = "${var.aws_email}"
     Environment = "${var.environment}"
