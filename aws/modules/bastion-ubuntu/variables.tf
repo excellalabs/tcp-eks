@@ -64,7 +64,6 @@ variable "availability_zones" {
 }
 
 variable "bastion_key_name" {
-  default     = "bastion"
   description = "ssh auth keypair name"
 }
 
