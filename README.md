@@ -54,10 +54,10 @@ github_user = "your user"
 # the token should have FULL repo access and FULL admin:web_hook access
 github_token = "your token"
 
-# these need to be unique per region
-bastion_key_name = "bastion_ssh_key_pair_YOURNAME"
-jenkins_key_name = "jenkins_ssh_key_pair_YOURNAME"
-cluster_key_name = "cluster_ssh_key_pair_YOURNAME"
+# these need to be unique per region and per environment
+bastion_key_name = "bastion_ENVIRONMENT_ssh_key_pair_YOURNAME"
+jenkins_key_name = "jenkins_ENVIRONMENT_ssh_key_pair_YOURNAME"
+cluster_key_name = "cluster_ENVIRONMENT_ssh_key_pair_YOURNAME"
 
 # credentials used to create any application database
 # password must be greater than 8 characters
