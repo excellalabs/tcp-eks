@@ -60,7 +60,7 @@ resource "aws_launch_configuration" "cluster" {
   iam_instance_profile = "${aws_iam_instance_profile.cluster_node.name}"
   image_id             = "${data.aws_ami.eks_worker.id}"
   instance_type        = "${var.instance_type}"
-  name                 = "${var.cluster_name}-cluster"
+  name_prefix          = "${var.cluster_name}-cluster"
   security_groups      = ["${aws_security_group.cluster_node.id}"]
   user_data_base64     = "${base64encode(local.cluster_node_userdata)}"
 
