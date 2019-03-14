@@ -1,8 +1,8 @@
 module "bastion_subnet" {
   source = "../subnet"
 
-  name               = "${var.name}-bastion-public-subnet"
-  environment        = "bastion"
+  name               = "${var.name}-${var.environment}-bastion-public-subnet"
+  environment        = "${var.environment}"
   aws_email          = "${var.aws_email}"
   vpc_id             = "${var.vpc_id}"
   cidrs              = "${var.bastion_cidrs}"
@@ -17,7 +17,7 @@ resource "aws_route" "public_igw_route" {
 }
 
 resource "aws_security_group" "bastion" {
-  name        = "${var.name}-bastion-security-group"
+  name        = "${var.name}-${var.environment}-bastion-sg"
   description = "Allow SSH/RDS access"
   vpc_id      = "${var.vpc_id}"
 
@@ -40,7 +40,7 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name        = "${var.name}-bastion-security-group"
+    Name        = "${var.name}-${var.environment}-bastion-sg"
     Project     = "${var.name}"
     Owner       = "${var.aws_email}"
     Environment = "${var.environment}"
