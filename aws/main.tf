@@ -1,7 +1,7 @@
-terraform {
-  backend "s3" {
-  }
-}
+#terraform {
+#  backend "s3" {
+#  }
+#}
 
 provider "aws" {
   region     = "${var.aws_region}"
@@ -10,31 +10,27 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "modules/vpc"
+  source = "git::https://github.com/excellaco/terraform-aws-vpc.git?ref=master"
 
-  environment = "${var.environment}"
   name        = "${var.project_name}"
+  environment = "${var.environment}"
   aws_email   = "${var.aws_email}"
   cidr        = "${var.vpc_cidr}"
 }
 
-module "bastion-ubuntu" {
-  source = "modules/bastion-ubuntu"
+module "bastion" {
+  source = "git::https://github.com/excellaco/terraform-aws-ec2-bastion-server.git?ref=master"
 
-  vpc_id                   = "${module.vpc.id}"
-  vpc_igw                  = "${module.vpc.igw}"
-  environment              = "${var.environment}"
-  name                     = "${var.project_name}"
-  aws_email                = "${var.aws_email}"
-  aws_access_key           = "${var.aws_access_key}"
-  aws_secret_key           = "${var.aws_secret_key}"
-  bastion_key_name         = "${var.bastion_key_name}"
-  bastion_private_key_path = "${var.bastion_private_key_path}"
-  bastion_public_key_path  = "${var.bastion_public_key_path}"
-  bastion_ssh_cidr         = "${var.ssh_cidr}"
-  bastion_cidrs            = "${var.bastion_cidrs}"
-  bastion_port             = "${var.rds_port}"
-  availability_zones       = ["${data.aws_availability_zones.available.names[0]}"]
+  name        = "bastion"
+  namespace   = "${var.project_name}"
+  environment = "${var.environment}"
+  port        = "${var.rds_port}"
+  vpc_id      = "${module.vpc.id}"
+  key_name    = "${var.bastion_key_name}"
+  subnets     = "${var.bastion_cidrs}"
+  ssh_user    = "${var.bastion_ssh_user}"
+  security_groups = []
+  allowed_cidr_blocks = "${var.ssh_cidr}"
 }
 
 module "jenkins-ubuntu" {

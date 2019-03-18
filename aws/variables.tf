@@ -60,7 +60,7 @@ variable "bastion_cidrs" {
 }
 
 variable "bastion_instance_type" {
-  type        = "string"
+  type    = "string"
   default = "t2.micro"
 }
 
@@ -69,16 +69,9 @@ variable "bastion_key_name" {
   description = "the ssh key pair to use for the bastion EC2 instance"
 }
 
-variable "bastion_private_key_path" {
-  type        = "string"
-  default     = "../keys/bench-tc-bastion"
-  description = "path to ssh private key"
-}
-
-variable "bastion_public_key_path" {
-  type        = "string"
-  default     = "../keys/bench-tc-bastion.pub"
-  description = "path to ssh public key"
+variable "bastion_ssh_user" {
+  type    = "string"
+  default = "ubuntu"
 }
 
 ## Cluster

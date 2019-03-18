@@ -47,12 +47,12 @@ module "rds" {
 
   name               = "${var.name}"
   environment        = "${var.environment}"
+  aws_email          = "${var.aws_email}"
   aws_region         = "${data.aws_region.current.name}"
-  db_subnet_cidrs    = "${var.db_subnet_cidrs}"
-  db_access_cidrs    = ["${concat(var.cluster_cidrs, var.private_subnet_cidrs)}"]
   vpc_id             = "${var.vpc_id}"
   availability_zones = "${var.availability_zones}"
-  aws_email          = "${var.aws_email}"
+  db_subnet_cidrs    = "${var.db_subnet_cidrs}"
+  db_access_cidrs    = ["${concat(var.cluster_cidrs, var.private_subnet_cidrs)}"]
   db_name            = "${var.db_name}"
   db_identifier      = "${var.environment}-${var.db_identifier}"
   db_username        = "${var.db_username}"
@@ -60,17 +60,18 @@ module "rds" {
 }
 
 module "network" {
-  source = "../network"
+  source = "git::https://github.com/excellaco/terraform-aws-network.git?ref=master"
 
-  vpc_id               = "${var.vpc_id}"
-  vpc_igw              = "${var.vpc_igw}"
-  name                 = "${var.cluster_name}"
-  environment          = "${var.environment}"
+  name        = "${var.cluster_name}"
+  environment = "${var.environment}"
+  aws_email   = "${var.aws_email}"
+  vpc_id      = "${var.vpc_id}"
+  vpc_igw     = "${var.vpc_igw}"
+  depends_id  = ""
+
   public_subnet_cidrs  = "${var.public_subnet_cidrs}"
   private_subnet_cidrs = "${var.private_subnet_cidrs}"
   availability_zones   = "${var.availability_zones}"
-  depends_id           = ""
-  aws_email            = "${var.aws_email}"
 }
 /*
 module "alb" {

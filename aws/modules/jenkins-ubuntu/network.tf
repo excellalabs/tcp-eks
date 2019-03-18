@@ -1,5 +1,5 @@
 module "public_subnet" {
-  source = "../subnet"
+  source = "git::https://github.com/excellaco/terraform-aws-subnet.git?ref=master"
 
   name               = "${var.name}-jenkins-public-subnet"
   environment        = "jenkins"
