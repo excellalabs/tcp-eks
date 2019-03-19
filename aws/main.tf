@@ -33,8 +33,8 @@ module "bastion" {
   allowed_cidr_blocks = "${var.ssh_cidr}"
 }
 
-module "jenkins-ubuntu" {
-  source = "modules/jenkins-ubuntu"
+module "jenkins" {
+  source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=master"
 
   vpc_id                     = "${module.vpc.id}"
   vpc_igw                    = "${module.vpc.igw}"
