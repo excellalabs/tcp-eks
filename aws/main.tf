@@ -58,6 +58,26 @@ module "jenkins" {
   availability_zones         = ["${data.aws_availability_zones.available.names[0]}"]
 }
 
+module "rds" {
+  source = "modules/rds"
+
+  name               = "${var.project_name}"
+  environment        = "${var.environment}"
+  aws_email          = "${var.aws_email}"
+  aws_region         = "${data.aws_region.current.name}"
+  vpc_id             = "${module.vpc.id}"
+  db_subnet_cidrs    = "${var.db_subnet_cidrs}"
+  db_access_cidrs    = ["${concat(var.cluster_cidrs, var.private_subnet_cidrs)}"]
+  db_name            = "${var.db_name}"
+  db_identifier      = "${var.environment}-${var.db_identifier}"
+  db_username        = "${var.db_username}"
+  db_password        = "${var.db_password}"
+
+  availability_zones = ["${data.aws_availability_zones.available.names[0]}",
+    "${data.aws_availability_zones.available.names[1]}"
+  ]
+}
+
 module "eks-cluster" {
   source = "modules/eks-cluster"
 
@@ -68,17 +88,17 @@ module "eks-cluster" {
   cluster_name         = "${var.project_name}-${var.environment}-cluster"
   cloudwatch_prefix    = "${var.project_name}/${var.environment}"
   cluster_cidrs        = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
-  public_subnet_cidrs  = ["10.0.0.0/24", "10.0.1.0/24"]
-  private_subnet_cidrs = ["10.0.50.0/24", "10.0.51.0/24"]
-  db_subnet_cidrs      = ["10.0.101.0/24", "10.0.102.0/24"]
-  db_name              = ""
-  db_identifier        = "${var.db_identifier}"
-  db_username          = "${var.db_username}"
-  db_password          = "${var.db_password}"
+  public_subnet_cidrs  = "${var.public_subnet_cidrs}"
+  private_subnet_cidrs = "${var.private_subnet_cidrs}"
+#  db_subnet_cidrs      = "${var.db_subnet_cidrs}"
+#  db_name              = ""
+#  db_identifier        = "${var.db_identifier}"
+#  db_username          = "${var.db_username}"
+#  db_password          = "${var.db_password}"
   aws_email            = "${var.aws_email}"
 
   availability_zones = ["${data.aws_availability_zones.available.names[0]}",
-    "${data.aws_availability_zones.available.names[1]}",
+    "${data.aws_availability_zones.available.names[1]}"
   ]
 
   max_size         = "${var.cluster_max_size}"

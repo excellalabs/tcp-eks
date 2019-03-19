@@ -42,23 +42,6 @@ resource "aws_security_group" "cluster" {
   }
 }
 
-module "rds" {
-  source = "../rds"
-
-  name               = "${var.name}"
-  environment        = "${var.environment}"
-  aws_email          = "${var.aws_email}"
-  aws_region         = "${data.aws_region.current.name}"
-  vpc_id             = "${var.vpc_id}"
-  availability_zones = "${var.availability_zones}"
-  db_subnet_cidrs    = "${var.db_subnet_cidrs}"
-  db_access_cidrs    = ["${concat(var.cluster_cidrs, var.private_subnet_cidrs)}"]
-  db_name            = "${var.db_name}"
-  db_identifier      = "${var.environment}-${var.db_identifier}"
-  db_username        = "${var.db_username}"
-  db_password        = "${var.db_password}"
-}
-
 module "network" {
   source = "git::https://github.com/excellaco/terraform-aws-network.git?ref=master"
 

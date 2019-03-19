@@ -1,4 +1,13 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
 data "aws_availability_zones" "available" {}
+
+variable "aws_region" {
+  type    = "string"
+  default = "us-east-1"
+}
 
 variable "aws_account_id" {
   type        = "string"
@@ -51,6 +60,18 @@ variable "vpc_cidr" {
   description = "Virtual Private Cloud Classless Inter-Domain Routing"
 }
 
+variable "public_subnet_cidrs" {
+  type        = "list"
+  default     = ["10.0.0.0/24", "10.0.1.0/24"]
+  description = "The cidrs the public subnet should reside in"
+}
+
+variable "private_subnet_cidrs" {
+  type        = "list"
+  default     = ["10.0.50.0/24", "10.0.51.0/24"]
+  description = "The cidrs the private subnet should reside in"
+}
+
 ## Bastion
 
 variable "bastion_cidrs" {
@@ -98,8 +119,6 @@ variable "cluster_instance_type" {
   default = "t2.large"
 }
 
-variable "aws_region" {}
-
 variable "home" {
   default = "~"
 }
@@ -108,18 +127,31 @@ variable "cluster_key_name" {
   description = "the ssh key pair to use for the EC2 instances making up the cluster"
 }
 
+## Database
+
 variable "db_identifier" {
   default     = "pg-bench-db"
-  description = "database name"
+  description = "(Forces new resource) The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier."
+}
+
+variable "db_name" {
+  default     = "pg-bench-db"
+  description = "The name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance. Note that this does not apply for Oracle or SQL Server engines. See the AWS documentation for more details on what applies for those engines."
 }
 
 variable "db_username" {
   default     = "benchtc"
-  description = "database username"
+  description = "(Required unless a snapshot_identifier or replicate_source_db is provided) Username for the master DB user."
 }
 
 variable "db_password" {
-  description = "password for database username"
+  description = "(Required unless a snapshot_identifier or replicate_source_db is provided) Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file."
+}
+
+variable "db_subnet_cidrs" {
+  type    = "list"
+  default = ["10.0.101.0/24", "10.0.102.0/24"]
+  description = "The cidrs the database should reside in"
 }
 
 ## Jenkins
