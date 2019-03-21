@@ -127,6 +127,10 @@ variable "cluster_key_name" {
   description = "the ssh key pair to use for the EC2 instances making up the cluster"
 }
 
+variable "config_output_path" {
+  default = "./"
+}
+
 ## Database
 
 variable "db_identifier" {

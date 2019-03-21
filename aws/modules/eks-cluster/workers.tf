@@ -1,10 +1,10 @@
 resource "aws_autoscaling_group" "cluster" {
   name                  = "${aws_eks_cluster.cluster.name}-asg"
   desired_capacity      = "${var.desired_capacity}"
-  max_size              = "${var.max_size}"
-  min_size              = "${var.min_size}"
+  max_size              = "${var.cluster_max_size}"
+  min_size              = "${var.cluster_min_size}"
   launch_configuration  = "${aws_launch_configuration.cluster.id}"
-  vpc_zone_identifier   = ["${module.network.private_subnet_ids}"]
+  vpc_zone_identifier   = ["${var.private_subnet}"]
   protect_from_scale_in = "${var.protect_from_scale_in}"
   suspended_processes   = ["${var.suspended_processes}"]
   count                 = "${var.worker_group_count}"
@@ -49,7 +49,7 @@ resource "aws_autoscaling_group" "cluster" {
   # For reason why see description in the network module
   tag {
     key                 = "DependsId"
-    value               = "${module.network.depends_id}"
+    value               = "${var.depends_id}"
     propagate_at_launch = "false"
   }
 }

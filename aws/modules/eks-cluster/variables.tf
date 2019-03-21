@@ -1,19 +1,25 @@
-variable "aws_email" {}
-
-variable "vpc_id" {
-  description = "The ID of the VPC the cluster should reside in"
+variable "aws_email" {
+  default     = "devops@excella.com"
+  description = "the user email address"
 }
 
-variable "vpc_igw" {
-  description = "The Internet Gateway ID of the VPC"
+variable "aws_region" {
+  type    = "string"
+  default = "us-east-1"
+}
+
+variable "depends_id" {
+  default = ""
 }
 
 variable "name" {
+  default     = "eks"
   description = "prefix for all created resources"
 }
 
 variable "environment" {
-  description = "The name of the environment"
+  default     = "dev"
+  description = "Environment i.e. prod or dev"
 }
 
 variable "cluster_name" {
@@ -96,18 +102,25 @@ variable "instance_type" {
   default     = "t2.large"
 }
 
-variable "private_subnet_cidrs" {
-  type        = "list"
-  description = "List of private cidrs, for every avalibility zone you want you need one. Example: 10.0.0.0/24 and 10.0.1.0/24"
+variable "vpc_id" {
+  description = "The ID of the VPC the cluster should reside in"
 }
 
-variable "public_subnet_cidrs" {
+variable "public_subnet" {
   type        = "list"
-  description = "List of public cidrs, for every avalibility zone you want you need one. Example: 10.0.0.0/24 and 10.0.1.0/24"
+  default     = ["192.168.10.0/24", "192.168.11.0/24"]
+  description = "The cidrs the public subnet should reside in"
+}
+
+variable "private_subnet" {
+  type        = "list"
+  default     = ["192.168.20.0/24", "192.168.21.0/24"]
+  description = "The cidrs the private subnet should reside in"
 }
 
 variable "cluster_cidrs" {
   type        = "list"
+  default     = ["192.168.0.0/24", "192.168.1.0/24"]
   description = "The cidrs the cluster should reside in"
 }
 
@@ -115,11 +128,6 @@ variable "load_balancers" {
   type        = "list"
   default     = []
   description = "The load balancers to couple to the instances"
-}
-
-variable "availability_zones" {
-  type        = "list"
-  description = "List of avalibility zones you want. Example: us-west-2a and us-west-2b"
 }
 
 variable "autoscaling_enabled" {
@@ -147,17 +155,17 @@ variable "desired_capacity" {
   default     = "1"
 }
 
-variable "max_size" {
+variable "cluster_max_size" {
   description = "Maximum worker capacity in the autoscaling group."
   default     = "1"
 }
 
-variable "min_size" {
+variable "cluster_min_size" {
   description = "Minimum worker capacity in the autoscaling group."
   default     = "1"
 }
 
-variable "key_name" {
+variable "cluster_key_name" {
   description = "SSH key name to be used"
 }
 

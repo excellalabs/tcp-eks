@@ -5,7 +5,7 @@ resource "aws_eks_cluster" "cluster" {
 
   vpc_config {
     security_group_ids = ["${aws_security_group.cluster.id}"]
-    subnet_ids         = ["${module.network.public_subnet_ids}"]
+    subnet_ids         = ["${var.public_subnet}"]
   }
   timeouts {
     create = "${var.cluster_create_timeout}"
@@ -41,21 +41,6 @@ resource "aws_security_group" "cluster" {
     Environment = "${var.environment}"
   }
 }
-
-module "network" {
-  source = "git::https://github.com/excellaco/terraform-aws-network.git?ref=master"
-
-  name        = "${var.cluster_name}"
-  environment = "${var.environment}"
-  aws_email   = "${var.aws_email}"
-  vpc_id      = "${var.vpc_id}"
-  vpc_igw     = "${var.vpc_igw}"
-  depends_id  = ""
-
-  public_subnet_cidrs  = "${var.public_subnet_cidrs}"
-  private_subnet_cidrs = "${var.private_subnet_cidrs}"
-  availability_zones   = "${var.availability_zones}"
-}
 /*
 module "alb" {
   source = "../alb"
@@ -64,7 +49,7 @@ module "alb" {
   environment       = "${var.environment}"
   alb_name          = "${var.name}"
   vpc_id            = "${var.vpc_id}"
-  public_subnet_ids = "${module.network.public_subnet_ids}"
+  public_subnet_ids = ["${var.public_subnet}"]
   aws_email          = "${var.aws_email}"
 }
 
@@ -85,7 +70,7 @@ module "eks-workers" {
   worker_name             = "${var.cluster_name}"
   bastion_cidrs           = "${var.cluster_cidrs}"
   worker_group            = "${var.worker_group}"
-  private_subnet_ids      = "${module.network.private_subnet_ids}"
+  private_subnet_ids      = ["${var.private_subnet}"]
   aws_ami                 = "${data.aws_ami.eks_worker.id}"
   aws_email               = "${var.aws_email}"
   instance_type           = "${var.instance_type}"
@@ -96,7 +81,7 @@ module "eks-workers" {
   iam_instance_profile_id = "${aws_iam_instance_profile.cluster_node.id}"
   key_name                = "${var.key_name}"
   load_balancers          = "${var.load_balancers}"
-  depends_id              = "${module.network.depends_id}"
+  depends_id              = "${var.depends_id}"
   custom_userdata         = "${var.custom_userdata}"
   cloudwatch_prefix       = "${var.cloudwatch_prefix}"
   cluster_endpoint        = "${aws_eks_cluster.cluster.endpoint}"

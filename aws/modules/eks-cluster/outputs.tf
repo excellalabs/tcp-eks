@@ -42,10 +42,6 @@ output "kubeconfig" {
   value       = "${data.template_file.kubeconfig.rendered}"
 }
 
-output "public_subnet_ids" {
-  value = "${module.network.public_subnet_ids}"
-}
-
 resource "aws_ssm_parameter" "cluster_id" {
   name      = "${var.environment}_cluster_id"
   type      = "String"
@@ -62,7 +58,7 @@ resource "aws_ssm_parameter" "cluster_id" {
 resource "aws_ssm_parameter" "cluster_private_subnet_cidrs" {
   name      = "${var.environment}_cluster_private_subnet_cidrs"
   type      = "String"
-  value     = "${join(",", var.private_subnet_cidrs)}"
+  value     = "${join(",", var.private_subnet)}"
   overwrite = true
   tags {
     Name        = "${var.environment}_cluster_private_subnet_cidrs"

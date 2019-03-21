@@ -18,6 +18,22 @@ module "vpc" {
   cidr        = "${var.vpc_cidr}"
 }
 
+module "network" {
+  source = "git::https://github.com/excellaco/terraform-aws-network.git?ref=master"
+
+  name        = "${var.project_name}"
+  environment = "${var.environment}"
+  aws_email   = "${var.aws_email}"
+  vpc_id      = "${module.vpc.id}"
+  vpc_igw     = "${module.vpc.igw}"
+  depends_id  = ""
+
+  public_subnet_cidrs  = "${var.public_subnet_cidrs}"
+  private_subnet_cidrs = "${var.private_subnet_cidrs}"
+  availability_zones   = ["${data.aws_availability_zones.available.names[0]}",
+    "${data.aws_availability_zones.available.names[1]}"]
+}
+
 module "bastion" {
   source = "git::https://github.com/excellaco/terraform-aws-ec2-bastion-server.git?ref=master"
 
@@ -81,33 +97,27 @@ module "rds" {
 module "eks-cluster" {
   source = "modules/eks-cluster"
 
-  environment          = "${var.environment}"
-  name                 = "${var.project_name}"
-  vpc_id               = "${module.vpc.id}"
-  vpc_igw              = "${module.vpc.igw}"
-  cluster_name         = "${var.project_name}-${var.environment}-cluster"
-  cloudwatch_prefix    = "${var.project_name}/${var.environment}"
-  cluster_cidrs        = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
-  public_subnet_cidrs  = "${var.public_subnet_cidrs}"
-  private_subnet_cidrs = "${var.private_subnet_cidrs}"
-#  db_subnet_cidrs      = "${var.db_subnet_cidrs}"
-#  db_name              = ""
-#  db_identifier        = "${var.db_identifier}"
-#  db_username          = "${var.db_username}"
-#  db_password          = "${var.db_password}"
-  aws_email            = "${var.aws_email}"
+  name         = "${var.project_name}"
+  environment  = "${var.environment}"
+  aws_email    = "${var.aws_email}"
+  aws_region   = "${var.aws_region}"
+  cluster_name = "${var.project_name}-${var.environment}-cluster"
+  vpc_id       = "${module.vpc.id}"
 
-  availability_zones = ["${data.aws_availability_zones.available.names[0]}",
-    "${data.aws_availability_zones.available.names[1]}"
-  ]
+  config_output_path = "${var.config_output_path}"
+  cloudwatch_prefix  = "${var.project_name}/${var.environment}"
+  private_subnet    = "${module.network.private_subnet_ids}"
+  public_subnet     = "${module.network.public_subnet_ids}"
+  cluster_cidrs     = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
 
-  max_size         = "${var.cluster_max_size}"
-  min_size         = "${var.cluster_min_size}"
+  cluster_max_size = "${var.cluster_max_size}"
+  cluster_min_size = "${var.cluster_min_size}"
   desired_capacity = "${var.cluster_desired_capacity}"
-  key_name         = "${aws_key_pair.cluster.key_name}"
+  cluster_key_name = "${aws_key_pair.cluster.key_name}"
   instance_type    = "${var.cluster_instance_type}"
 }
 
+# Cluster KMS key
 resource "aws_key_pair" "cluster" {
   key_name   = "${var.cluster_key_name}"
   public_key = "${file("${path.module}/../keys/${var.cluster_key_name}.pub")}"
