@@ -75,23 +75,40 @@ module "jenkins" {
 }
 
 module "rds" {
-  source = "modules/rds"
+  source = "git::https://github.com/excellaco/terraform-aws-rds.git?ref=master"
 
-  name               = "${var.project_name}"
-  environment        = "${var.environment}"
-  aws_email          = "${var.aws_email}"
-  aws_region         = "${data.aws_region.current.name}"
-  vpc_id             = "${module.vpc.id}"
-  db_subnet_cidrs    = "${var.db_subnet_cidrs}"
-  db_access_cidrs    = ["${concat(var.cluster_cidrs, var.private_subnet_cidrs)}"]
-  db_name            = "${var.db_name}"
-  db_identifier      = "${var.environment}-${var.db_identifier}"
-  db_username        = "${var.db_username}"
-  db_password        = "${var.db_password}"
-
-  availability_zones = ["${data.aws_availability_zones.available.names[0]}",
-    "${data.aws_availability_zones.available.names[1]}"
-  ]
+  name                  = "rds"
+  namespace             = "${var.project_name}"
+  environment           = "${var.environment}"
+  host_name             = "${var.environment}-${var.db_identifier}"
+  database_name         = "${var.db_name}"
+  database_user         = "${var.db_username}"
+  database_password     = "${var.db_password}"
+  database_port         = "${var.db_port}"
+  multi_az              = "${var.db_multi_availability_zone}"
+  iops                  = "${var.db_iops}"
+  allocated_storage     = "${var.db_size}"
+  storage_type          = "${var.db_storage_type}"
+  storage_encrypted     = "${var.db_storage_encrypted}"
+  engine                = "${var.db_engine}"
+  engine_version        = "${var.db_version}"
+ #major_engine_version  = "${var.db_version}"
+  instance_class        = "${var.db_instance_class}"
+  db_parameter_group    = "${var.db_param_family}"
+  parameter_group_name  = "${var.db_engine}-${var.db_version}"
+  option_group_name     = "${var.db_engine}-options"
+  publicly_accessible   = "${var.db_publicly_accessible}"
+ #database_access_cidrs = ["${concat(var.cluster_cidrs, var.private_subnet)}"]
+  subnet_ids            = "${var.db_subnet_cidrs}"
+  vpc_id                = "${module.vpc.id}"
+  auto_minor_version_upgrade  = "${var.db_auto_minor_version_upgrade}"
+  allow_major_version_upgrade = "${var.db_allow_major_version_upgrade}"
+  apply_immediately           = "${var.db_apply_immediately}"
+  maintenance_window          = "${var.db_maintenance_window}"
+  skip_final_snapshot         = "${var.db_skip_final_snapshot}"
+  copy_tags_to_snapshot       = "${var.db_copy_tags_to_snapshot}"
+  backup_retention_period     = "${var.db_backup_retention_period}"
+  backup_window               = "${var.db_backup_window}"
 }
 
 module "eks-cluster" {
