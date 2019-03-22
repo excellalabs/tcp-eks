@@ -15,7 +15,7 @@ module "vpc" {
   name        = "${var.project_name}"
   environment = "${var.environment}"
   aws_email   = "${var.aws_email}"
-  cidr        = "${var.vpc_cidr}"
+  cidr_block  = "${var.vpc_cidr_block}"
 }
 
 module "network" {

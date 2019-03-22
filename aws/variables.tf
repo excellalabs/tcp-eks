@@ -54,7 +54,7 @@ variable "ssh_cidr" {
   default = ["76.76.0.0/16"]
 }
 
-variable "vpc_cidr" {
+variable "vpc_cidr_block" {
   type        = "string"
   default     = "10.0.0.0/16"
   description = "Virtual Private Cloud Classless Inter-Domain Routing"
