@@ -52,7 +52,7 @@ IF /I "%1"=="help" (
 )
 
 IF /I "%1"=="kube" (
-  SET "amazon_url=https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/windows"
+  SET "amazon_url=https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.11/2018-12-06/bin/windows"
   SET "iam_file=%CD%\..\aws-iam-authenticator.exe"
   SET "kube_file=%CD%\..\kubectl.exe"
   IF EXIST "%iam_file%" DEL "%iam_file%"
@@ -73,7 +73,7 @@ IF /I "%1"=="kube" (
 
 IF NOT EXIST "%1" (
   IF NOT EXIST terraform.exe (
-    SET "terraform_ver=0.11.11"
+    SET "terraform_ver=0.11.13"
     SET "hashicorp_url=https://releases.hashicorp.com/terraform/%terraform_ver%"
     IF %arc%==32BIT (
 	  SET "terraform_zip_file=terraform_%terraform_ver%_windows_386.zip"

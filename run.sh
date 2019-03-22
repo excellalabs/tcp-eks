@@ -69,7 +69,7 @@ case "$1" in
     ;;
   all)
     popd &> /dev/null
-	curl -s -qL -o terraform.zip https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_darwin_amd64.zip
+	curl -s -qL -o terraform.zip https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_darwin_amd64.zip
 	unzip -o terraform.zip
 	chmod +x ./terraform
     eval $0 init
@@ -87,8 +87,8 @@ case "$1" in
     ssh -i ../keys/jenkins ubuntu@$(terraform output jenkins_master_public_dns) sudo chef-solo --recipe-url /tmp/cookbooks.tar.gz -j /tmp/chef.json
     ;;
   kube)
-    curl -s -qL -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/kubectl
-    curl -s -qL -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-07-26/bin/darwin/amd64/aws-iam-authenticator
+    curl -s -qL -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.11/2018-12-06/bin/darwin/amd64/kubectl
+    curl -s -qL -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.11/2018-12-06/bin/darwin/amd64/aws-iam-authenticator
     chmod +x ./kubectl
     chmod +x ./aws-iam-authenticator
     ;;
