@@ -85,7 +85,7 @@ variable "bastion_key_name" {
 }
 
 variable "bastion_public_key_path" {
-  default     = "../keys/sandbox-bastion.pub"
+  default     = "../keys/bench-tc-bastion.pub"
   description = "path to bastion public key"
 }
 
@@ -123,7 +123,7 @@ variable "cluster_key_name" {
 }
 
 variable "cluster_public_key_path" {
-  default     = "../keys/sandbox-cluster.pub"
+  default     = "../keys/bench-tc-cluster.pub"
   description = "path to cluster public key"
 }
 
