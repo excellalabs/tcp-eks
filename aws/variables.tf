@@ -84,6 +84,11 @@ variable "bastion_key_name" {
   description = "the ssh key pair to use for the bastion EC2 instance"
 }
 
+variable "bastion_public_key_path" {
+  default     = "../keys/sandbox-bastion.pub"
+  description = "path to bastion public key"
+}
+
 variable "bastion_ssh_user" {
   type    = "string"
   default = "ubuntu"
@@ -113,12 +118,13 @@ variable "cluster_instance_type" {
   default = "t2.large"
 }
 
-variable "home" {
-  default = "~"
-}
-
 variable "cluster_key_name" {
   description = "the ssh key pair to use for the EC2 instances making up the cluster"
+}
+
+variable "cluster_public_key_path" {
+  default     = "../keys/sandbox-cluster.pub"
+  description = "path to cluster public key"
 }
 
 variable "config_output_path" {

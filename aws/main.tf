@@ -125,7 +125,7 @@ module "eks-cluster" {
   cloudwatch_prefix  = "${var.project_name}/${var.environment}"
   private_subnet    = "${module.network.private_subnet_ids}"
   public_subnet     = "${module.network.public_subnet_ids}"
-  cluster_cidrs     = ["${concat(var.bastion_cidrs, var.jenkins_cidrs)}"]
+  cluster_cidrs     = ["${var.jenkins_cidrs}"]
 
   cluster_max_size = "${var.cluster_max_size}"
   cluster_min_size = "${var.cluster_min_size}"
@@ -134,10 +134,45 @@ module "eks-cluster" {
   instance_type    = "${var.cluster_instance_type}"
 }
 
+# Bastion KMS key
+resource "aws_key_pair" "bastion" {
+  key_name   = "${var.bastion_key_name}"
+  public_key = "${file(var.bastion_public_key_path)}"
+}
+
+resource "aws_kms_key" "bastion" {
+  description             = "${var.project_name}-${var.environment}-bastion-kms-key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = false
+  tags {
+    Name    = "${var.project_name}-${var.environment}-bastion-kms-key"
+    Project = "${var.project_name}"
+    Owner   = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
+}
+
 # Cluster KMS key
 resource "aws_key_pair" "cluster" {
   key_name   = "${var.cluster_key_name}"
-  public_key = "${file("${path.module}/../keys/${var.cluster_key_name}.pub")}"
+  public_key = "${file(var.cluster_public_key_path)}"
+}
+
+resource "aws_kms_key" "cluster" {
+  description             = "${var.project_name}-${var.environment}-cluster-kms-key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = false
+  tags {
+    Name    = "${var.project_name}-${var.environment}-cluster-kms-key"
+    Project = "${var.project_name}"
+    Owner   = "${var.aws_email}"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_kms_alias" "cluster" {
+  name = "alias/${var.project_name}-${var.environment}-cluster-kms-key"
+  target_key_id = "${aws_kms_key.cluster.key_id}"
 }
 
 resource "aws_s3_bucket" "terraform-state-storage-s3" {
