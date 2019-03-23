@@ -74,12 +74,6 @@ variable "private_subnet_cidrs" {
 
 ## Bastion
 
-variable "bastion_cidrs" {
-  type        = "list"
-  default     = ["10.0.100.0/24"]
-  description = "The list of cidrs to allow ssh access from"
-}
-
 variable "bastion_instance_type" {
   type    = "string"
   default = "t2.micro"

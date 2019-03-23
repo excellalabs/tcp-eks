@@ -43,7 +43,7 @@ module "bastion" {
   port        = "${var.rds_port}"
   vpc_id      = "${module.vpc.id}"
   key_name    = "${var.bastion_key_name}"
-  subnets     = "${var.bastion_cidrs}"
+  subnets     = "${module.network.public_subnet_ids}"
   ssh_user    = "${var.bastion_ssh_user}"
   security_groups = []
   allowed_cidr_blocks = "${var.ssh_cidr}"
