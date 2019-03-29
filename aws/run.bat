@@ -8,12 +8,12 @@ SET AWS_REGION="us-east-1"
 SET ENVIRONMENT="dev"
 SET KEY_ROOT="..\keys"
 
-IF NOT EXIST %KEY_ROOT%\bench-tc-bastion (
+IF NOT EXIST %KEY_ROOT%\bench-tc-bastion.pub (
   ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\bench-tc-bastion
   ssh-keygen -f %KEY_ROOT%\bench-tc-bastion.pub -t pem -e > %KEY_ROOT%\bench-tc-bastion.pem
 )
 
-IF NOT EXIST %KEY_ROOT%\bench-tc-cluster (
+IF NOT EXIST %KEY_ROOT%\bench-tc-cluster.pub (
   ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\bench-tc-cluster
   ssh-keygen -f %KEY_ROOT%\bench-tc-cluster.pub -t pem -e > %KEY_ROOT%\bench-tc-cluster.pem
 )
@@ -76,11 +76,11 @@ IF NOT EXIST "%1" (
     SET "terraform_ver=0.11.13"
     SET "hashicorp_url=https://releases.hashicorp.com/terraform/%terraform_ver%"
     IF %arc%==32BIT (
-	  SET "terraform_zip_file=terraform_%terraform_ver%_windows_386.zip"
+      SET "terraform_zip_file=terraform_%terraform_ver%_windows_386.zip"
       SET "terraform_url=%hashicorp_url%/%terraform_zip_file%"
     )
     IF %arc%==64BIT (
-	  SET "terraform_zip_file=terraform_%terraform_ver%_windows_amd64.zip"
+      SET "terraform_zip_file=terraform_%terraform_ver%_windows_amd64.zip"
       SET "terraform_url=%hashicorp_url%/%terraform_zip_file%"
     )
     ECHO Installing from %terraform_url%

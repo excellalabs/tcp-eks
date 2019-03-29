@@ -44,17 +44,17 @@ case "$1" in
     if [ ! -d $KEY_ROOT ]; then
       mkdir $KEY_ROOT
     fi
-    if [ ! -f $KEY_ROOT/bench-tc-bastion ]; then
+    if [ ! -f $KEY_ROOT/bench-tc-bastion.pub ]; then
       echo "${BOLD}Creating SSH keys for bench-tc-bastion instance${NORMAL}"
       ssh-keygen -t rsa -b 4096 -o -a 100 -f $KEY_ROOT/bench-tc-bastion
       ssh-keygen -f $KEY_ROOT/bench-tc-bastion.pub -m pem -e > $KEY_ROOT/bench-tc-bastion.pem
     fi
-    if [ ! -f $KEY_ROOT/cluster ]; then
+    if [ ! -f $KEY_ROOT/bench-tc-cluster.pub ]; then
       echo "${BOLD}Creating SSH keys for bench-tc-cluster instances${NORMAL}"
       ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/bench-tc-cluster
       ssh-keygen -f $KEY_ROOT/bench-tc-cluster.pub -m pem -e > $KEY_ROOT/bench-tc-cluster.pem
     fi
-    if [ ! -f $KEY_ROOT/jenkins ]; then
+    if [ ! -f $KEY_ROOT/bench-tc-jenkins.pub ]; then
       echo "${BOLD}Creating SSH keys for Jenkins instance${NORMAL}"
       ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f $KEY_ROOT/bench-tc-jenkins
       ssh-keygen -f $KEY_ROOT/bench-tc-jenkins.pub -m pem -e > $KEY_ROOT/bench-tc-jenkins.pem
