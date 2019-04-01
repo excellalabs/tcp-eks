@@ -148,6 +148,7 @@ resource "aws_kms_key" "bastion" {
     Name    = "${var.project_name}-${var.environment}-bastion-kms-key"
     Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
+    Created = "${timestamp()}"
     Environment = "${var.environment}"
   }
 }
@@ -166,6 +167,7 @@ resource "aws_kms_key" "cluster" {
     Name    = "${var.project_name}-${var.environment}-cluster-kms-key"
     Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
+    Created = "${timestamp()}"
     Environment = "${var.environment}"
   }
 }
@@ -185,9 +187,10 @@ resource "aws_s3_bucket" "terraform-state-storage-s3" {
     enabled = true
   }
   tags {
-    Name        = "S3 Remote Terraform State Store"
-    Project     = "${var.project_name}"
-    Creator     = "${var.aws_email}"
+    Name    = "S3 Remote Terraform State Store"
+    Project = "${var.project_name}"
+    Owner   = "${var.aws_email}"
+    Created = "${timestamp()}"
     Environment = "${var.environment}"
   }
 }
