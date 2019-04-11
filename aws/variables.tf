@@ -169,7 +169,7 @@ variable "db_identifier" {
 }
 
 variable "db_name" {
-  default     = "pg-bench-db"
+  default     = "benchdb"
   description = "The name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance. Note that this does not apply for Oracle or SQL Server engines. See the AWS documentation for more details on what applies for those engines."
 }
 
