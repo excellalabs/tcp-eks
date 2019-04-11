@@ -158,6 +158,11 @@ variable "db_version" {
   default     = "10.4"
 }
 
+variable "db_major_version" {
+  description = "major_engine_version (Optional) The major engine version to use."
+  default     = "10"
+}
+
 variable "db_port" {
   description = "(Optional) The port on which the DB accepts connections."
   default     = 5432
