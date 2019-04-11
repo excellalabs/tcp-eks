@@ -182,12 +182,6 @@ variable "db_password" {
   description = "(Required unless a snapshot_identifier or replicate_source_db is provided) Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file."
 }
 
-variable "db_subnet_cidrs" {
-  type    = "list"
-  default = ["10.0.101.0/24", "10.0.102.0/24"]
-  description = "The cidrs the database should reside in"
-}
-
 variable "db_storage_type" {
   description = "(Optional) One of standard (magnetic), gp2 (general purpose SSD), or io1 (provisioned IOPS SSD). The default is io1 if iops is specified, standard if not. Note that this behaviour is different from the AWS web console, where the default is gp2."
   default     = "gp2"

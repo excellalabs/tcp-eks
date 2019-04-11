@@ -1,5 +1,6 @@
 #terraform {
 #  backend "s3" {
+#    encrypt = true
 #  }
 #}
 
@@ -98,8 +99,7 @@ module "rds" {
   parameter_group_name  = "${var.db_engine}-${var.db_version}"
   option_group_name     = "${var.db_engine}-options"
   publicly_accessible   = "${var.db_publicly_accessible}"
- #database_access_cidrs = ["${concat(var.cluster_cidrs, var.private_subnet)}"]
-  subnet_ids            = "${var.db_subnet_cidrs}"
+  subnet_ids            = "${module.network.private_subnet_ids}"
   vpc_id                = "${module.vpc.id}"
   auto_minor_version_upgrade  = "${var.db_auto_minor_version_upgrade}"
   allow_major_version_upgrade = "${var.db_allow_major_version_upgrade}"
