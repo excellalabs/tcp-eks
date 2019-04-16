@@ -155,7 +155,7 @@ variable "db_size" {
 
 variable "db_version" {
   description = "engine_version (Optional) The engine version to use. If auto_minor_version_upgrade is enabled, you can provide a prefix of the version"
-  default     = "10.4"
+  default     = "10.6"
 }
 
 variable "db_major_version" {
