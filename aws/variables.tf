@@ -311,3 +311,14 @@ variable "github_branch_trigger" {
   default     = "master"
   description = "Branches to automatically build (of the subset of included branches)"
 }
+
+variable "deletion_window_in_days" {
+  description = "key deletion window in days"
+  default     = 7
+}
+
+variable "enable_key_rotation" {
+  type        = "string"
+  description = "Enable key rotation"
+  default     = "false"
+}

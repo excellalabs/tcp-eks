@@ -140,8 +140,8 @@ resource "aws_key_pair" "bastion" {
 
 resource "aws_kms_key" "bastion" {
   description             = "${var.project_name}-${var.environment}-bastion-kms-key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = false
+  deletion_window_in_days = "${var.deletion_window_in_days}"
+  enable_key_rotation     = "${var.enable_key_rotation}"
   tags {
     Name    = "${var.project_name}-${var.environment}-bastion-kms-key"
     Project = "${var.project_name}"
@@ -159,8 +159,8 @@ resource "aws_key_pair" "cluster" {
 
 resource "aws_kms_key" "cluster" {
   description             = "${var.project_name}-${var.environment}-cluster-kms-key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = false
+  deletion_window_in_days = "${var.deletion_window_in_days}"
+  enable_key_rotation     = "${var.enable_key_rotation}"
   tags {
     Name    = "${var.project_name}-${var.environment}-cluster-kms-key"
     Project = "${var.project_name}"
