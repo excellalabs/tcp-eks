@@ -151,6 +151,11 @@ resource "aws_kms_key" "bastion" {
   }
 }
 
+resource "aws_kms_alias" "bastion" {
+  name = "alias/${var.project_name}-${var.environment}-bastion-kms-key"
+  target_key_id = "${aws_kms_key.bastion.key_id}"
+}
+
 # Cluster KMS key
 resource "aws_key_pair" "cluster" {
   key_name   = "${var.cluster_key_name}"
