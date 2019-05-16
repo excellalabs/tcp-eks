@@ -13,10 +13,11 @@ provider "aws" {
 module "vpc" {
   source = "git::https://github.com/excellaco/terraform-aws-vpc.git?ref=master"
 
-  name        = "${var.project_name}"
+  name = "${var.project_name}"
+  cidr = "${var.vpc_cidr_block}"
+
   environment = "${var.environment}"
   aws_email   = "${var.aws_email}"
-  cidr_block  = "${var.vpc_cidr_block}"
 }
 
 module "network" {
