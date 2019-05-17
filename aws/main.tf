@@ -26,8 +26,8 @@ module "network" {
   name        = "${var.project_name}"
   environment = "${var.environment}"
   aws_email   = "${var.aws_email}"
-  vpc_id      = "${module.vpc.id}"
-  vpc_igw     = "${module.vpc.igw}"
+  vpc_id      = "${module.vpc.vpc_id}"
+  vpc_igw     = "${module.vpc.igw_id}"
   depends_id  = ""
 
   public_subnet_cidrs  = "${var.public_subnet_cidrs}"
@@ -43,7 +43,7 @@ module "bastion" {
   namespace   = "${var.project_name}"
   environment = "${var.environment}"
   port        = "${var.rds_port}"
-  vpc_id      = "${module.vpc.id}"
+  vpc_id      = "${module.vpc.vpc_id}"
   key_name    = "${var.bastion_key_name}"
   subnets     = "${module.network.public_subnet_ids}"
   ssh_user    = "${var.bastion_ssh_user}"
@@ -54,8 +54,8 @@ module "bastion" {
 module "jenkins" {
   source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=master"
 
-  vpc_id                     = "${module.vpc.id}"
-  vpc_igw                    = "${module.vpc.igw}"
+  vpc_id                     = "${module.vpc.vpc_id}"
+  vpc_igw                    = "${module.vpc.igw_id}"
   environment                = "${var.environment}"
   name                       = "${var.project_name}"
   aws_email                  = "${var.aws_email}"
@@ -99,7 +99,7 @@ module "rds" {
   db_parameter_group    = "${var.db_param_family}"
   publicly_accessible   = "${var.db_publicly_accessible}"
   subnet_ids            = "${module.network.private_subnet_ids}"
-  vpc_id                = "${module.vpc.id}"
+  vpc_id                = "${module.vpc.vpc_id}"
   auto_minor_version_upgrade  = "${var.db_auto_minor_version_upgrade}"
   allow_major_version_upgrade = "${var.db_allow_major_version_upgrade}"
   apply_immediately           = "${var.db_apply_immediately}"
@@ -118,7 +118,7 @@ module "eks-cluster" {
   aws_email    = "${var.aws_email}"
   aws_region   = "${var.aws_region}"
   cluster_name = "${var.project_name}-${var.environment}-cluster"
-  vpc_id       = "${module.vpc.id}"
+  vpc_id       = "${module.vpc.vpc_id}"
 
   config_output_path = "${var.config_output_path}"
   cloudwatch_prefix  = "${var.project_name}/${var.environment}"
