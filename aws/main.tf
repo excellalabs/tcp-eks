@@ -11,29 +11,21 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "git::https://github.com/excellaco/terraform-aws-vpc.git?ref=master"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=master"
 
   name = "${var.project_name}"
   cidr = "${var.vpc_cidr_block}"
-
-  environment = "${var.environment}"
-  aws_email   = "${var.aws_email}"
-}
-
-module "network" {
-  source = "git::https://github.com/excellaco/terraform-aws-network.git?ref=master"
-
-  name        = "${var.project_name}"
-  environment = "${var.environment}"
-  aws_email   = "${var.aws_email}"
-  vpc_id      = "${module.vpc.vpc_id}"
-  vpc_igw     = "${module.vpc.igw_id}"
-  depends_id  = ""
-
-  public_subnet_cidrs  = "${var.public_subnet_cidrs}"
-  private_subnet_cidrs = "${var.private_subnet_cidrs}"
-  availability_zones   = ["${data.aws_availability_zones.available.names[0]}",
+  azs  = ["${data.aws_availability_zones.available.names[0]}",
     "${data.aws_availability_zones.available.names[1]}"]
+
+  private_subnets = "${var.private_subnet_cidrs}"
+  public_subnets  = "${var.public_subnet_cidrs}"
+
+  enable_nat_gateway = true
+
+  tags = {"Owner" = "${var.aws_email}"
+          "Created" = "${timestamp()}"
+          "Environment" = "${var.environment}"}
 }
 
 module "bastion" {
@@ -45,7 +37,7 @@ module "bastion" {
   port        = "${var.rds_port}"
   vpc_id      = "${module.vpc.vpc_id}"
   key_name    = "${var.bastion_key_name}"
-  subnets     = "${module.network.public_subnet_ids}"
+  subnets     = "${module.vpc.public_subnets}"
   ssh_user    = "${var.bastion_ssh_user}"
   security_groups = []
   allowed_cidr_blocks = "${var.ssh_cidr}"
@@ -98,7 +90,7 @@ module "rds" {
   instance_class        = "${var.db_instance_class}"
   db_parameter_group    = "${var.db_param_family}"
   publicly_accessible   = "${var.db_publicly_accessible}"
-  subnet_ids            = "${module.network.private_subnet_ids}"
+  subnet_ids            = "${module.vpc.private_subnets}"
   vpc_id                = "${module.vpc.vpc_id}"
   auto_minor_version_upgrade  = "${var.db_auto_minor_version_upgrade}"
   allow_major_version_upgrade = "${var.db_allow_major_version_upgrade}"
@@ -122,8 +114,8 @@ module "eks-cluster" {
 
   config_output_path = "${var.config_output_path}"
   cloudwatch_prefix  = "${var.project_name}/${var.environment}"
-  private_subnet    = "${module.network.private_subnet_ids}"
-  public_subnet     = "${module.network.public_subnet_ids}"
+  private_subnet    = "${module.vpc.private_subnets}"
+  public_subnet     = "${module.vpc.public_subnets}"
   cluster_cidrs     = ["${var.jenkins_cidrs}"]
 
   cluster_max_size = "${var.cluster_max_size}"
