@@ -1,4 +1,4 @@
-# Bench CI/CD + EKS infrastructure
+# Technical Challenge Platform CI/CD + EKS infrastructure
 
 This repo uses Terraform and Chef to quickly create a Jenkins instance and two EKS clusters optimized for rapid prototype development in AWS. The jenkins instance acts as both the CI/CD facilitator as well as the bastion to access instances within the VPC.
 
@@ -12,11 +12,11 @@ Upon running terraform to create the infrastructure in this repo, several AWS SS
 
 ![Pipeline Example](./doc/pipeline-flow.png "Pipeline Example")
 
-First the `bench-infrastructure` pipeline should be run to create any globally used resources (such as docker images). In the example case above, ECR repos are created as well as SSM paramters for later use by the application pipelines, followed by building and publishing the "base" and "pipeline" docker images to ECR.
+First the `tcp-eks` pipeline should be run to create any globally used resources (such as docker images). In the example case above, ECR repos are created as well as SSM paramters for later use by the application pipelines, followed by building and publishing the "base" and "pipeline" docker images to ECR.
 
 *What are these docker images?* The "base" image is what the application produciton docker image will be derived from. The "pipeline" image is used within the application pipeline to test and build the application. (It is assumed that any toolchains necessary to build and test an application will be containerized for speed and portability. In this way if a toolchain changes it will not require that Jenkins be reprovisoned, but instead, simply rebuilding the toolchain image in question. )
 
-Once the `bench-infrastructure` pipeline completes successfully, then application pipelines can begin to run. In the example above a `bench-react` application is being tested, built, and deployed. The application pipeline in this example is using terraform to create and manage the EKS service, ECR repo (for the application production image), ALB Target changes (for facilitating routing), and persisting important key-value parameters in SSM. All terraform state is persisted to an S3 bucket and read/write coordination is achieved by locking on a dynamoDB table during any terraform action --this ensures that parallel pipeline runs aren't mutating shared state simultaneously.
+Once the `tcp-eks` pipeline completes successfully, then application pipelines can begin to run. In the example above a `bench-react` application is being tested, built, and deployed. The application pipeline in this example is using terraform to create and manage the EKS service, ECR repo (for the application production image), ALB Target changes (for facilitating routing), and persisting important key-value parameters in SSM. All terraform state is persisted to an S3 bucket and read/write coordination is achieved by locking on a dynamoDB table during any terraform action --this ensures that parallel pipeline runs aren't mutating shared state simultaneously.
 
 Lastly, jenkins has resource locks for each environment to ensure that multiple applications are not attempting to modify the same environment at the same time. During any deployment the application pipeline should acquire an environment resource lock before attempting to deploy any application and release this lock after the deployment has finished.
 
@@ -61,13 +61,13 @@ cluster_key_name = "cluster_ENVIRONMENT_ssh_key_pair_YOURNAME"
 
 # credentials used to create any application database
 # password must be greater than 8 characters
-db_username = "benchtc"
+db_username = "tcp-eks"
 db_password = "anothergreatpasswordelse"
-db_identifier = "pg-bench-db1"
+db_identifier = "pg-tcp-eks-db1"
 
 # Leave these alone
 github_repo_owner = "excellaco"
-github_repo_include = "bench-infrastructure bench-tc-react bench-tc-ruby bench-tc-java"
+github_repo_include = "tcp-eks bench-tc-react bench-tc-ruby bench-tc-java"
 ```
 
 This is used by both of the jenkins and eks terraform modules.
@@ -79,7 +79,7 @@ This is used by both of the jenkins and eks terraform modules.
 
 Head into the infrastructure toolchain container:
 ```
-glue bash bench-infrastructure
+glue bash tcp-eks
 ```
 
 To generate keys and provision the Jenkins infrastructure run the following from within the toolchain container:
