@@ -17,7 +17,7 @@ variable "aws_account_id" {
 
 variable "project_name" {
   type        = "string"
-  default     = "bench-tc"
+  default     = "tcp-eks"
   description = "prefix for all created resources"
 }
 
@@ -85,7 +85,7 @@ variable "bastion_key_name" {
 }
 
 variable "bastion_public_key_path" {
-  default     = "../keys/bench-tc-bastion.pub"
+  default     = "../keys/tcp-eks-bastion.pub"
   description = "path to bastion public key"
 }
 
@@ -123,7 +123,7 @@ variable "cluster_key_name" {
 }
 
 variable "cluster_public_key_path" {
-  default     = "../keys/bench-tc-cluster.pub"
+  default     = "../keys/tcp-eks-cluster.pub"
   description = "path to cluster public key"
 }
 
@@ -169,17 +169,17 @@ variable "db_port" {
 }
 
 variable "db_identifier" {
-  default     = "pg-bench-db"
+  default     = "pg-tcp-eks-db"
   description = "(Forces new resource) The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier."
 }
 
 variable "db_name" {
-  default     = "benchdb"
+  default     = "tcpeksdb"
   description = "The name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance. Note that this does not apply for Oracle or SQL Server engines. See the AWS documentation for more details on what applies for those engines."
 }
 
 variable "db_username" {
-  default     = "benchtc"
+  default     = "tcp-eks"
   description = "(Required unless a snapshot_identifier or replicate_source_db is provided) Username for the master DB user."
 }
 
@@ -269,12 +269,12 @@ variable "jenkins_key_name" {
 }
 
 variable "jenkins_private_key_path" {
-  default     = "../keys/bench-tc-jenkins"
+  default     = "../keys/tcp-eks-jenkins"
   description = "path to ssh private key"
 }
 
 variable "jenkins_public_key_path" {
-  default     = "../keys/bench-tc-jenkins.pub"
+  default     = "../keys/tcp-eks-jenkins.pub"
   description = "path to ssh public key"
 }
 
