@@ -5,10 +5,9 @@ realpath() {
   [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
-PROJECT_NAME="bench-tc"
-AWS_REGION="us-east-1"
-ENVIRONMENT="dev"
 KEY_ROOT=$(realpath keys)
+export CI_PROJECT_NAME="tcp-eks"
+export AWS_DEFAULT_REGION="us-east-1"
 USAGE="Usage: $0 init|plan|apply|destroy|chef|kube"
 
 NORMAL=$(tput sgr0)
@@ -30,10 +29,11 @@ if [ $# -gt 2 ]; then
   error_and_exit "$USAGE"
 fi
 
-exes=(git terraform)
+exes=(git terraform python)
 for i in "${exes[@]}"
 do
-  command -v $i >/dev/null 2>&1 || error_and_exit "$i is not installed. Aborting."
+ #command -v $i >/dev/null 2>&1 || error_and_exit "$i is not installed. Aborting."
+  command -v $i >/dev/null 2>&1 || brew install $i
 done
 
 echo "Running [$1]"
@@ -41,25 +41,25 @@ echo "Running [$1]"
 pushd aws &> /dev/null
 case "$1" in
   init)
+    if aws s3 ls "s3://${CI_PROJECT_NAME}" 2>&1 | grep -q 'NoSuchBucket'; then
+      aws s3api create-bucket --acl private --bucket ${CI_PROJECT_NAME} --region ${AWS_DEFAULT_REGION}
+    fi
     if [ ! -d ${KEY_ROOT} ]; then
       mkdir ${KEY_ROOT}
     fi
-    if [ ! -f ${KEY_ROOT}/${PROJECT_NAME}-bastion.pub ]; then
-      echo "Creating SSH keys for ${PROJECT_NAME}-bastion instance"
-      ssh-keygen -t rsa -b 4096 -o -a 100 -f ${KEY_ROOT}/${PROJECT_NAME}-bastion
-      ssh-keygen -f ${KEY_ROOT}/${PROJECT_NAME}-bastion.pub -m pem -e > ${KEY_ROOT}/${PROJECT_NAME}-bastion.pem
-    fi
-    if [ ! -f ${KEY_ROOT}/${PROJECT_NAME}-cluster.pub ]; then
-      echo "Creating SSH keys for ${PROJECT_NAME}-cluster instances"
-      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${PROJECT_NAME}-cluster
-      ssh-keygen -f ${KEY_ROOT}/${PROJECT_NAME}-cluster.pub -m pem -e > ${KEY_ROOT}/${PROJECT_NAME}-cluster.pem
-    fi
-    if [ ! -f ${KEY_ROOT}/${PROJECT_NAME}-jenkins.pub ]; then
-      echo "Creating SSH keys for ${PROJECT_NAME}-jenkins instance"
-      ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${PROJECT_NAME}-jenkins
-      ssh-keygen -f ${KEY_ROOT}/${PROJECT_NAME}-jenkins.pub -m pem -e > ${KEY_ROOT}/${PROJECT_NAME}-jenkins.pem
-    fi
-    terraform init -backend-config="bucket=${PROJECT_NAME}-${ENVIRONMENT}" -backend-config="key=terraform.tfstate" -backend-config="region=${AWS_REGION}" -backend-config="encrypt=true"
+    for key in bastion cluster jenkins; do
+      if [ ! -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem ]; then
+        echo "Creating SSH keys for ${CI_PROJECT_NAME}-${key} instance"
+        ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}
+        ssh-keygen -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pub -m pem -e > ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem
+        aws s3 cp ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pub s3://${CI_PROJECT_NAME}/${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pub
+        aws s3 ls s3://${CI_PROJECT_NAME}/${KEY_ROOT}/
+      fi
+    done
+    terraform init -backend-config="bucket=${CI_PROJECT_NAME}" \
+      -backend-config="key=terraform/terraform.tfstate" \
+      -backend-config="region=${AWS_DEFAULT_REGION}" \
+      -backend-config="encrypt=true"
     ;;
   plan)
     terraform plan -out tfplan
