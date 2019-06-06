@@ -17,14 +17,13 @@ variable "aws_account_id" {
 
 variable "project_name" {
   type        = "string"
-  default     = "tcp-eks"
   description = "prefix for all created resources"
 }
 
 variable "environment" {
   type        = "string"
-  default     = "development"
-  description = "Environment i.e. production or development"
+  default     = "dev"
+  description = "Environment, i.e. prod or dev"
 }
 
 variable "aws_access_key" {
@@ -336,14 +335,15 @@ variable "github_token" {
 }
 
 variable "github_repo_owner" {
-  type        = "string"
-  default     = "excellaco"
   description = "The github user account that *owns* the repos for which pipelines should be instantiated"
+  default     = "excellaco"
+  type        = "string"
 }
 
 variable "github_repo_include" {
-  type        = "string"
   description = "Repos to include from github owner account"
+  default     = "tcp-eks"
+  type        = "string"
 }
 
 variable "github_branch_include" {
