@@ -341,8 +341,8 @@ variable "github_repo_owner" {
 }
 
 variable "github_repo_include" {
-  description = "Repos to include from github owner account"
-  default     = "tcp-eks"
+  description = "Repositories to include from github owner account"
+  default     = "tcp-eks tcp-angular tcp-java"
   type        = "string"
 }
 
