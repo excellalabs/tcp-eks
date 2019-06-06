@@ -5,13 +5,27 @@
 #}
 
 provider "aws" {
+  version    = "~> 2.13"
   region     = "${var.aws_region}"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
 }
 
+provider "local" {
+  version = "~> 1.2"
+}
+
+provider "null" {
+  version = "~> 2.1"
+}
+
+provider "template" {
+  version = "~> 2.1"
+}
+
+# Virtual Private Cloud (VPC)
 module "vpc" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=master"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v0.11"
 
   name = "${var.project_name}"
   cidr = "${var.vpc_cidr_block}"
@@ -23,11 +37,14 @@ module "vpc" {
 
   enable_nat_gateway = true
 
-  tags = {"Owner" = "${var.aws_email}"
-          "Created" = "${timestamp()}"
-          "Environment" = "${var.environment}"}
+  tags = {
+    Owner = "${var.aws_email}"
+    Created = "${timestamp()}"
+    Environment = "${var.environment}"
+  }
 }
 
+# Control Network Access to RDS and EC2 Instances Using a Bastion Server
 module "bastion" {
   source = "git::https://github.com/excellaco/terraform-aws-ec2-bastion-server.git?ref=master"
 
@@ -41,8 +58,13 @@ module "bastion" {
   ssh_user    = "${var.bastion_ssh_user}"
   security_groups = []
   allowed_cidr_blocks = "${var.ssh_cidr}"
+  tags = {
+    Owner   = "${var.aws_email}"
+    Created = "${timestamp()}"
+  }
 }
 
+# Jenkins Open-source CI/CD Automation Server
 module "jenkins" {
   source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=master"
 
@@ -65,9 +87,9 @@ module "jenkins" {
   github_branch_include      = "${var.github_branch_include}"
   github_branch_trigger      = "${var.github_branch_trigger}"
   public_subnet_cidrs        = "${var.jenkins_cidrs}"
-  availability_zones         = ["${data.aws_availability_zones.available.names[0]}"]
 }
 
+# Relational Database Service (RDS)
 module "rds" {
   source = "git::https://github.com/excellaco/terraform-aws-rds.git?ref=master"
 
@@ -100,8 +122,13 @@ module "rds" {
   copy_tags_to_snapshot       = "${var.db_copy_tags_to_snapshot}"
   backup_retention_period     = "${var.db_backup_retention_period}"
   backup_window               = "${var.db_backup_window}"
+  tags = {
+    Owner   = "${var.aws_email}"
+    Created = "${timestamp()}"
+  }
 }
 
+# Elastic Kubernetes Service (EKS)
 module "eks-cluster" {
   source = "git::https://github.com/excellaco/terraform-aws-eks.git?ref=master"
 
@@ -125,7 +152,7 @@ module "eks-cluster" {
   instance_type    = "${var.cluster_instance_type}"
 }
 
-# Bastion KMS key
+# Bastion Key Management Service (KMS)
 resource "aws_key_pair" "bastion" {
   key_name   = "${var.bastion_key_name}"
   public_key = "${file(var.bastion_public_key_path)}"
@@ -149,7 +176,7 @@ resource "aws_kms_alias" "bastion" {
   target_key_id = "${aws_kms_key.bastion.key_id}"
 }
 
-# Cluster KMS key
+# Cluster Key Management Service (KMS)
 resource "aws_key_pair" "cluster" {
   key_name   = "${var.cluster_key_name}"
   public_key = "${file(var.cluster_public_key_path)}"
