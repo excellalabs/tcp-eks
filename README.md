@@ -67,7 +67,7 @@ db_identifier = "pg-tcp-eks-db1"
 
 # Leave these alone
 github_repo_owner = "excellaco"
-github_repo_include = "tcp-eks bench-tc-react bench-tc-ruby bench-tc-java"
+github_repo_include = "tcp-eks tcp-angular tcp-java"
 ```
 
 This is used by both of the jenkins and eks terraform modules.
