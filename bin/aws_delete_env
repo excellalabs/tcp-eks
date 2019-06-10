@@ -1,0 +1,276 @@
+#!/bin/sh
+
+
+
+USAGE="Usage: ${0} <project_name> <aws_region> <environment>"
+
+
+if [ $# -lt 3 ]; then
+
+
+  echo ${USAGE}
+
+else
+
+  export CI_PROJECT_NAME=${1}
+
+  export AWS_DEFAULT_REGION=${2}
+
+  export ENVIRONMENT=${3}
+
+fi
+
+
+aws eks delete-cluster --name ${CI_PROJECT_NAME}-dev-cluster
+
+aws ec2 delete-key-pair --key-name ${CI_PROJECT_NAME}-dev-bastion
+
+aws ec2 delete-key-pair --key-name ${CI_PROJECT_NAME}-dev-cluster
+
+
+aws logs delete-log-group --log-group-name "${CI_PROJECT_NAME}/dev"
+
+
+aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-bastion-kms-key
+
+aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-cluster-kms-key
+
+
+aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-cluster/dev/cluster
+
+aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-cluster/dev/logsecrets
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_cluster_certificate_authority_data
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_cluster_endpoint
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_cluster_id
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_cluster_private_subnet_cidrs
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_cluster_public_subnet_cidrs
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_cluster_role_arn
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_private_subnet_ids
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_public_subnet_ids
+
+aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_vpc_id
+
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name ${CI_PROJECT_NAME}-dev-cluster-asg --force-delete
+
+
+
+aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,Tags[?Key==`Name`].Value]"
+
+
+aws ec2 describe-instances --filters "Name=dns-name,Values=${CI_PROJECT_NAME}-dev-cluster-node" "Name=availability-zone,Values=us-east-1a"
+
+aws ec2 describe-instances --filters "Name=dns-name,Values=${CI_PROJECT_NAME}-dev-cluster-node" "Name=availability-zone,Values=us-east-1b"
+
+
+aws ec2 describe-instances --filters "Name=dns-name,Values=${CI_PROJECT_NAME}-dev-bastion" "Name=availability-zone,Values=us-east-1a"
+
+
+#aws ec2 terminate-instances --instance-ids i-074ba045044a91994
+
+
+
+sg_ids=`aws ec2 describe-security-groups --query="SecurityGroups[?starts_with(GroupName, '${CI_PROJECT_NAME}-dev-')][GroupId]" --output=text`
+
+for sg_id in ${sg_ids}; do
+
+  aws ec2 delete-security-group --group-id ${sg_id}
+
+done
+
+
+
+subnet_ids=`aws ec2 describe-subnets --query="Subnets[?Tags[?Key=='Name' && starts_with(Value, '${CI_PROJECT_NAME}-dev')]].SubnetId" --output text`
+
+for subnet_id in ${subnet_ids}; do
+
+  aws ec2 delete-subnet --subnet-id ${subnet_id}
+
+done
+
+
+
+rtb_ids=`aws ec2 describe-route-tables --query="RouteTables[?starts_with(VpcId, '${vpc_id}')][RouteTableId]" --output=text`
+
+for rtb_id in ${rtb_ids}; do
+
+  aws ec2 delete-route-table --route-table-id {rtb_id}
+
+done
+
+
+
+acl_ids=`aws ec2 describe-network-acls --query="NetworkAcls[?starts_with(VpcId, '${vpc_id}')][NetworkAclId]" --output=text`
+
+for acl_id in ${acl_ids}; do
+
+  aws ec2 delete-network-acl --network-acl-id ${acl_id}
+
+done
+
+
+
+eni_ids=`aws ec2 describe-network-interfaces --query="NetworkInterfaces[?starts_with(VpcId, '${vpc_id}')][NetworkInterfaceId]" --output=text`
+
+for eni_id in ${eni_ids}; do
+
+  aws ec2 delete-network-interface --network-interface-id ${eni_id}
+
+done
+
+
+
+igw_ids=`aws ec2 describe-internet-gateways --query="InternetGateways[?Tags[?Key=='Name' && Value=='${CI_PROJECT_NAME}-dev-igw']].InternetGatewayId" --output text`
+
+for igw_id in ${igw_ids}; do
+
+  vpc_ids=`aws ec2 describe-internet-gateways --internet-gateway-id ${igw_id} --query="InternetGateways[].Attachments[].VpcId" --output text`
+
+  for vpc_id in ${vpc_ids}; do
+
+    aws ec2 detach-internet-gateway --internet-gateway-id ${igw_id} --vpc-id ${vpc_id}
+
+  done
+
+  aws ec2 delete-internet-gateway --internet-gateway-id ${igw_id}
+
+done
+
+
+
+nat_ids=`aws ec2 describe-nat-gateways --query="NatGateways[?Tags[?Key=='Name' && Value=='${CI_PROJECT_NAME}-dev-nat-gateway']].NatGatewayId" --output text`
+
+for nat_id in ${nat_ids}; do
+
+  aws ec2 delete-nat-gateway --nat-gateway-id ${nat_id}
+
+done
+
+
+
+vpc_ids=`aws ec2 describe-vpcs --query="Vpcs[?Tags[?Key=='Name' && Value=='${CI_PROJECT_NAME}-dev-vpc']].VpcId" --output text`
+
+for vpc_id in ${vpc_ids}; do
+
+  subnet_ids=`aws ec2 describe-subnets --query="Subnets[?VpcId=='${vpc_id}'].SubnetId" --output text`
+
+  for subnet_id in ${subnet_ids}; do
+
+    aws ec2 delete-subnet --subnet-id ${subnet_id}
+
+  done
+
+  group_ids=`aws ec2 describe-security-groups --query="SecurityGroups[?VpcId=='${vpc_id}'].GroupId" --output text`
+
+  for group_id in ${group_ids}; do
+
+    aws ec2 delete-security-group --group-id ${group_id}
+
+  done
+
+  aws ec2 delete-vpc --vpc-id ${vpc_id}
+
+done
+
+
+
+eipalloc_ips=`aws ec2 describe-addresses --query="Addresses[?Domain=='vpc'].AllocationId" --output text`
+
+for eipalloc_ip in ${eipalloc_ips}; do
+
+  aws ec2 release-address --allocation-id ${eipalloc_ip}
+
+done
+
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
+
+
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-policy --role-name ${CI_PROJECT_NAME}-dev-cluster-role
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy --role-name ${CI_PROJECT_NAME}-dev-cluster-role
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess --role-name ${CI_PROJECT_NAME}-dev-cluster-role
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSServicePolicy --role-name ${CI_PROJECT_NAME}-dev-cluster-role
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role --role-name ${CI_PROJECT_NAME}-dev-cluster-role
+
+
+
+aws iam detach-role-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-worker-autoscaling --role-name ${CI_PROJECT_NAME}-dev-cluster
+
+
+
+aws iam delete-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-policy
+
+aws iam delete-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-worker-autoscaling
+
+
+
+aws iam list-instance-profiles --query="InstanceProfiles[?starts_with(InstanceProfileName, '${CI_PROJECT_NAME}-dev-')][CreateDate,InstanceProfileName,Arn]" --output=text
+
+aws iam list-instance-profiles --query="InstanceProfiles[?Roles[?starts_with(RoleName,'${CI_PROJECT_NAME}-dev-')]].[InstanceProfileId,InstanceProfileName]" --output=text
+
+
+
+
+aws iam remove-role-from-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-bastion --role-name ${CI_PROJECT_NAME}-dev-bastion
+
+aws iam remove-role-from-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster --role-name ${CI_PROJECT_NAME}-dev-cluster
+
+aws iam remove-role-from-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster-node-profile --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
+
+
+
+aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-bastion
+aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster
+aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster-node-profile
+
+
+
+
+
+aws iam list-roles --query="Roles[?starts_with(RoleName, '${CI_PROJECT_NAME}-dev-')][RoleName,Arn]" --output=text
+
+
+aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-bastion
+aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-cluster
+
+aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-cluster-role
+
+aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
+
+
+
+for r in ${CI_PROJECT_NAME}-dev-cluster \
+
+  ${CI_PROJECT_NAME}-dev-cluster-role \
+
+  ${CI_PROJECT_NAME}-dev-cluster-node-role
+
+do
+
+  aws iam list-role-policies --role-name $r
+
+  aws iam delete-role --role-name $r
+
+done

@@ -31,6 +31,4 @@ RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.
     ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
     echo -n "aws cli v: " && aws --version
 
-CMD sh
-
-ENTRYPOINT sh
+ENTRYPOINT ["sh", "./bin/aws_create_eks_cluster"]

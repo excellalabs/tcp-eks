@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -eu
 
 realpath() {
@@ -6,9 +6,9 @@ realpath() {
 }
 
 KEY_ROOT=$(realpath keys)
-export CI_PROJECT_NAME="tcp-eks"
+export CI_PROJECT_NAME="sandbox"
 export AWS_DEFAULT_REGION="us-east-1"
-USAGE="Usage: $0 init|plan|apply|destroy|chef|kube"
+USAGE="Usage: $0 init|plan|apply|destroy"
 
 NORMAL=$(tput sgr0)
 RED=$(tput setaf 1)
@@ -47,7 +47,7 @@ case "$1" in
     if [ ! -d ${KEY_ROOT} ]; then
       mkdir ${KEY_ROOT}
     fi
-    for key in bastion cluster jenkins; do
+    for key in bastion cluster; do
       if [ ! -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem ]; then
         echo "Creating SSH keys for ${CI_PROJECT_NAME}-${key} instance"
         ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}
@@ -56,6 +56,17 @@ case "$1" in
         aws s3 ls s3://${CI_PROJECT_NAME}/${KEY_ROOT}/
       fi
     done
+    export AWS_EKS_URL=https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.13/2019-03-13/bin
+    if [ `uname -s` = "Linux" ]; then
+      curl -s -qL -o kubectl ${AWS_EKS_URL}/linux/amd64/kubectl
+      curl -s -qL -o aws-iam-authenticator ${AWS_EKS_URL}/linux/amd64/aws-iam-authenticator
+    else
+      curl -s -qL -o kubectl ${AWS_EKS_URL}/darwin/amd64/kubectl
+      curl -s -qL -o aws-iam-authenticator ${AWS_EKS_URL}/darwin/amd64/aws-iam-authenticator
+    fi
+    chmod +x ./kubectl ./aws-iam-authenticator
+    ./kubectl version --client --short
+    ./aws-iam-authenticator
     terraform init -backend-config="bucket=${CI_PROJECT_NAME}" \
       -backend-config="key=terraform/terraform.tfstate" \
       -backend-config="region=${AWS_DEFAULT_REGION}" \
@@ -69,27 +80,12 @@ case "$1" in
     ;;
   all)
     popd &> /dev/null
-    curl -s -qL -o terraform.zip https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_darwin_amd64.zip
-    unzip -o terraform.zip
-    chmod +x ./terraform
     eval $0 init
     eval $0 plan
     eval $0 apply
     ;;
   destroy)
-    terraform destroy 
-    ;;
-  chef)
-    pushd modules/jenkins
-    berks package ./cookbooks.tar.gz --berksfile=./cookbooks/demo/Berksfile
-    popd
-    scp -i ../keys/jenkins modules/jenkins/cookbooks.tar.gz ubuntu@$(terraform output jenkins_master_public_dns):/tmp/
-    ssh -i ../keys/jenkins ubuntu@$(terraform output jenkins_public_dns) sudo chef-solo --recipe-url /tmp/cookbooks.tar.gz -j /tmp/chef.json
-    ;;
-  kube)
-    curl -s -qL -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.13/2019-03-13/bin/darwin/amd64/kubectl
-    curl -s -qL -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.13/2019-03-13/bin/darwin/amd64/aws-iam-authenticator
-    chmod +x ./kubectl ./aws-iam-authenticator
+    terraform destroy
     ;;
   *)
     error_and_exit "$USAGE"

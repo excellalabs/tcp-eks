@@ -1,0 +1,45 @@
+#!/bin/sh
+
+source bin/export_dev_variables
+
+USAGE="Usage: ${0} <CI_PROJECT_NAME> <AWS_DEFAULT_REGION>"
+
+if [ $# -lt 2 ]; then
+  echo ${USAGE}
+else
+  export CI_PROJECT_NAME=${1}
+  export AWS_DEFAULT_REGION=${2}
+fi
+
+KEY_ROOT=${PWD}/keys
+if [ ! -d ${KEY_ROOT} ]; then
+  mkdir ${KEY_ROOT}
+fi
+
+for key in bastion cluster; do
+  if [ ! -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem ]; then
+    echo "$Creating SSH keys for ${CI_PROJECT_NAME}-${key} instance"
+    ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}
+    ssh-keygen -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pub -m pem -e > ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem
+  fi
+done
+
+if [ `uname -s` = "Linux" ]; then
+  curl -s -qL -o kubectl ${AWS_EKS_URL}/linux/amd64/kubectl
+  curl -s -qL -o aws-iam-authenticator ${AWS_EKS_URL}/linux/amd64/aws-iam-authenticator
+else
+  curl -s -qL -o kubectl ${AWS_EKS_URL}/darwin/amd64/kubectl
+  curl -s -qL -o aws-iam-authenticator ${AWS_EKS_URL}/darwin/amd64/aws-iam-authenticator 
+fi
+
+chmod +x ./kubectl ./aws-iam-authenticator
+./kubectl version --client --short
+./aws-iam-authenticator
+
+bin/aws_create_s3 ${CI_PROJECT_NAME} ${AWS_DEFAULT_REGION} keys
+aws s3 ls s3://${CI_PROJECT_NAME}/keys
+bin/terraform_init
+terraform plan -out "planfile"
+terraform apply -input=false "planfile"
+aws s3 cp kubeconfig.yaml s3://${CI_PROJECT_NAME}/${AWS_DEFAULT_REGION}/
+aws s3 ls s3://${CI_PROJECT_NAME}/${AWS_DEFAULT_REGION}

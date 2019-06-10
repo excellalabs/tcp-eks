@@ -1,0 +1,17 @@
+export AWS_EKS_URL=https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.13/2019-03-13/bin
+export AWS_DEFAULT_REGION=us-east-1
+export ENVIRONMENT=prod
+
+export CLUSTER_NAME=${CI_PROJECT_NAME}-${ENVIRONMENT}
+export CLUSTER_INSTANCE_TYPE=t2.medium
+export CLUSTER_MAX_SIZE=6
+export CLUSTER_NODES=4
+
+export DOCKER_REGISTRY=registry.gitlab.com
+export DOCKER_URL=${DOCKER_REGISTRY}/${CI_PROJECT_PATH}
+
+export RDS_PORT=5432
+
+#export SSH_CIDR=["76.76.0.0/16"]
+
+export CONFIG_OUTPUT_PATH=/builds/${CI_PROJECT_PATH}

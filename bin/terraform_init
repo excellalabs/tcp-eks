@@ -1,0 +1,25 @@
+cd aws
+terraform --version
+
+echo aws_region="\"${AWS_DEFAULT_REGION}\"" > terraform.tfvars
+echo aws_email="\"${GITLAB_USER_EMAIL}\"" >> terraform.tfvars
+echo bastion_key_name="\"${CLUSTER_NAME}-bastion\"" >> terraform.tfvars
+echo bastion_public_key_path="\"../keys/${CLUSTER_NAME}-bastion.pub\"" >> terraform.tfvars
+echo config_output_path="\"${CONFIG_OUTPUT_PATH}\"" >> terraform.tfvars
+echo cluster_key_name="\"${CLUSTER_NAME}-cluster\"" >> terraform.tfvars
+echo cluster_public_key_path="\"../keys/${CLUSTER_NAME}-cluster.pub\"" >> terraform.tfvars
+echo cluster_instance_type="\"${CLUSTER_INSTANCE_TYPE}\"" >> terraform.tfvars
+echo cluster_max_size="\"${CLUSTER_MAX_SIZE}\"" >> terraform.tfvars
+echo desired_capacity="\"${CLUSTER_NODES}\"" >> terraform.tfvars
+echo environment="\"${ENVIRONMENT}\"" >> terraform.tfvars
+echo project_name="\"${CI_PROJECT_NAME}\"" >> terraform.tfvars
+echo rds_port="\"${RDS_PORT}\"" >> terraform.tfvars
+
+echo AWS bucket name will be "${CLUSTER_NAME}"
+echo AWS ${ENVIRONMENT} cluster and VPC will be created in region "${AWS_DEFAULT_REGION}"
+echo AWS ${ENVIRONMENT} cluster will have "${CLUSTER_NODES}" nodes of type "${CLUSTER_INSTANCE_TYPE}"
+
+terraform init -backend-config="bucket=${CLUSTER_NAME}" \
+  -backend-config="key=terraform/terraform.tfstate" \
+  -backend-config="region=${AWS_DEFAULT_REGION}" \
+  -backend-config="encrypt=true"
