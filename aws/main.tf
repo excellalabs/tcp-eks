@@ -1,11 +1,12 @@
-#terraform {
+terraform {
+  required_version = "~> 0.11.0"
 #  backend "s3" {
 #    encrypt = true
 #  }
-#}
+}
 
 provider "aws" {
-  version    = "~> 2.13"
+  version    = "~> 2.14"
   region     = "${var.aws_region}"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
@@ -25,7 +26,7 @@ provider "template" {
 
 # Virtual Private Cloud (VPC)
 module "vpc" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v0.11"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v1.66.0"
 
   name = "${var.project_name}"
   cidr = "${var.vpc_cidr_block}"
@@ -69,13 +70,13 @@ module "jenkins" {
   source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=master"
 
   vpc_id                     = "${module.vpc.vpc_id}"
-  vpc_igw                    = "${module.vpc.igw_id}"
   environment                = "${var.environment}"
   name                       = "${var.project_name}"
   aws_email                  = "${var.aws_email}"
   aws_access_key             = "${var.aws_access_key}"
   aws_secret_key             = "${var.aws_secret_key}"
   jenkins_key_name           = "${var.jenkins_key_name}"
+  jenkins_subnet_ids         = "${module.vpc.public_subnets}"
   jenkins_private_key_path   = "${var.jenkins_private_key_path}"
   jenkins_public_key_path    = "${var.jenkins_public_key_path}"
   jenkins_developer_password = "${var.jenkins_developer_password}"
@@ -86,7 +87,6 @@ module "jenkins" {
   github_repo_include        = "${var.github_repo_include}"
   github_branch_include      = "${var.github_branch_include}"
   github_branch_trigger      = "${var.github_branch_trigger}"
-  public_subnet_cidrs        = "${var.jenkins_cidrs}"
 }
 
 # Relational Database Service (RDS)
@@ -97,10 +97,10 @@ module "rds" {
   namespace             = "${var.project_name}"
   environment           = "${var.environment}"
   host_name             = "${var.environment}-${var.db_identifier}"
-  database_name         = "${var.db_name}"
-  database_user         = "${var.db_username}"
-  database_password     = "${var.db_password}"
-  database_port         = "${var.db_port}"
+  identifier            = "${var.db_name}"
+  username              = "${var.db_username}"
+  password              = "${var.db_password}"
+  port                  = "${var.db_port}"
   multi_az              = "${var.db_multi_availability_zone}"
   iops                  = "${var.db_iops}"
   allocated_storage     = "${var.db_size}"
@@ -110,7 +110,7 @@ module "rds" {
   engine_version        = "${var.db_version}"
   major_engine_version  = "${var.db_major_version}"
   instance_class        = "${var.db_instance_class}"
-  db_parameter_group    = "${var.db_param_family}"
+  parameter_group_name  = "${var.db_param_family}"
   publicly_accessible   = "${var.db_publicly_accessible}"
   subnet_ids            = "${module.vpc.private_subnets}"
   vpc_id                = "${module.vpc.vpc_id}"
@@ -143,7 +143,7 @@ module "eks-cluster" {
   cloudwatch_prefix  = "${var.project_name}/${var.environment}"
   private_subnet    = "${module.vpc.private_subnets}"
   public_subnet     = "${module.vpc.public_subnets}"
-  cluster_cidrs     = ["${var.jenkins_cidrs}"]
+  cluster_cidrs     = ["${var.public_subnet_cidrs}"]
 
   cluster_max_size = "${var.cluster_max_size}"
   cluster_min_size = "${var.cluster_min_size}"

@@ -45,8 +45,7 @@ variable "aws_email" {
 }
 
 variable "rds_port" {
-  type        = "string"
-  default     = "5432"
+  default     = 5432
   description = "relational database service port"
 }
 
@@ -290,12 +289,6 @@ variable "db_copy_tags_to_snapshot" {
 }
 
 ## Jenkins
-
-variable "jenkins_cidrs" {
-  type    = "list"
-  default = ["10.0.103.0/24"]
-  description = "The cidrs that jenkins should reside in"
-}
 
 variable "jenkins_key_name" {
   type        = "string"
