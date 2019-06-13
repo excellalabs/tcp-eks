@@ -70,7 +70,7 @@ module "bastion" {
 
 # Jenkins Open-source CI/CD Automation Server
 module "jenkins" {
-  source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=v0.12"
+  source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=master"
 
   vpc_id                     = "${module.vpc.vpc_id}"
   environment                = "${var.environment}"
