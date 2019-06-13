@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 0.11.0"
+  required_version = "~> 0.12.0"
 #  backend "s3" {
 #    encrypt = true
 #  }
@@ -26,7 +26,7 @@ provider "template" {
 
 # Virtual Private Cloud (VPC)
 module "vpc" {
-  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=v1.66.0"
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=master"
 
   name = "${var.project_name}"
   cidr = "${var.vpc_cidr_block}"
@@ -39,7 +39,8 @@ module "vpc" {
   enable_nat_gateway = true
 
   tags = {
-    Owner = "${var.aws_email}"
+    Project = "${var.project_name}"
+    Owner   = "${var.aws_email}"
     Created = "${timestamp()}"
     Environment = "${var.environment}"
   }
@@ -47,7 +48,7 @@ module "vpc" {
 
 # Control Network Access to RDS and EC2 Instances Using a Bastion Server
 module "bastion" {
-  source = "git::https://github.com/excellaco/terraform-aws-ec2-bastion-server.git?ref=master"
+  source = "git::https://github.com/excellaco/terraform-aws-ec2-bastion-server.git?ref=v0.12"
 
   name        = "bastion"
   namespace   = "${var.project_name}"
@@ -60,14 +61,16 @@ module "bastion" {
   security_groups = []
   allowed_cidr_blocks = "${var.ssh_cidr}"
   tags = {
+    Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
     Created = "${timestamp()}"
+    Environment = "${var.environment}"
   }
 }
 
 # Jenkins Open-source CI/CD Automation Server
 module "jenkins" {
-  source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=master"
+  source = "git::https://github.com/excellaco/terraform-aws-ec2-jenkins-server.git?ref=v0.12"
 
   vpc_id                     = "${module.vpc.vpc_id}"
   environment                = "${var.environment}"
@@ -123,14 +126,16 @@ module "rds" {
   backup_retention_period     = "${var.db_backup_retention_period}"
   backup_window               = "${var.db_backup_window}"
   tags = {
+    Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
     Created = "${timestamp()}"
+    Environment = "${var.environment}"
   }
 }
 
 # Elastic Kubernetes Service (EKS)
 module "eks-cluster" {
-  source = "git::https://github.com/excellaco/terraform-aws-eks.git?ref=master"
+  source = "git::https://github.com/excellaco/terraform-aws-eks.git?ref=v0.12"
 
   name         = "${var.project_name}"
   environment  = "${var.environment}"
@@ -143,7 +148,7 @@ module "eks-cluster" {
   cloudwatch_prefix  = "${var.project_name}/${var.environment}"
   private_subnet    = "${module.vpc.private_subnets}"
   public_subnet     = "${module.vpc.public_subnets}"
-  cluster_cidrs     = ["${var.public_subnet_cidrs}"]
+  cluster_cidrs     = "${var.public_subnet_cidrs}"
 
   cluster_max_size = "${var.cluster_max_size}"
   cluster_min_size = "${var.cluster_min_size}"
@@ -162,7 +167,7 @@ resource "aws_kms_key" "bastion" {
   description             = "${var.project_name}-${var.environment}-bastion-kms-key"
   deletion_window_in_days = "${var.deletion_window_in_days}"
   enable_key_rotation     = "${var.enable_key_rotation}"
-  tags {
+  tags = {
     Name    = "${var.project_name}-${var.environment}-bastion-kms-key"
     Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
@@ -186,7 +191,7 @@ resource "aws_kms_key" "cluster" {
   description             = "${var.project_name}-${var.environment}-cluster-kms-key"
   deletion_window_in_days = "${var.deletion_window_in_days}"
   enable_key_rotation     = "${var.enable_key_rotation}"
-  tags {
+  tags = {
     Name    = "${var.project_name}-${var.environment}-cluster-kms-key"
     Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
@@ -200,7 +205,7 @@ resource "aws_kms_alias" "cluster" {
   target_key_id = "${aws_kms_key.cluster.key_id}"
 }
 
-resource "aws_s3_bucket" "terraform-state-storage-s3" {
+resource "aws_s3_bucket" "terraform_state_storage_s3" {
   bucket = "${var.project_name}-terraform"
   acl    = "private"
 
@@ -209,8 +214,8 @@ resource "aws_s3_bucket" "terraform-state-storage-s3" {
   versioning {
     enabled = true
   }
-  tags {
-    Name    = "S3 Remote Terraform State Store"
+  tags = {
+    Name    = "${var.project_name}-${var.environment}-s3-terraform-state"
     Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
     Created = "${timestamp()}"
@@ -218,7 +223,7 @@ resource "aws_s3_bucket" "terraform-state-storage-s3" {
   }
 }
 
-resource "local_file" "terraform-file" {
+resource "local_file" "terraform_file" {
     content     = <<EOF
 [default]
 aws_access_key_id = ${var.aws_access_key}
