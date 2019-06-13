@@ -135,7 +135,7 @@ module "rds" {
 
 # Elastic Kubernetes Service (EKS)
 module "eks-cluster" {
-  source = "git::https://github.com/excellaco/terraform-aws-eks.git?ref=v0.12"
+  source = "git::https://github.com/excellaco/terraform-aws-eks.git?ref=master"
 
   name         = "${var.project_name}"
   environment  = "${var.environment}"
