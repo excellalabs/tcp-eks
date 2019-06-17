@@ -179,19 +179,16 @@ variable "db_port" {
 
 variable "db_identifier" {
   type        = string
-  default     = "pg-tcp-eks-db"
   description = "(Forces new resource) The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier."
 }
 
 variable "db_name" {
   type        = string
-  default     = "tcpeksdb"
   description = "The name of the database to create when the DB instance is created. If this parameter is not specified, no database is created in the DB instance. Note that this does not apply for Oracle or SQL Server engines. See the AWS documentation for more details on what applies for those engines."
 }
 
 variable "db_username" {
   type        = string
-  default     = "tcp-eks"
   description = "(Required unless a snapshot_identifier or replicate_source_db is provided) Username for the master DB user."
 }
 

@@ -40,7 +40,7 @@ aws_region = "us-west-2"
 
 # only alpha-numeric and dashes allowed!
 project_name = "something-unique"
-environment = "development"
+environment = "dev"
 
 # no single quotes allowed
 jenkins_developer_password = "a good password"
@@ -61,9 +61,10 @@ cluster_key_name = "cluster_ENVIRONMENT_ssh_key_pair_YOURNAME"
 
 # credentials used to create any application database
 # password must be greater than 8 characters
+db_name = "tcp_eks"
 db_username = "tcp-eks"
 db_password = "anothergreatpassword"
-db_identifier = "pg-tcp-eks-db1"
+db_identifier = "tcp-eks-db1"
 
 # Leave these alone
 github_repo_owner = "excellaco"
