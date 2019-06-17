@@ -10,7 +10,8 @@ variable "aws_region" {
 }
 
 variable "aws_account_id" {
-  default     = 090999229429
+  type        = string
+  default     = "090999229429"
   description = "AWS Account Identity"
 }
 
