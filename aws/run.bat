@@ -3,23 +3,22 @@
 REM finds the architecture of the windows installation
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set arc=32BIT || set arc=64BIT
 
-SET PROJECT_NAME="bench-tc"
+SET PROJECT_NAME="tcp-eks"
 SET AWS_REGION="us-east-1"
 SET ENVIRONMENT="dev"
 SET KEY_ROOT="..\keys"
 
-IF NOT EXIST %KEY_ROOT%\%PROJECT_NAME%-bastion.pub (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%PROJECT_NAME%-bastion
-  ssh-keygen -f %KEY_ROOT%\%PROJECT_NAME%-bastion.pub -t pem -e > %KEY_ROOT%\%PROJECT_NAME%-bastion.pem
-)
-
-IF NOT EXIST %KEY_ROOT%\%PROJECT_NAME%-cluster.pub (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%PROJECT_NAME%-cluster
-  ssh-keygen -f %KEY_ROOT%\%PROJECT_NAME%-cluster.pub -t pem -e > %KEY_ROOT%\%PROJECT_NAME%-cluster.pem
+IF NOT EXIST %KEY_ROOT%\%PROJECT_NAME%.pub (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%PROJECT_NAME%
+  ssh-keygen -f %KEY_ROOT%\%PROJECT_NAME%.pub -t pem -e > %KEY_ROOT%\%PROJECT_NAME%.pem
 )
 
 IF /I "%1"=="init" (
-  terraform init -backend-config="bucket=%PROJECT_NAME%-%ENVIRONMENT%" -backend-config="key=terraform.tfstate" -backend-config="region=%AWS_REGION%" -backend-config="encrypt=true"
+  terraform init \
+    -backend-config="bucket=%PROJECT_NAME%-%ENVIRONMENT%" \
+    -backend-config="key=terraform.tfstate" \
+    -backend-config="region=%AWS_REGION%" \
+    -backend-config="encrypt=true"
 )
 
 IF /I "%1"=="plan" (
@@ -73,7 +72,7 @@ IF /I "%1"=="kube" (
 
 IF NOT EXIST "%1" (
   IF NOT EXIST terraform.exe (
-    SET "terraform_ver=0.12.0"
+    SET "terraform_ver=0.12.2"
     SET "hashicorp_url=https://releases.hashicorp.com/terraform/%terraform_ver%"
     IF %arc%==32BIT (
       SET "terraform_zip_file=terraform_%terraform_ver%_windows_386.zip"
