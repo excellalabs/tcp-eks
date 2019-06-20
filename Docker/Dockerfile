@@ -9,6 +9,9 @@ ARG TERRAFORM_VER=0.12.2
 WORKDIR tcp-eks
 COPY / .
 
+RUN mkdir ~/.aws
+COPY ~/.aws/credentials ~/.aws
+
 RUN apt-get update -y && apt-get install curl wget unzip -y
 RUN wget https://packages.chef.io/files/stable/chefdk/${CHEF_VER}/ubuntu/18.04/chefdk_${CHEF_VER}-1_amd64.deb \
   && dpkg -i chefdk_${CHEF_VER}-1_amd64.deb
@@ -33,4 +36,4 @@ RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.
     ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
     echo -n "aws cli v: " && aws --version
 
-ENTRYPOINT ["sh", "./bin/aws_create_eks_cluster"]
+ENTRYPOINT ["sh", "cd aws;terraform init;terraform plan;terraform apply -auto-approve"]
