@@ -90,6 +90,7 @@ module "jenkins" {
   github_repo_include        = "${var.github_repo_include}"
   github_branch_include      = "${var.github_branch_include}"
   github_branch_trigger      = "${var.github_branch_trigger}"
+  aws_account_id             = "${data.aws_caller_identity.current.account_id}"
 }
 
 # Relational Database Service (RDS)
