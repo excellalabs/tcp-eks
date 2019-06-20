@@ -3,11 +3,9 @@ terraform --version
 
 echo aws_region="\"${AWS_DEFAULT_REGION}\"" > terraform.tfvars
 echo aws_email="\"${GITLAB_USER_EMAIL}\"" >> terraform.tfvars
-echo bastion_key_name="\"${CLUSTER_NAME}-bastion\"" >> terraform.tfvars
-echo bastion_public_key_path="\"../keys/${CLUSTER_NAME}-bastion.pub\"" >> terraform.tfvars
+echo project_key_name="\"${CLUSTER_NAME}\"" >> terraform.tfvars
+echo public_key_path="\"../keys/${CLUSTER_NAME}.pub\"" >> terraform.tfvars
 echo config_output_path="\"${CONFIG_OUTPUT_PATH}\"" >> terraform.tfvars
-echo cluster_key_name="\"${CLUSTER_NAME}-cluster\"" >> terraform.tfvars
-echo cluster_public_key_path="\"../keys/${CLUSTER_NAME}-cluster.pub\"" >> terraform.tfvars
 echo cluster_instance_type="\"${CLUSTER_INSTANCE_TYPE}\"" >> terraform.tfvars
 echo cluster_max_size="\"${CLUSTER_MAX_SIZE}\"" >> terraform.tfvars
 echo desired_capacity="\"${CLUSTER_NODES}\"" >> terraform.tfvars

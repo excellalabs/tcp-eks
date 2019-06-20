@@ -1,15 +1,10 @@
 @ECHO OFF
 SET KEY_ROOT="..\keys"
-SET CI_PROJECT_NAME="sandbox"
+SET CI_PROJECT_NAME="tcp-eks"
 
-IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME%-bastion (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%CI_PROJECT_NAME%-bastion
-  ssh-keygen -f %KEY_ROOT%\%CI_PROJECT_NAME%-bastion.pub -m pem -e > %KEY_ROOT%\%CI_PROJECT_NAME%-bastion.pem
-)
-
-IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME%-cluster (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%CI_PROJECT_NAME%-cluster
-  ssh-keygen -f %KEY_ROOT%\%CI_PROJECT_NAME%-cluster.pub -m pem -e > %KEY_ROOT%\%CI_PROJECT_NAME%-cluster.pem
+IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME% (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%CI_PROJECT_NAME%
+  ssh-keygen -f %KEY_ROOT%\%CI_PROJECT_NAME%.pub -m pem -e > %KEY_ROOT%\%CI_PROJECT_NAME%.pem
 )
 
 IF /I "%1"=="init" (

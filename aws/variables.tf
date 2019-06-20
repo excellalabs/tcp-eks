@@ -20,6 +20,11 @@ variable "project_name" {
   description = "prefix for all created resources"
 }
 
+variable "project_key_name" {
+  type        = string
+  description = "the ssh key pair to use for EC2 instances"
+}
+
 variable "environment" {
   type        = string
   default     = "dev"
@@ -73,23 +78,24 @@ variable "private_subnet_cidrs" {
   description = "The cidrs the private subnet should reside in"
 }
 
+variable "public_key_path" {
+  type        = string
+  default     = "../keys/tcp-eks.pub"
+  description = "path to ssh public key"
+}
+
+variable "private_key_path" {
+  type        = string
+  default     = "../keys/tcp-eks"
+  description = "path to ssh private key"
+}
+
 ## Bastion
 
 variable "bastion_instance_type" {
   type    = string
   default = "t2.micro"
   description = "type of bastion EC2 instance"
-}
-
-variable "bastion_key_name" {
-  type        = string
-  description = "the ssh key pair to use for the bastion EC2 instance"
-}
-
-variable "bastion_public_key_path" {
-  type        = string
-  default     = "../keys/tcp-eks-bastion.pub"
-  description = "path to bastion public key"
 }
 
 variable "bastion_ssh_user" {
@@ -119,17 +125,6 @@ variable "cluster_instance_type" {
   type        = string
   default     = "t2.large"
   description = "type of cluster worker node EC2 instance"
-}
-
-variable "cluster_key_name" {
-  type        = string
-  description = "the ssh key pair to use for the EC2 instances making up the cluster"
-}
-
-variable "cluster_public_key_path" {
-  type        = string
-  default     = "../keys/tcp-eks-cluster.pub"
-  description = "path to cluster public key"
 }
 
 variable "config_output_path" {
@@ -279,23 +274,6 @@ variable "db_copy_tags_to_snapshot" {
 }
 
 ## Jenkins
-
-variable "jenkins_key_name" {
-  type        = string
-  description = "ssh auth keypair name"
-}
-
-variable "jenkins_private_key_path" {
-  type        = string
-  default     = "../keys/tcp-eks-jenkins"
-  description = "path to ssh private key"
-}
-
-variable "jenkins_public_key_path" {
-  type        = string
-  default     = "../keys/tcp-eks-jenkins.pub"
-  description = "path to ssh public key"
-}
 
 variable "jenkins_developer_password" {
   type        = string

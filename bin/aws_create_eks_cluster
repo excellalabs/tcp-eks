@@ -16,13 +16,11 @@ if [ ! -d ${KEY_ROOT} ]; then
   mkdir ${KEY_ROOT}
 fi
 
-for key in bastion cluster; do
-  if [ ! -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem ]; then
-    echo "$Creating SSH keys for ${CI_PROJECT_NAME}-${key} instance"
-    ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}
-    ssh-keygen -f ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pub -m pem -e > ${KEY_ROOT}/${CI_PROJECT_NAME}-${key}.pem
-  fi
-done
+if [ ! -f ${KEY_ROOT}/${CI_PROJECT_NAME}.pem ]; then
+  echo "$Creating SSH key for ${CI_PROJECT_NAME}"
+  ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${KEY_ROOT}/${CI_PROJECT_NAME}
+  ssh-keygen -f ${KEY_ROOT}/${CI_PROJECT_NAME}.pub -m pem -e > ${KEY_ROOT}/${CI_PROJECT_NAME}.pem
+fi
 
 if [ `uname -s` = "Linux" ]; then
   curl -s -qL -o kubectl ${AWS_EKS_URL}/linux/amd64/kubectl

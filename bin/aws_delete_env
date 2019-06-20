@@ -23,19 +23,13 @@ fi
 
 aws eks delete-cluster --name ${CI_PROJECT_NAME}-dev-cluster
 
-aws ec2 delete-key-pair --key-name ${CI_PROJECT_NAME}-dev-bastion
-
-aws ec2 delete-key-pair --key-name ${CI_PROJECT_NAME}-dev-cluster
+aws ec2 delete-key-pair --key-name ${CI_PROJECT_NAME}-dev
 
 
 aws logs delete-log-group --log-group-name "${CI_PROJECT_NAME}/dev"
 
 
-aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-bastion-kms-key
-
-aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-cluster-kms-key
-
-
+aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-kms-key
 aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-cluster/dev/cluster
 
 aws kms delete-alias --alias-name alias/${CI_PROJECT_NAME}-dev-cluster/dev/logsecrets

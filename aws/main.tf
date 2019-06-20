@@ -6,7 +6,7 @@ terraform {
 }
 
 provider "aws" {
-  version    = "~> 2.14"
+  version    = "~> 2.15"
   region     = "${var.aws_region}"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
@@ -55,7 +55,7 @@ module "bastion" {
   environment = "${var.environment}"
   port        = "${var.rds_port}"
   vpc_id      = "${module.vpc.vpc_id}"
-  key_name    = "${var.bastion_key_name}"
+  key_name    = "${var.project_key_name}"
   subnets     = "${module.vpc.public_subnets}"
   ssh_user    = "${var.bastion_ssh_user}"
   security_groups = []
@@ -78,10 +78,10 @@ module "jenkins" {
   aws_email                  = "${var.aws_email}"
   aws_access_key             = "${var.aws_access_key}"
   aws_secret_key             = "${var.aws_secret_key}"
-  jenkins_key_name           = "${var.jenkins_key_name}"
+  jenkins_key_name           = "${var.project_key_name}"
   jenkins_subnet_ids         = "${module.vpc.public_subnets}"
-  jenkins_private_key_path   = "${var.jenkins_private_key_path}"
-  jenkins_public_key_path    = "${var.jenkins_public_key_path}"
+  jenkins_private_key_path   = "${var.private_key_path}"
+  jenkins_public_key_path    = "${var.public_key_path}"
   jenkins_developer_password = "${var.jenkins_developer_password}"
   jenkins_admin_password     = "${var.jenkins_admin_password}"
   github_user                = "${var.github_user}"
@@ -153,22 +153,22 @@ module "eks-cluster" {
   cluster_max_size = "${var.cluster_max_size}"
   cluster_min_size = "${var.cluster_min_size}"
   desired_capacity = "${var.cluster_desired_capacity}"
-  cluster_key_name = "${aws_key_pair.cluster.key_name}"
+  cluster_key_name = "${aws_key_pair.project.key_name}"
   instance_type    = "${var.cluster_instance_type}"
 }
 
-# Bastion Key Management Service (KMS)
-resource "aws_key_pair" "bastion" {
-  key_name   = "${var.bastion_key_name}"
-  public_key = "${file(var.bastion_public_key_path)}"
+# Key Management Service (KMS)
+resource "aws_key_pair" "project" {
+  key_name   = "${var.project_key_name}"
+  public_key = "${file(var.public_key_path)}"
 }
 
-resource "aws_kms_key" "bastion" {
-  description             = "${var.project_name}-${var.environment}-bastion-kms-key"
+resource "aws_kms_key" "project" {
+  description             = "${var.project_name}-${var.environment}-kms-key"
   deletion_window_in_days = "${var.deletion_window_in_days}"
   enable_key_rotation     = "${var.enable_key_rotation}"
   tags = {
-    Name    = "${var.project_name}-${var.environment}-bastion-kms-key"
+    Name    = "${var.project_name}-${var.environment}-kms-key"
     Project = "${var.project_name}"
     Owner   = "${var.aws_email}"
     Created = "${timestamp()}"
@@ -176,33 +176,9 @@ resource "aws_kms_key" "bastion" {
   }
 }
 
-resource "aws_kms_alias" "bastion" {
-  name = "alias/${var.project_name}-${var.environment}-bastion-kms-key"
-  target_key_id = "${aws_kms_key.bastion.key_id}"
-}
-
-# Cluster Key Management Service (KMS)
-resource "aws_key_pair" "cluster" {
-  key_name   = "${var.cluster_key_name}"
-  public_key = "${file(var.cluster_public_key_path)}"
-}
-
-resource "aws_kms_key" "cluster" {
-  description             = "${var.project_name}-${var.environment}-cluster-kms-key"
-  deletion_window_in_days = "${var.deletion_window_in_days}"
-  enable_key_rotation     = "${var.enable_key_rotation}"
-  tags = {
-    Name    = "${var.project_name}-${var.environment}-cluster-kms-key"
-    Project = "${var.project_name}"
-    Owner   = "${var.aws_email}"
-    Created = "${timestamp()}"
-    Environment = "${var.environment}"
-  }
-}
-
-resource "aws_kms_alias" "cluster" {
-  name = "alias/${var.project_name}-${var.environment}-cluster-kms-key"
-  target_key_id = "${aws_kms_key.cluster.key_id}"
+resource "aws_kms_alias" "project" {
+  name = "alias/${var.project_name}-${var.environment}-kms-key"
+  target_key_id = "${aws_kms_key.project.key_id}"
 }
 
 resource "aws_s3_bucket" "terraform_state_storage_s3" {

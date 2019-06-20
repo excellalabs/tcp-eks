@@ -19,14 +19,12 @@ if [ ! -d ${key_dir} ]; then
   mkdir ${key_dir}
 fi
 
-for key in bastion cluster; do
-  if [ ! -f ${key_dir}/${CI_PROJECT_NAME}-${key}.pem ]; then
-    echo "Creating SSH keys for ${CI_PROJECT_NAME}-${key} instance"
+if [ ! -f ${key_dir}/${CI_PROJECT_NAME}.pem ]; then
+  echo "Creating SSH key for ${CI_PROJECT_NAME}"
 
-    ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${key_dir}/${CI_PROJECT_NAME}-${key}
+  ssh-keygen -t rsa -b 4096 -o -a 100 -N "" -f ${key_dir}/${CI_PROJECT_NAME}
 
-    ssh-keygen -f ${key_dir}/${CI_PROJECT_NAME}-${key}.pub -m pem -e > ${key_dir}/${CI_PROJECT_NAME}-${key}.pem
+  ssh-keygen -f ${key_dir}/${CI_PROJECT_NAME}.pub -m pem -e > ${key_dir}/${CI_PROJECT_NAME}.pem
 
-  fi
-  aws s3 cp ${key_dir}/${CI_PROJECT_NAME}-${key}.pub s3://${CI_PROJECT_NAME}/${key_dir}/ --acl bucket-owner-full-control
-done
+fi
+aws s3 cp ${key_dir}/${CI_PROJECT_NAME}.pub s3://${CI_PROJECT_NAME}/${key_dir}/ --acl bucket-owner-full-control

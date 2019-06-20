@@ -9,17 +9,10 @@ IF NOT "%~4"=="" GOTO USAGE
 
 SET KEY_ROOT="keys"
 
-IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME%-bastion.pem (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%CI_PROJECT_NAME%-bastion
-  ssh-keygen -f %KEY_ROOT%\%CI_PROJECT_NAME%-bastion.pub -t pem -e > %KEY_ROOT%\%CI_PROJECT_NAME%-bastion.pem
-  aws s3 cp %KEY_ROOT%\%CI_PROJECT_NAME%-bastion.pub s3://%CLUSTER_NAME%/%KEY_ROOT%/%CI_PROJECT_NAME%-bastion.pub
-  aws s3 ls s3://%CLUSTER_NAME%/%AWS_DEFAULT_REGION%/%KEY_ROOT%
-)
-
-IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME%-cluster.pem (
-  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%CI_PROJECT_NAME%-cluster
-  ssh-keygen -f %KEY_ROOT%\%CI_PROJECT_NAME%-cluster.pub -t pem -e > %KEY_ROOT%\%CI_PROJECT_NAME%-cluster.pem
-  aws s3 cp %KEY_ROOT%\%CI_PROJECT_NAME%-cluster.pub s3://%CLUSTER_NAME%/%KEY_ROOT%/%CI_PROJECT_NAME%-cluster.pub
+IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME%.pem (
+  ssh-keygen -t rsa -b 4096 -a 100 -N "" -f %KEY_ROOT%\%CI_PROJECT_NAME%
+  ssh-keygen -f %KEY_ROOT%\%CI_PROJECT_NAME%.pub -t pem -e > %KEY_ROOT%\%CI_PROJECT_NAME%.pem
+  aws s3 cp %KEY_ROOT%\%CI_PROJECT_NAME%.pub s3://%CLUSTER_NAME%/%KEY_ROOT%/%CI_PROJECT_NAME%.pub
   aws s3 ls s3://%CLUSTER_NAME%/%AWS_DEFAULT_REGION%/%KEY_ROOT%
 )
 
