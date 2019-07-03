@@ -9,12 +9,6 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "aws_account_id" {
-  type        = string
-  default     = "090999229429"
-  description = "AWS Account Identity"
-}
-
 variable "project_name" {
   type        = string
   description = "prefix for all created resources"
@@ -49,11 +43,6 @@ variable "aws_email" {
   description = "the user email address"
 }
 
-variable "rds_port" {
-  default     = 5432
-  description = "relational database service port"
-}
-
 variable "ssh_cidr" {
   type        = list(string)
   default     = ["76.76.0.0/16"]
@@ -80,7 +69,7 @@ variable "private_subnet_cidrs" {
 
 variable "public_key_path" {
   type        = string
-  default     = "../keys/tcp-eks.pub"
+  default     = "../keys/tcp-eks"
   description = "path to ssh public key"
 }
 
@@ -148,7 +137,7 @@ variable "db_instance_class" {
 
 variable "db_param_family" {
   description = "(Optional) Name of the DB parameter group to associate."
-  default     = "postgres10"
+  default     = "postgres11"
   type        = string
 }
 
@@ -159,13 +148,13 @@ variable "db_size" {
 
 variable "db_version" {
   description = "engine_version (Optional) The engine version to use. If auto_minor_version_upgrade is enabled, you can provide a prefix of the version"
-  default     = "10.6"
+  default     = "11.4"
   type        = string
 }
 
 variable "db_major_version" {
   description = "major_engine_version (Optional) The major engine version to use."
-  default     = 10
+  default     = 11
 }
 
 variable "db_port" {
@@ -274,6 +263,12 @@ variable "db_copy_tags_to_snapshot" {
 }
 
 ## Jenkins
+
+variable "jenkins_instance_type" {
+  type        = string
+  default     = "t2.xlarge"
+  description = "type of jenkins EC2 instance"
+}
 
 variable "jenkins_developer_password" {
   type        = string
