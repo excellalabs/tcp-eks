@@ -1,4 +1,4 @@
-# This Dockerfile adds AWS CLI, Chef, and Terraform to the Ubuntu image
+# This Dockerfile adds AWS CLI, Chef, Git, and Terraform to the Ubuntu image
 
 FROM ubuntu:18.04
 
@@ -9,10 +9,8 @@ ARG TERRAFORM_VER=0.12.2
 WORKDIR tcp-eks
 COPY / .
 
-RUN mkdir ~/.aws
-COPY ~/.aws/credentials ~/.aws
+RUN apt-get update -y && apt-get install curl git wget unzip -y
 
-RUN apt-get update -y && apt-get install curl wget unzip -y
 RUN wget https://packages.chef.io/files/stable/chefdk/${CHEF_VER}/ubuntu/18.04/chefdk_${CHEF_VER}-1_amd64.deb \
   && dpkg -i chefdk_${CHEF_VER}-1_amd64.deb
 
