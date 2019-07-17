@@ -19,7 +19,8 @@ IF NOT EXIST %KEY_ROOT%\%CI_PROJECT_NAME%.pem (
 @ECHO Creating %CLUSTER_NAME% cluster in %AWS_DEFAULT_REGION% region
 
 cd aws
-terraform init -backend-config="bucket=%CLUSTER_NAME%" \
+terraform init \
+  -backend-config="bucket=%CLUSTER_NAME%" \
   -backend-config="key=terraform.tfstate" \
   -backend-config="region=%AWS_DEFAULT_REGION%" \
   -backend-config="encrypt=true"
