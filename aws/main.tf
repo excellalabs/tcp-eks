@@ -1,8 +1,8 @@
 terraform {
   required_version = "~> 0.12.0"
-#  backend "s3" {
-#    encrypt = true
-#  }
+  backend "s3" {
+    encrypt = true
+  }
 }
 
 provider "aws" {
@@ -28,7 +28,7 @@ provider "template" {
 module "vpc" {
   source = "git::https://github.com/terraform-aws-modules/terraform-aws-vpc.git?ref=master"
 
-  name = var.project_name
+  name = "${var.project_name}-${var.environment}"
   cidr = var.vpc_cidr_block
   azs  = [data.aws_availability_zones.available.names[0],
     data.aws_availability_zones.available.names[1]]
@@ -58,6 +58,7 @@ module "bastion" {
   key_name    = var.project_key_name
   subnets     = module.vpc.public_subnets
   ssh_user    = var.bastion_ssh_user
+  instance_type = var.bastion_instance_type
   security_groups = []
   allowed_cidr_blocks = var.ssh_cidr
   tags = {
@@ -80,8 +81,8 @@ module "jenkins" {
   aws_secret_key             = var.aws_secret_key
   jenkins_key_name           = var.project_key_name
   jenkins_subnet_ids         = module.vpc.public_subnets
-  jenkins_private_key_path   = var.private_key_path
-  jenkins_public_key_path    = var.public_key_path
+  jenkins_private_key_path   = var.ssh_key_path
+  jenkins_public_key_path    = var.ssh_key_path
   jenkins_developer_password = var.jenkins_developer_password
   jenkins_admin_password     = var.jenkins_admin_password
   github_user                = var.github_user
@@ -181,8 +182,8 @@ resource "aws_kms_alias" "project" {
 
 # SSH Key Creation
 locals {
-  public_key_filename  = "${var.public_key_path}/${var.project_key_name}.pub"
-  private_key_filename = "${var.public_key_path}/${var.project_key_name}.pem"
+  public_key_filename  = "${var.ssh_key_path}/${var.project_key_name}.pub"
+  private_key_filename = "${var.ssh_key_path}/${var.project_key_name}.pem"
   chmod_command = "chmod 600 %v"
 }
 

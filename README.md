@@ -27,7 +27,6 @@ Edit the file localy called `aws/terraform.tfvars` with the following contents:
 
 ```
 # Change these
-account_id = "090999229429"
 aws_access_key = "your access key"
 aws_secret_key = "your secret key"
 aws_email = "your email address"
@@ -42,6 +41,16 @@ aws_region = "us-west-2"
 project_name = "something-unique"
 environment = "dev"
 
+# these need to be unique per region and per environment
+project_key_name = "project_ENVIRONMENT_ssh_key_pair_YOURNAME"
+
+# credentials used to create any application database
+# password must be greater than 8 characters
+db_name = "tcp_eks"
+db_username = "tcp-eks"
+db_password = "anothergreatpassword"
+db_identifier = "tcp-eks-db1"
+
 # no single quotes allowed
 jenkins_developer_password = "a good password"
 
@@ -54,19 +63,17 @@ github_user = "your user"
 # the token should have FULL repo access and FULL admin:web_hook access
 github_token = "your token"
 
-# these need to be unique per region and per environment
-project_key_name = "project_ENVIRONMENT_ssh_key_pair_YOURNAME"
-
-# credentials used to create any application database
-# password must be greater than 8 characters
-db_name = "tcp_eks"
-db_username = "tcp-eks"
-db_password = "anothergreatpassword"
-db_identifier = "tcp-eks-db1"
-
 # Leave these alone
 github_repo_owner = "excellaco"
 github_repo_include = "tcp-eks tcp-angular tcp-java"
+```
+
+Edit the file localy called `.netrc` with the following contents:
+
+```
+machine github.com
+  login github_user
+  password github_token
 ```
 
 This is used by both of the jenkins and eks terraform modules.
@@ -75,34 +82,54 @@ This is used by both of the jenkins and eks terraform modules.
 
 ## Build container
 
+```
 docker build -t tcp-eks:latest -f Docker/Dockerfile .
-
-## Run container
-
-docker run -it tcp-eks:latest
-
-## Provisioning Jenkins + Dev/Prod EKS Clusters
-
-Head into the infrastructure toolchain container:
-```
-glue bash tcp-eks
 ```
 
-To generate keys and provision the Jenkins infrastructure run the following from within the toolchain container:
+## Provisioning EKS Cluster
+
+AWS-MFA token should be valid before running the container.<br>
 
 ```
-./run.sh all
+docker run -it --rm -d --name tcp-eks -v ~/.aws/credentials:/root/.aws/credentials tcp-eks:latest
 ```
+
+Entrypoint contains: `ENTRYPOINT ["/bin/sh", "-c", "bin/create_s3; bin/create_env; tail -f /dev/null;"]
+`<br>
+`bin/create_s3` creates an s3 bucket named `<project_name>-<environment>`<br>
+`bin/create_env` initializes the terraform backend to use the above s3 bucket and creates the infrastructure<br>
+`tail -f /dev/null` prevents the docker container from stopping after terraform apply is successful<br>
+<br>
+
+Provisioning should take approximately 15 minutes.
+
+## Check progress
+
+```
+docker logs tcp-eks
+```
+
+## Modify Infrastructure
 
 As you modify terraform code, replan and apply the changes as needed:
 
 ```
-./run.sh plan
-./run.sh apply
+docker exec -it tcp-eks /bin/bash
+cd aws
+terraform plan
+terraform apply
 ```
 
-To destroy all created resources, run:
+## Destroy All Resources 
+
+User will be prompted for destroy confirmation. 
 
 ```
-./run.sh destroy
+docker exec -it tcp-eks bin/destroy_env
+docker stop tcp-eks
 ```
+
+`bin/destroy_env` destroys all infrastructure and deletes the s3 bucket named `<project_name>-<environment>`<br>
+<br>
+
+Destruction should take approximately 10 minutes.

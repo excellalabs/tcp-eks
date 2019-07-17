@@ -67,16 +67,10 @@ variable "private_subnet_cidrs" {
   description = "The cidrs the private subnet should reside in"
 }
 
-variable "public_key_path" {
+variable "ssh_key_path" {
   type        = string
-  default     = "../keys/tcp-eks"
-  description = "path to ssh public key"
-}
-
-variable "private_key_path" {
-  type        = string
-  default     = "../keys/tcp-eks"
-  description = "path to ssh private key"
+  default     = "../keys/ssh"
+  description = "The directory path for the ssh private and public key"
 }
 
 ## Bastion
@@ -268,6 +262,12 @@ variable "jenkins_instance_type" {
   type        = string
   default     = "t2.xlarge"
   description = "type of jenkins EC2 instance"
+}
+
+variable "jenkins_agent_instance_type" {
+  type        = string
+  default     = "t2.xlarge"
+  description = "type of Jenkins agent (worker) EC2 instance"
 }
 
 variable "jenkins_developer_password" {
