@@ -4,9 +4,16 @@ export ENVIRONMENT=$(grep -rnw 'aws/terraform.tfvars' -e 'environment' | grep -E
 export PROJECT_NAME=$(grep -rnw 'aws/terraform.tfvars' -e 'project_name' | grep -Eo '[\"].*[\""]' | cut -d '"' -f2)
 export AWS_REGION=$(grep -rnw 'aws/terraform.tfvars' -e 'aws_region' | grep -Eo '[\"].*[\""]' | cut -d '"' -f2)
 
+# aws s3api WILL NOT ALLOW YOU to specify us-east-1 as a LocationConstraint, so check:
 if [ "${AWS_REGION}" = "us-east-1" ]; then
   aws s3api create-bucket --bucket ${PROJECT_NAME}-${ENVIRONMENT} --region ${AWS_REGION}
 else
   aws s3api create-bucket --bucket ${PROJECT_NAME}-${ENVIRONMENT} --region ${AWS_REGION} \
     --create-bucket-configuration LocationConstraint=${AWS_REGION}
 fi
+
+aws s3api put-bucket-versioning --bucket ${PROJECT_NAME} --region ${AWS_REGION} \
+  --versioning-configuration Status=Enabled
+
+aws s3api put-bucket-encryption --bucket ${PROJECT_NAME} --region ${AWS_REGION} \
+  --server-side-encryption-configuration={"\"Rules"\":[{"\"ApplyServerSideEncryptionByDefault"\":{"\"SSEAlgorithm"\":"\"AES256"\"}}]}
