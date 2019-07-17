@@ -13,6 +13,7 @@
 /**/.delivery 
 .idea
 /**/*.iml
+.netrc
 /**/Berksfile.lock
 /**/creds/*
 
