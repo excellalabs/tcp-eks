@@ -4,12 +4,13 @@ FROM ubuntu:18.04
 
 ARG AWS_EKS_URL=https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.13/2019-03-13/bin
 ARG CHEF_VER=3.2.30
-ARG TERRAFORM_VER=0.12.4
+ARG TERRAFORM_VER=0.12.5
 
 WORKDIR tcp-eks
 COPY / .
+COPY .netrc /root
 
-RUN apt-get update -y && apt-get install curl git wget unzip -y
+RUN apt-get update -y && apt-get install curl git wget unzip vim -y
 
 RUN wget https://packages.chef.io/files/stable/chefdk/${CHEF_VER}/ubuntu/18.04/chefdk_${CHEF_VER}-1_amd64.deb \
   && dpkg -i chefdk_${CHEF_VER}-1_amd64.deb
@@ -34,4 +35,4 @@ RUN curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.
     ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
     echo -n "aws cli v: " && aws --version
 
-ENTRYPOINT ["sh", "cd aws;terraform init;terraform plan;terraform apply -auto-approve"]
+ENTRYPOINT ["/bin/sh", "-c", "bin/create_s3; bin/create_env; tail -f /dev/null;"]
