@@ -3,8 +3,9 @@
 export ENVIRONMENT=$(grep -rnw 'aws/terraform.tfvars' -e 'environment' | grep -Eo '[\"].*[\""]' | cut -d '"' -f2)
 export PROJECT_NAME=$(grep -rnw 'aws/terraform.tfvars' -e 'project_name' | grep -Eo '[\"].*[\""]' | cut -d '"' -f2)
 export AWS_REGION=$(grep -rnw 'aws/terraform.tfvars' -e 'aws_region' | grep -Eo '[\"].*[\""]' | cut -d '"' -f2)
+export BUCKET_NAME=${PROJECT_NAME}-${ENVIRONMENT}
 
 cd aws
 terraform destroy
-aws s3 rm s3://${PROJECT_NAME}-${ENVIRONMENT}/${ENVIRONMENT}
-aws s3api delete-bucket --bucket ${PROJECT_NAME}-${ENVIRONMENT} --region ${AWS_REGION}
+aws s3 rm s3://${BUCKET_NAME}/${ENVIRONMENT}
+aws s3api delete-bucket --bucket ${BUCKET_NAME} --region ${AWS_REGION}
