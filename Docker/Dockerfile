@@ -4,7 +4,7 @@ FROM ubuntu:18.04
 
 ARG AWS_EKS_URL=https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.13/2019-03-13/bin
 ARG CHEF_VER=3.2.30
-ARG TERRAFORM_VER=0.12.2
+ARG TERRAFORM_VER=0.12.4
 
 WORKDIR tcp-eks
 COPY / .
