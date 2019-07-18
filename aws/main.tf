@@ -6,14 +6,14 @@ terraform {
 }
 
 provider "aws" {
-  version    = "~> 2.17"
+  version    = "~> 2.19"
   region     = var.aws_region
   access_key = var.aws_access_key
   secret_key = var.aws_secret_key
 }
 
 provider "local" {
-  version = "~> 1.2"
+  version = "~> 1.3"
 }
 
 provider "null" {
@@ -22,6 +22,10 @@ provider "null" {
 
 provider "template" {
   version = "~> 2.1"
+}
+
+provider "tls" {
+  version = "~> 2.0"
 }
 
 # Virtual Private Cloud (VPC)
