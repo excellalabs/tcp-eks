@@ -6,7 +6,7 @@ terraform {
 }
 
 provider "aws" {
-  version    = "~> 2.19"
+  version    = "~> 2.23"
   region     = var.aws_region
   access_key = var.aws_access_key
   secret_key = var.aws_secret_key
@@ -44,7 +44,7 @@ module "vpc" {
 
   tags = {
     Project = var.project_name
-    Owner   = var.aws_email
+    Creator = var.aws_email
     Created = timestamp()
     Environment = var.environment
   }
@@ -67,7 +67,7 @@ module "bastion" {
   allowed_cidr_blocks = var.ssh_cidr
   tags = {
     Project = var.project_name
-    Owner   = var.aws_email
+    Creator = var.aws_email
     Created = timestamp()
     Environment = var.environment
   }
@@ -129,7 +129,7 @@ module "rds" {
   backup_window               = var.db_backup_window
   tags = {
     Project = var.project_name
-    Owner   = var.aws_email
+    Creator = var.aws_email
     Created = timestamp()
     Environment = var.environment
   }
@@ -173,7 +173,7 @@ resource "aws_kms_key" "project" {
   tags = {
     Name    = "${var.project_name}-${var.environment}-kms-key"
     Project = var.project_name
-    Owner   = var.aws_email
+    Creator = var.aws_email
     Created = timestamp()
     Environment = var.environment
   }
@@ -229,7 +229,7 @@ resource "aws_s3_bucket" "terraform_state_storage_s3" {
   tags = {
     Name    = "${var.project_name}-${var.environment}-s3-terraform-state"
     Project = var.project_name
-    Owner   = var.aws_email
+    Creator = var.aws_email
     Created = timestamp()
     Environment = var.environment
   }
