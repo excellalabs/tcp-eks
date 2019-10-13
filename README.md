@@ -23,91 +23,84 @@ Lastly, jenkins has resource locks for each environment to ensure that multiple 
 
 ## Prerequisites
 
-Edit the file localy called `aws/terraform.tfvars` with the following contents:
+1. Edit the file localy called `aws/terraform.tfvars` with the following contents:
 
-```
-# Change these
-aws_access_key = "your access key"
-aws_secret_key = "your secret key"
-aws_email = "your email address"
+    ```
+    # Change these
+    aws_access_key = "your access key"
+    aws_secret_key = "your secret key"
+    aws_email = "your email address"
 
-# Amazon EKS is available in the following Regions at this time:
-# US West (Oregon) (us-west-2)
-# US East (N. Virginia) (us-east-1)
-# EU (Ireland) (eu-west-1)
-aws_region = "us-west-2"
+    # Amazon EKS is available in the following Regions at this time:
+    # US West (Oregon) (us-west-2)
+    # US East (N. Virginia) (us-east-1)
+    # EU (Ireland) (eu-west-1)
+    aws_region = "us-west-2"
 
-# only alpha-numeric and dashes allowed!
-project_name = "something-unique"
-environment = "dev"
+    # only alpha-numeric and dashes allowed!
+    project_name = "something-unique"
+    environment = "dev"
 
-# these need to be unique per region and per environment
-project_key_name = "project_ENVIRONMENT_ssh_key_pair_YOURNAME"
+    # these need to be unique per region and per environment
+    project_key_name = "project_ENVIRONMENT_ssh_key_pair_YOURNAME"
 
-# credentials used to create any application database
-# password must be greater than 8 characters
-db_name = "tcp_eks"
-db_username = "tcp-eks"
-db_password = "anothergreatpassword"
-db_identifier = "tcp-eks-db1"
+    # credentials used to create any application database
+    # password must be greater than 8 characters
+    db_name = "tcp_eks"
+    db_username = "tcp-eks"
+    db_password = "anothergreatpassword"
+    db_identifier = "tcp-eks-db1"
 
-# no single quotes allowed
-jenkins_developer_password = "a good password"
+    #### If building Jenkins from this repo:
 
-# no single quotes allowed
-jenkins_admin_password = "a really good password"
+    # no single quotes allowed
+    jenkins_developer_password = "a good password"
 
-# the user must have access to the repos that should be under ci/cd control
-github_user = "your user"
+    # no single quotes allowed
+    jenkins_admin_password = "a really good password"
 
-# the token should have FULL repo access and FULL admin:web_hook access
-github_token = "your token"
+    # the user must have access to the repos that should be under ci/cd control
+    github_user = "your user"
 
-# Leave these alone
-github_repo_owner = "excellaco"
-github_repo_include = "tcp-eks tcp-angular tcp-java"
-```
+    # the token should have FULL repo access and FULL admin:web_hook access
+    github_token = "your token"
 
-Edit the file localy called `.netrc` with the following contents:
+    # Leave these alone
+    github_repo_owner = "excellaco"
+    github_repo_include = "tcp-eks tcp-angular tcp-java"
+    ```
 
-```
-machine github.com
-  login github_user
-  password github_token
-```
+1. Edit the file localy called `.netrc` with the following contents:
 
-This is used by both of the jenkins and eks terraform modules.
+    ```
+    machine github.com
+      login github_user
+      password github_token
+    ```
 
-[Generate Github token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) follow instructions here to generate a personal access token. Be sure to include scope for "repo" and "admin:repo_hook", otherwise your token will not allow you to scan the organization for exisiting repositories.
+    This is used by both of the jenkins and eks terraform modules.
 
-## Build container
+1. Build container
 
-```
-docker build -t tcp-eks:latest -f Docker/Dockerfile .
-```
+    ```
+    docker build -t tcp-eks:latest -f Docker/Dockerfile .
+    ```
 
-## Provisioning EKS Cluster
+1. Provisioning EKS Cluster
 
-AWS-MFA token should be valid before running the container.<br>
+    AWS-MFA token should be valid before running the container.<br>
 
-```
-docker run -it --rm -d --name tcp-eks -v ~/.aws/credentials:/root/.aws/credentials tcp-eks:latest
-```
+    ```
+    docker run -it --rm -d --name tcp-eks -v ~/.aws/credentials:/root/.aws/credentials tcp-eks:latest
+    ```
 
-Entrypoint contains: `ENTRYPOINT ["/bin/sh", "-c", "bin/create_s3; bin/create_env; tail -f /dev/null;"]
-`<br>
-`bin/create_s3` creates an s3 bucket named `<project_name>-<environment>`<br>
-`bin/create_env` initializes the terraform backend to use the above s3 bucket and creates the infrastructure<br>
-`tail -f /dev/null` prevents the docker container from stopping after terraform apply is successful<br>
-<br>
+    Entrypoint contains: `ENTRYPOINT ["/bin/sh", "-c", "bin/create_s3; bin/create_env; tail -f /dev/null;"]
 
-Provisioning should take approximately 15 minutes.
+    - `bin/create_s3` creates an s3 bucket named `<project_name>-<environment>`<br>
+    - `bin/create_env` initializes the terraform backend to use the above s3 bucket and creates the infrastructure<br>
+    - `tail -f /dev/null` prevents the docker container from stopping after terraform apply is successful<br>
 
-## Check progress
-
-```
-docker logs tcp-eks
-```
+    Provisioning should take approximately 15 minutes.
 
 ## Modify Infrastructure
 

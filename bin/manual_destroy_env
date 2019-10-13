@@ -54,22 +54,13 @@ aws ssm delete-parameter --name ${CI_PROJECT_NAME}_dev_vpc_id
 
 aws autoscaling delete-auto-scaling-group --auto-scaling-group-name ${CI_PROJECT_NAME}-dev-cluster-asg --force-delete
 
-
-
 aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,Tags[?Key==`Name`].Value]"
-
 
 aws ec2 describe-instances --filters "Name=dns-name,Values=${CI_PROJECT_NAME}-dev-cluster-node" "Name=availability-zone,Values=us-east-1a"
 
 aws ec2 describe-instances --filters "Name=dns-name,Values=${CI_PROJECT_NAME}-dev-cluster-node" "Name=availability-zone,Values=us-east-1b"
 
-
 aws ec2 describe-instances --filters "Name=dns-name,Values=${CI_PROJECT_NAME}-dev-bastion" "Name=availability-zone,Values=us-east-1a"
-
-
-#aws ec2 terminate-instances --instance-ids i-074ba045044a91994
-
-
 
 sg_ids=`aws ec2 describe-security-groups --query="SecurityGroups[?starts_with(GroupName, '${CI_PROJECT_NAME}-dev-')][GroupId]" --output=text`
 
@@ -78,8 +69,6 @@ for sg_id in ${sg_ids}; do
   aws ec2 delete-security-group --group-id ${sg_id}
 
 done
-
-
 
 subnet_ids=`aws ec2 describe-subnets --query="Subnets[?Tags[?Key=='Name' && starts_with(Value, '${CI_PROJECT_NAME}-dev')]].SubnetId" --output text`
 
@@ -187,17 +176,11 @@ done
 
 aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
 
-
 aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
-
 
 aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
 
-
-
-
 aws iam detach-role-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-policy --role-name ${CI_PROJECT_NAME}-dev-cluster-role
-
 
 aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSClusterPolicy --role-name ${CI_PROJECT_NAME}-dev-cluster-role
 
@@ -205,27 +188,17 @@ aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFu
 
 aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/AmazonEKSServicePolicy --role-name ${CI_PROJECT_NAME}-dev-cluster-role
 
-
 aws iam detach-role-policy --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role --role-name ${CI_PROJECT_NAME}-dev-cluster-role
 
-
-
 aws iam detach-role-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-worker-autoscaling --role-name ${CI_PROJECT_NAME}-dev-cluster
-
-
 
 aws iam delete-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-policy
 
 aws iam delete-policy --policy-arn arn:aws:iam::090999229429:policy/${CI_PROJECT_NAME}/${CI_PROJECT_NAME}-dev-cluster-worker-autoscaling
 
-
-
 aws iam list-instance-profiles --query="InstanceProfiles[?starts_with(InstanceProfileName, '${CI_PROJECT_NAME}-dev-')][CreateDate,InstanceProfileName,Arn]" --output=text
 
 aws iam list-instance-profiles --query="InstanceProfiles[?Roles[?starts_with(RoleName,'${CI_PROJECT_NAME}-dev-')]].[InstanceProfileId,InstanceProfileName]" --output=text
-
-
-
 
 aws iam remove-role-from-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-bastion --role-name ${CI_PROJECT_NAME}-dev-bastion
 
@@ -233,15 +206,10 @@ aws iam remove-role-from-instance-profile --instance-profile-name ${CI_PROJECT_N
 
 aws iam remove-role-from-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster-node-profile --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
 
-
-
 aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-bastion
 aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster
-aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster-node-profile
 
-
-
-
+aws iam delete-instance-profile --instance-profile-name ${CI_PROJECT_NAME}-dev-cluster-node-profile
 
 aws iam list-roles --query="Roles[?starts_with(RoleName, '${CI_PROJECT_NAME}-dev-')][RoleName,Arn]" --output=text
 
@@ -252,8 +220,6 @@ aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-cluster
 aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-cluster-role
 
 aws iam delete-role --role-name ${CI_PROJECT_NAME}-dev-cluster-node-role
-
-
 
 for r in ${CI_PROJECT_NAME}-dev-cluster \
 

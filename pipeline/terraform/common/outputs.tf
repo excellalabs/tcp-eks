@@ -20,7 +20,6 @@ resource "aws_ssm_parameter" "rails_pipeline_ecr_repo" {
   overwrite = true
 }
 
-
 output "node_base_ecr_repository_url" {
   value = "${aws_ecr_repository.node_base.repository_url}"
 }
